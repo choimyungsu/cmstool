@@ -12,6 +12,9 @@ const ExcelJS = require('exceljs');
 // 업로드된 파일을 저장할 경로 설정
 const upload = multer({ dest: 'uploads/' });
 
+require('dotenv').config(); // 환경 변수를 .env 파일에서 로드하기 위한 모듈
+
+/*
 const pool = new Pool({
   user: "postgres",
   host: "localhost",
@@ -19,6 +22,34 @@ const pool = new Pool({
   password: "1234",
   port: 5432,
 });
+*/
+
+// 데이터베이스 연결 설정
+const dbConfig = {
+  // 공통 설정
+  user: "postgres",
+  password: "1234",
+  database: "postgres",
+  port: process.env.DB_PORT || 5432, // 기본 포트 5432 사용
+};
+
+// 환경에 따라 호스트 설정
+if (process.env.NODE_ENV === 'production') {
+  // Render에서 실행 중일 때 (Neon DB 연결)
+  dbConfig.host = process.env.DATABASE_URL;
+  dbConfig.ssl = {
+    rejectUnauthorized: false, // Neon DB는 SSL 연결이 필요할 수 있음
+  };
+} else {
+  // 로컬 환경일 때 (로컬 PostgreSQL 연결)
+  dbConfig.host = process.env.LOCAL_DB_HOST || 'localhost';
+}
+
+// Pool 생성
+const pool = new Pool(dbConfig);
+
+//##################
+
 
 const app = express();
 
