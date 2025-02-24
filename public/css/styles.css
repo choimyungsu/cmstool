@@ -1,0 +1,21 @@
+
+
+/* DataTable 스타일 */
+table.dataTable {
+    border-collapse: collapse;
+    font-size: 12px;
+}
+table.dataTable thead th, table.dataTable tbody td {
+    border: 1px solid #ddd; text-align: center;
+}
+
+/* DataTable 버튼 스타일 */
+.dt-buttons button {
+    font-size: 12px !important;
+    padding: 5px 8px !important;
+    margin: 2px;
+    color: white !important;
+}
+.buttons-copy { background-color: blue !important; }
+.buttons-excel { background-color: orange !important; }
+.buttons-print { background-color: red !important; }

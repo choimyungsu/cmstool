@@ -1,0 +1,8 @@
+CREATE TABLE tb_report (
+    id SERIAL PRIMARY KEY,              -- 자동 증가하는 기본 키
+    project VARCHAR(255) NOT NULL,      -- 프로젝트명 (최대 255자, 필수)
+    name VARCHAR(255) NOT NULL,         -- 담당자 이름 (최대 255자, 필수)
+    report_date VARCHAR(255) NOT NULL,  -- 날짜 (문자열로 저장, 최대 255자, 필수)
+    content TEXT NOT NULL,              -- Summernote 내용 (HTML 포함 가능, 큰 텍스트)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- 데이터 삽입 시 자동 현재 시간 저장
+);
