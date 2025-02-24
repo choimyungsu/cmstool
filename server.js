@@ -36,7 +36,7 @@ const dbConfig = {
 // 환경에 따라 호스트 설정
 if (process.env.NODE_ENV === 'production') {
   // Render에서 실행 중일 때 (Neon DB 연결)
-  dbConfig.host = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_uYbwV3oOGl8J@ep-twilight-wildflower-a1ulzpbw-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
+  dbConfig.host = process.env.DATABASE_URL || 'ep-twilight-wildflower-a1ulzpbw-pooler.ap-southeast-1.aws.neon.tech';
   dbConfig.ssl = {
     rejectUnauthorized: false, // Neon DB는 SSL 연결이 필요할 수 있음
   };
