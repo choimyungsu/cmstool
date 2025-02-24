@@ -25,6 +25,7 @@ const pool = new Pool({
 */
 
 // 데이터베이스 연결 설정
+/*
 const dbConfig = {
   // 공통 설정
   user: "postgres",
@@ -44,6 +45,37 @@ if (process.env.NODE_ENV === 'production') {
   // 로컬 환경일 때 (로컬 PostgreSQL 연결)
   dbConfig.host = process.env.LOCAL_DB_HOST || 'localhost';
 }
+
+*/
+
+// 기본 DB 설정
+const dbConfig = {
+  user: process.env.DB_USER || "postgres", 
+  password: process.env.DB_PASSWORD || "1234", 
+  database: process.env.DB_NAME || "postgres", 
+  port: process.env.DB_PORT || 5432,
+};
+
+// 환경에 따라 설정
+if (process.env.NODE_ENV === 'production') {
+  const databaseUrl = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_uYbwV3oOGl8J@ep-twilight-wildflower-a1ulzpbw-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require';
+  
+  const url = new URL(databaseUrl);
+  
+  dbConfig.host = url.hostname;
+  dbConfig.user = url.username;
+  dbConfig.password = url.password;
+  dbConfig.database = url.pathname.split('/')[1];
+  dbConfig.port = url.port || 5432;
+  dbConfig.ssl = { rejectUnauthorized: false };
+} else {
+  dbConfig.host = process.env.LOCAL_DB_HOST || 'localhost';
+}
+
+
+
+
+
 
 // Pool 생성
 const pool = new Pool(dbConfig);
