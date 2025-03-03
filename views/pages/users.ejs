@@ -53,12 +53,20 @@
                             <input type="text" class="form-control custom-input" id="user_id" name="user_id" required>
                         </div>
                         <div class="input-group custom-input-group mb-1">
+                            <label class="input-group-text custom-label" for="user_name">User명</label>
+                            <input type="text" class="form-control custom-input" id="user_name" name="user_name" required>
+                        </div>
+                        <div class="input-group custom-input-group mb-1">
                             <label class="input-group-text custom-label" for="password">Password</label>
                             <input type="password" class="form-control custom-input" id="password" name="password" required>
                         </div>
                         <div class="input-group custom-input-group mb-1">
                             <label class="input-group-text custom-label" for="email">Email</label>
                             <input type="email" class="form-control custom-input" id="email" name="email" required>
+                        </div>
+                        <div class="input-group custom-input-group mb-1">
+                            <label class="input-group-text custom-label" for="tel">Tel</label>
+                            <input type="text" class="form-control custom-input" id="tel" name="tel" required>
                         </div>
                         <div class="input-group custom-input-group mb-1">
                             <label class="input-group-text custom-label" for="organization">Organization</label>
@@ -111,7 +119,9 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>User ID</th>
+                                    <th>User Name</th>
                                     <th>Email</th>
+                                    <th>Tel</th>
                                     <th>Organization</th>
                                     <th>Department</th>
                                     <th>Created At</th>
@@ -129,7 +139,13 @@
                                                 <%= user.user_id %>
                                             </td>
                                             <td>
+                                                <%= user.user_name %>
+                                            </td>
+                                            <td>
                                                 <%= user.email %>
+                                            </td>
+                                            <td>
+                                                <%= user.tel %>
                                             </td>
                                             <td>
                                                 <%= user.organization || '-' %>
@@ -147,7 +163,7 @@
                                         <% }) %>
                                 <% } else { %>
                                         <tr>
-                                            <td colspan="7" class="text-center">No users found</td>
+                                            <td colspan="8" class="text-center">No users found</td>
                                         </tr>
                                 <% } %>
                             </tbody>
