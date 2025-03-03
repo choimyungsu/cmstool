@@ -44,9 +44,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/calendar', async (req, res) => {
-    try {
-
-        //wbs    
+    try {    
         res.render("index", {
           currentPage:'pages/calendar',
         });
@@ -55,6 +53,15 @@ app.get('/calendar', async (req, res) => {
       }
 });
 
+app.get('/compare', async (req, res) => {
+  try {    
+      res.render("index", {
+        currentPage:'pages/compare',
+      });
+    } catch (err) {
+      console.error(err);
+    }
+});
 
 
 // 서버 시작
