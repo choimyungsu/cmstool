@@ -1,0 +1,319 @@
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/css/custom.css">
+
+<style>
+    body { font-family: Arial, sans-serif; }
+    .custom-container { border: 1px solid gray; padding: 5px; border-radius: 5px; }
+    .nav-tabs .nav-link { color: #495057; font-size: 0.875rem; padding: 0.25rem 0.5rem; }
+    .nav-tabs .nav-link.active { background-color: #007bff !important; color: white !important; }
+    #nav-new-issue-tab.nav-link.active { background-color: #28a745 !important; color: white !important; }
+    #nav-issue-detail-tab.nav-link.active { background-color: #17a2b8 !important; color: white !important; }
+    .nav-tabs .nav-link:hover { background-color: #f8f9fa; }
+    .btn-sm i { font-size: 0.75rem; vertical-align: middle; }
+    /* 버튼 크기와 스타일 동기화 및 오른쪽 정렬 */
+    .import-export-buttons .btn {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.7rem;
+        height: 25px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .import-export-buttons { margin-left: auto; display: flex; gap: 5px; }
+</style>
+
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-issue-list-tab" data-bs-toggle="tab" data-bs-target="#nav-issue-list" type="button" role="tab" aria-controls="nav-issue-list" aria-selected="true">이슈 목록</button>
+                        <button class="nav-link" id="nav-new-issue-tab" data-bs-toggle="tab" data-bs-target="#nav-new-issue" type="button" role="tab" aria-controls="nav-new-issue" aria-selected="false">새 이슈 추가</button>
+                        <button class="nav-link" id="nav-issue-detail-tab" data-bs-toggle="tab" data-bs-target="#nav-issue-detail" type="button" role="tab" aria-controls="nav-issue-detail" aria-selected="false">이슈 상세</button>
+                        <div class="import-export-buttons">
+                            <form id="excelImportForm" enctype="multipart/form-data">
+                                <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
+                                <button type="button" class="btn btn-success import-excel-btn" id="importExcelBtn">
+                                    <i class="fas fa-upload"></i> Excel Import
+                                </button>
+                            </form>
+                            <a href="/issue/export" class="btn btn-primary">
+                                <i class="fas fa-download"></i> Excel Download
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="tab-content" id="nav-tabContent">
+                    <!-- 이슈 목록 탭 -->
+                    <div class="tab-pane fade show active" id="nav-issue-list" role="tabpanel" aria-labelledby="nav-issue-list-tab">
+                        <div style="margin-top: 15px;">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th class="small">ID</th>
+                                        <th class="small">프로젝트 ID</th>
+                                        <th class="small" style="width:45%">이슈 제목</th>
+                                        <th class="small">상태</th>
+                                        <th class="small">생성일</th>
+                                        <th class="small">보기</th>
+                                        <th class="small">삭제</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% issues.forEach(issue => { %>
+                                        <tr data-issue-id="<%= issue.id %>">
+                                            <td class="small"><%= issue.id %></td>
+                                            <td class="small"><%= issue.project_id %></td>
+                                            <td class="small"><%= issue.issue_title %></td>
+                                            <td class="small"><%= issue.issue_status %></td>
+                                            <td class="small"><%= issue.issue_create_date %></td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm view-btn" data-issue-id="<%= issue.id %>">
+                                                    <i class="fas fa-eye" style="font-size: 0.75rem;"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <form id="delete-form-<%= issue.id %>" action="/deleteIssue/<%= issue.id %>" method="POST" style="display: inline;">
+                                                    <button type="button" class="btn btn-danger btn-sm delete-btn" data-issue-id="<%= issue.id %>">
+                                                        <i class="fas fa-trash-alt" style="font-size: 0.75rem;"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <!-- 히든 값으로 모든 데이터 저장 -->
+                                            <input type="hidden" class="issue-data" data-field="project_id" value="<%= issue.project_id %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_gubun" value="<%= issue.issue_gubun %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_title" value="<%= issue.issue_title %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_contents" value="<%= issue.issue_contents || '' %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_status" value="<%= issue.issue_status %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_progress" value="<%= issue.issue_progress || '' %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_patch_version" value="<%= issue.issue_patch_version %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_finish_date" value="<%= issue.issue_finish_date %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_create_date" value="<%= issue.issue_create_date %>">
+                                            <input type="hidden" class="issue-data" data-field="created_at" value="<%= issue.created_at %>">
+                                            <input type="hidden" class="issue-data" data-field="updated_at" value="<%= issue.updated_at %>">
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 새 이슈 추가 탭 -->
+                    <div class="tab-pane fade" id="nav-new-issue" role="tabpanel" aria-labelledby="nav-new-issue-tab">
+                        <div style="margin-top: 15px;">
+                            <form action="/createIssue" method="POST">
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="project_id">프로젝트 ID</label>
+                                    <input type="text" class="form-control custom-input" id="project_id" name="project_id" placeholder="프로젝트 ID를 입력하세요">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_gubun">이슈 구분</label>
+                                    <input type="text" class="form-control custom-input" id="issue_gubun" name="issue_gubun" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_title">이슈 제목</label>
+                                    <input type="text" class="form-control custom-input" id="issue_title" name="issue_title" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_contents">내용</label>
+                                    <textarea class="form-control custom-input" id="issue_contents" name="issue_contents"></textarea>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_status">상태</label>
+                                    <input type="text" class="form-control custom-input" id="issue_status" name="issue_status" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_progress">진행 상황</label>
+                                    <textarea class="form-control custom-input" id="issue_progress" name="issue_progress"></textarea>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_patch_version">패치 버전</label>
+                                    <input type="text" class="form-control custom-input" id="issue_patch_version" name="issue_patch_version">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_create_date">생성일</label>
+                                    <input type="date" class="form-control custom-input" id="issue_create_date" name="issue_create_date">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_finish_date">완료일</label>
+                                    <input type="date" class="form-control custom-input" id="issue_finish_date" name="issue_finish_date">
+                                </div>
+                                
+                                <button type="submit" class="btn btn-success btn-sm" style="font-size: 0.75rem;">추가</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 이슈 상세 탭 -->
+                    <div class="tab-pane fade" id="nav-issue-detail" role="tabpanel" aria-labelledby="nav-issue-detail-tab">
+                        <div style="margin-top: 15px;" id="issue-detail-content">
+                            <h5>이슈 상세 정보</h5>
+                            <form id="updateIssueForm" method="POST">
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label">ID</label>
+                                    <input type="text" class="form-control custom-input" name="id" readonly>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="project_id">프로젝트 ID</label>
+                                    <input type="text" class="form-control custom-input" id="project_id" name="project_id">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_gubun">이슈 구분</label>
+                                    <input type="text" class="form-control custom-input" id="issue_gubun" name="issue_gubun">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_title">이슈 제목</label>
+                                    <input type="text" class="form-control custom-input" id="issue_title" name="issue_title">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_contents">내용</label>
+                                    <textarea class="form-control custom-input" id="issue_contents_detail" name="issue_contents"></textarea>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_status">상태</label>
+                                    <input type="text" class="form-control custom-input" id="issue_status" name="issue_status">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_progress">진행 상황</label>
+                                    <textarea class="form-control custom-input" id="issue_progress_detail" name="issue_progress"></textarea>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_patch_version">패치 버전</label>
+                                    <input type="text" class="form-control custom-input" id="issue_patch_version" name="issue_patch_version">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_create_date">생성일</label>
+                                    <input type="date" class="form-control custom-input" id="issue_create_date" name="issue_create_date">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_finish_date">완료일</label>
+                                    <input type="date" class="form-control custom-input" id="issue_finish_date" name="issue_finish_date">
+                                </div>
+                                
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label">시스템 생성일</label>
+                                    <input type="text" class="form-control custom-input" name="created_at" readonly>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label">시스템 변경일</label>
+                                    <input type="text" class="form-control custom-input" name="updated_at" readonly>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.75rem;">수정</button>
+                                <button type="button" class="btn btn-danger btn-sm delete-btn" style="font-size: 0.75rem;">삭제</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 삭제 확인 모달 -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">삭제 확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                정말로 이 이슈를 삭제하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete" autofocus>확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery, Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+<script>
+    $(document).ready(function() {
+        // "보기" 버튼 클릭 시 상세 탭으로 이동 및 데이터 표시
+        $('.view-btn').on('click', function() {
+            const issueId = $(this).data('issue-id');
+            const $row = $(`tr[data-issue-id="${issueId}"]`);
+            const issueData = {};
+            $row.find('.issue-data').each(function() {
+                const field = $(this).data('field');
+                issueData[field] = $(this).val();
+            });
+
+            // 상세 탭에 데이터 채우기
+            $('#updateIssueForm').attr('action', `/updateIssue/${issueId}`);
+            $('#updateIssueForm input[name="id"]').val(issueId);
+            $('#updateIssueForm input[name="project_id"]').val(issueData.project_id);
+            $('#updateIssueForm input[name="issue_gubun"]').val(issueData.issue_gubun);
+            $('#updateIssueForm input[name="issue_title"]').val(issueData.issue_title);
+            $('#updateIssueForm textarea[name="issue_contents"]').val(issueData.issue_contents || '');
+            $('#updateIssueForm input[name="issue_status"]').val(issueData.issue_status);
+            $('#updateIssueForm textarea[name="issue_progress"]').val(issueData.issue_progress || '');
+            $('#updateIssueForm input[name="issue_patch_version"]').val(issueData.issue_patch_version);
+            $('#updateIssueForm input[name="issue_finish_date"]').val(issueData.issue_finish_date);
+            $('#updateIssueForm input[name="issue_create_date"]').val(issueData.issue_create_date);
+            $('#updateIssueForm input[name="created_at"]').val(issueData.created_at);
+            $('#updateIssueForm input[name="updated_at"]').val(issueData.updated_at);
+
+            // 상세 탭으로 전환
+            $('#nav-issue-detail-tab').tab('show');
+        });
+
+        // 삭제 버튼 이벤트
+        $('.delete-btn').on('click', function() {
+            const issueId = $(this).data('issue-id');
+            const deleteForm = document.getElementById(`delete-form-${issueId}`) || document.createElement('form');
+            deleteForm.method = 'POST';
+            deleteForm.action = `/deleteIssue/${issueId}`;
+            const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+
+            document.getElementById('confirmDelete').onclick = function() {
+                deleteForm.submit();
+                modal.hide();
+            };
+            modal.show();
+        });
+
+        // 엑셀 임포트 이벤트
+        const importExcelBtn = document.getElementById('importExcelBtn');
+        const excelFileInput = document.getElementById('excelFileInput');
+        importExcelBtn.addEventListener('click', function() {
+            excelFileInput.click();
+        });
+
+        excelFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const formData = new FormData(document.getElementById('excelImportForm'));
+                formData.append('excelFileInput', file);
+                fetch('/issue/import', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('데이터가 성공적으로 import되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('import 중 오류가 발생했습니다: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('import 중 오류가 발생했습니다.');
+                });
+            }
+        });
+    });
+</script>

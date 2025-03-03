@@ -1,0 +1,49 @@
+/project-root
+│── /public
+│   ├── /css
+│   │   ├── style.css
+│   │   ├── header.css
+│   │   ├── sidebar.css
+│   │   ├── footer.css
+│   ├── /js
+│   │   ├── main.js
+│   │   ├── datatable.js
+│   │   ├── calendar.js
+│   │   ├── sidebar.js
+│   ├── /img (빈 폴더)
+│── /views
+│   ├── /layouts
+│   │   ├── header.ejs
+│   │   ├── sidebar.ejs
+│   │   ├── footer.ejs
+│   │   ├── main.ejs
+│   ├── /pages
+│   │   ├── index.ejs
+│   │   ├── calendar.ejs
+│   │   ├── table.ejs
+│   │   ├── dashboard.ejs
+│── /routes
+│   ├── index.js
+│   ├── calendar.js
+│   ├── table.js
+│   ├── dashboard.js
+│── /controllers
+│   ├── calendarController.js
+│   ├── tableController.js
+│   ├── dashboardController.js
+│   ├── indexController.js
+│── /models
+│   ├── db.js
+│   ├── userModel.js
+│   ├── eventModel.js
+│   ├── tableModel.js
+│── /config
+│   ├── database.js
+│── /middlewares
+│   ├── auth.js
+│── /utils
+│   ├── helpers.js
+│── .env
+│── app.js
+│── package.json
+│── README.md

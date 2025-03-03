@@ -1,0 +1,332 @@
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/css/custom.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.min.js"></script>
+
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-wbs-list-tab" data-bs-toggle="tab" data-bs-target="#nav-wbs-list" type="button" role="tab" aria-controls="nav-wbs-list" aria-selected="true">WBS 목록</button>
+                        <button class="nav-link" id="nav-new-task-tab" data-bs-toggle="tab" data-bs-target="#nav-new-task" type="button" role="tab" aria-controls="nav-new-task" aria-selected="false">새 작업 추가</button>
+                        <button class="nav-link" id="nav-gantt-tab" data-bs-toggle="tab" data-bs-target="#nav-gantt" type="button" role="tab" aria-controls="nav-gantt" aria-selected="false">간트챠트</button>
+                        <div>
+                            <form id="excelImportForm" enctype="multipart/form-data">
+                                <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
+                                <button type="button" class="btn btn-success import-excel-btn" id="importExcelBtn">
+                                    <i class="fas fa-upload"></i> Excel Import
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="tab-content" id="nav-tabContent">
+                    <!-- WBS 목록 탭 -->
+                    <div class="tab-pane fade show active" id="nav-wbs-list" role="tabpanel" aria-labelledby="nav-wbs-list-tab">
+                        <div style="margin-top: 15px;">
+
+
+                            <table class="custom-table"> 
+                                <thead>
+                                    <tr>
+                                        <th class="small">ID</th>
+                                        <th class="small">프로젝트 ID</th>
+                                        <th class="small" style="width:45%">작업명</th>
+                                        <th class="small">시작일</th>
+                                        <th class="small">종료일</th>
+                                        <th class="small">진행률</th>
+                                        <th class="small">담당자</th>
+                                        <th class="small">수정</th>
+                                        <th class="small">삭제</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% tasks.forEach(task => { %>
+                                        <tr>
+                                            <td class="small"><%= task.id %></td>
+                                            <form action="/wbsUpdate/<%= task.id %>" method="POST">
+                                                <td><input type="text" name="project_id" value="<%= task.project_id %>" class="form-control custom-input" ></td>
+                                                <td><input type="text" name="task_name" value="<%= task.task_name %>" class="form-control  custom-input" ></td>
+                                                <td><input type="text" name="start_date" value="<%= task.start_date %>" class="form-control  custom-input" ></td>
+                                                <td><input type="text" name="end_date" value="<%= task.end_date %>" class="form-control  custom-input" ></td>
+                                                <td><input type="number" name="task_progress" value="<%= task.task_progress %>" class="form-control  custom-input" ></td>
+                                                <td><input type="text" name="task_user" value="<%= task.task_user %>" class="form-control  custom-input" ></td>
+                                                <td>
+                                                    <button type="submit" class="btn btn-primary btn-sm" >
+                                                        <i class="fas fa-pen fa-xxs"></i> 
+                                                        <!-- fas fa-pen -->
+                                                    </button>
+                                                    
+                                                </td>
+                                            </form>
+                                            <td>
+                                                <form id="delete-form-<%= task.id %>" action="/wbsDelete/<%= task.id %>" method="POST" style="display: inline;">
+                                                    <button type="button" class="btn btn-danger btn-sm delete-btn" data-task-id="<%= task.id %>" >
+                                                        <i class="fas fa-trash-alt fa-xxs" ></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <!-- 새 작업 추가 탭 -->
+                    <div class="tab-pane fade" id="nav-new-task" role="tabpanel" aria-labelledby="nav-new-task-tab">
+                        <div style="margin-top: 15px;">
+                            
+                            <form action="/wbsCreate" method="POST">
+
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="project_id">프로젝트 ID</label>
+                                    <input type="text" class="form-control custom-input" id="project_id" name="project_id" placeholder="프로젝트명을 입력하세요" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="task_name">작업명</label>
+                                    <input type="text" class="form-control custom-input" id="task_name" name="task_name" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="start_date">시작일</label>
+                                    <input type="date" class="form-control custom-input"  id="start_date" name="start_date" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="end_date">종료일</label>
+                                    <input type="date" class="form-control custom-input" id="end_date"  name="end_date" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="task_progress">진행률(%)</label>
+                                    <input type="number" class="form-control custom-input" id="task_progress" name="task_progress" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="task_user">담당자</label>
+                                    <input type="text" class="form-control custom-input" id="task_user" name="task_user" required>
+                                </div>
+                            
+                                <button type="submit" class="btn btn-success btn-sm" style="font-size: 0.75rem;">추가</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 간트챠트 탭 -->
+                    <div class="tab-pane fade" id="nav-gantt" role="tabpanel" aria-labelledby="nav-gantt-tab">
+                        <div style="margin-top: 15px; min-height: 400px; position: relative;">
+                            
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-day" data-mode="Day">Day</button>
+                                <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-week" data-mode="Week">Week</button>
+                                <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-month" data-mode="Month">Month</button>
+                            </div>
+                            <!-- <div id="gantt"></div> -->
+                            <div id="gantt" style="height: 100%; min-height: 400px;"></div>
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+<!-- 삭제 확인 모달 -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">삭제 확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                정말로 이 작업을 삭제하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete" autofocus>확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    body { font-family: Arial, sans-serif; }
+    #gantt { width: 100%; height: 500px; margin-top: 20px; }
+
+
+    .custom-container {
+        border: 1px solid gray;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    .nav-tabs .nav-link {
+        color: #495057; /* 기본 글씨 색상 */
+        font-size: 0.875rem; /* 탭 글씨 크기 작게 */
+        padding: 0.25rem 0.5rem; /* 탭 높이 낮춤 (패딩 조정) */
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: #007bff !important; /* WBS 목록: 파란색 */
+        color: white !important;
+    }
+
+    #nav-new-task-tab.nav-link.active {
+        background-color: #28a745 !important; /* 새 작업 추가: 초록색 */
+        color: white !important;
+    }
+
+    #nav-gantt-tab.nav-link.active {
+        background-color: #17a2b8 !important; /* 간트챠트: 청록색 */
+        color: white !important;
+    }
+
+    .nav-tabs .nav-link:hover {
+        background-color: #f8f9fa; /* 호버 시 밝은 회색 */
+    }
+
+
+</style>
+
+<script>
+
+    
+
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     const tasks = '<%= JSON.stringify(tasks) %>'; // EJS 데이터 삽입
+    //     // const tasks = [
+    //     //     { id: "Task 1", name: "Design", start: "2025-01-01", end: "2025-01-10", progress: 20, Project_id:"a" },
+    //     //     { id: "Task 2", name: "Design", start: "2025-01-01", end: "2025-01-12", progress: 20, Project_id:"b" },
+    //     //     { id: "Task 3", name: "Design", start: "2025-03-01", end: "2025-03-05", progress: 20, Project_id:"c" },
+    //     //     { id: "Task 4", name: "Design", start: "2025-03-01", end: "2025-03-05", progress: 20, Project_id:"d" },
+    //     //     { id: "Task 5", name: "Design", start: "2025-03-01", end: "2025-03-05", progress: 20, Project_id:"e" },
+    //     //     { id: "Task 6", name: "Development", start: "2025-03-06", end: "2025-04-15", progress: 50 }
+    //     // ];
+
+
+    // tasks가 undefined일 경우 빈 배열로 기본값 설정
+    const tasks = <%- JSON.stringify(tasks) || '[]' %>; // 이스케이프 비활성화
+    console.log('Received tasks:', tasks); // 디버깅
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!Array.isArray(tasks)) {
+            console.error('Tasks is not an array:', tasks);
+            return; // 배열이 아니면 실행 중단
+        }
+
+        // 간트 차트에 맞게 데이터 변환
+        const tasksForGantt = tasks.map(task => ({
+            id: task.id.toString(), // id를 문자열로 변환 (frappe-gantt 요구 사항)
+            name: task.task_name,
+            start: task.start_date,
+            end: task.end_date,
+            progress: task.task_progress || 0 // progress가 없으면 0으로 기본값
+        }));
+
+        console.log('Tasks for Gantt:', tasksForGantt); // 변환된 데이터 확인
+
+        // 간트 차트 초기화
+        const gantt = new Gantt("#gantt", tasksForGantt, {
+            view_mode: "Month", // Week, Month
+            column_width: 50, // 주 간격 좁게
+            step: 1
+        });
+
+        // 뷰 모드 변경 이벤트 핸들러
+        const viewModeButtons = document.querySelectorAll('.view-mode-btn');
+        let activeViewMode = "Week"; // 초기 활성 모드
+
+        viewModeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const mode = this.getAttribute('data-mode');
+                if (gantt && mode !== activeViewMode) {
+                    gantt.change_view_mode(mode);
+                    activeViewMode = mode;
+
+                    // 모든 버튼의 스타일 초기화
+                    viewModeButtons.forEach(btn => btn.classList.remove('btn-primary', 'btn-outline-primary'));
+                    // 선택된 버튼에 파란색 스타일 적용
+                    this.classList.add('btn-primary');
+                    this.classList.remove('btn-outline-primary');
+                }
+            });
+        });
+
+        // 초기 활성 버튼 설정
+        document.getElementById('view-week').classList.add('btn-primary');
+        document.getElementById('view-week').classList.remove('btn-outline-primary');
+       
+        // 삭제 버튼 이벤트 핸들러
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const taskId = this.getAttribute('data-task-id');
+                    const deleteForm = document.getElementById(`delete-form-${taskId}`);
+                    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+
+                    document.getElementById('confirmDelete').onclick = function() {
+                        deleteForm.submit(); // 모달 확인 시 폼 제출
+                        modal.hide();
+                    };
+
+                    modal.show();
+                });
+            });
+
+        // 엑셀 import 이벤트 핸들러
+            const importExcelBtn = document.getElementById('importExcelBtn');
+            const excelFileInput = document.getElementById('excelFileInput');
+            importExcelBtn.addEventListener('click', function() {
+                excelFileInput.click(); // 파일 입력 필드 트리거
+            });
+
+            excelFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const formData = new FormData(document.getElementById('excelImportForm'));
+                    formData.append('excelFileInput', file); // 파일 추가
+                    console.log('Sending file:', file.name); // 디버깅 로그
+                    fetch('/wbs/import', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert('데이터가 성공적으로 import되었습니다.');
+                            location.reload(); // 페이지 새로고침
+                        } else {
+                            alert('import 중 오류가 발생했습니다: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('import 중 오류가 발생했습니다.');
+                    });
+                } else {
+                    console.warn('No file selected');
+                }
+            });
+
+
+
+
+
+
+
+
+
+    });
+</script>

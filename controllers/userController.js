@@ -1,0 +1,55 @@
+// controllers/userController.js
+const User = require('../models/user');
+
+const userController = {
+  async getUsers(req, res) {
+    try {
+      const users = await User.getAllUsers();
+      res.render('index', {  // index.ejs를 렌더링
+        title: 'User List',
+        currentPage: 'pages/users',  // 동적 페이지로 pages/users 지정
+        users: users  // 사용자 데이터 전달
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Server Error');
+    }
+  },
+  // 사용자 등록 처리
+  async registerUser(req, res) {
+    try {
+      const userData = req.body;
+      await User.createUser(userData);
+      res.redirect('/users'); // 등록 후 사용자 목록으로 리다이렉트
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Registration Failed');
+    }
+  },
+
+  //검색
+async searchUsers (req, res) {
+
+  try {
+
+    console.log("searchUsers 요청 수신됨", req.query);
+    const { search_user_id } = req.query;
+    const users = await User.searchUsers({ search_user_id  });
+    console.log(users)
+    return res.json({ success: true, message: 'Memo search successfully', data: users  });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+
+}
+
+
+  
+
+
+
+};
+
+module.exports = userController;

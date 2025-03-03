@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cms tool</title>
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* 커스텀 스타일 */
+    .sidebar {
+      background-color: #343a40; /* 짙은 회색 */
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0; /* 기본적으로 보임 */
+      width: 250px;
+      padding-top: 60px; /* 로고 높이만큼 패딩 추가 */
+      border-right: 1px solid #dee2e6; /* 얇은 회색 라인 */
+      transition: left 0.3s ease-in-out; /* 슬라이드 애니메이션 */
+    }
+    .sidebar.hidden {
+      left: -250px; /* 숨김 상태 */
+    }
+    .sidebar .nav-link {
+      color: white;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #495057;
+    }
+    .header {
+      background-color: white;
+      border-bottom: 1px solid #dee2e6; /* 얇은 회색 라인 */
+      height: 60px;
+      margin-left: 250px; /* 기본적으로 사이드바 너비만큼 여백 */
+      transition: margin-left 0.3s ease-in-out; /* 부드러운 전환 */
+    }
+    .content {
+      margin-left: 250px; /* 기본적으로 사이드바 너비만큼 여백 */
+      padding: 20px;
+      min-height: calc(100vh - 100px); /* 헤더(60px) + 푸터(40px) 제외 */
+      transition: margin-left 0.3s ease-in-out; /* 부드러운 전환 */
+    }
+    .footer {
+      background-color: white;
+      border-top: 1px solid #dee2e6; /* 얇은 회색 라인 */
+      height: 40px; /* 줄인 높이 */
+      margin-left: 250px; /* 기본적으로 사이드바 너비만큼 여백 */
+      text-align: center;
+      padding-top: 10px; /* 내용 중앙 정렬 조정 */
+      transition: margin-left 0.3s ease-in-out; /* 부드러운 전환 */
+    }
+    /* 사이드바 숨김 시 콘텐츠 조정 */
+    .sidebar.hidden ~ .header,
+    .sidebar.hidden ~ .content,
+    .sidebar.hidden ~ .footer {
+      margin-left: 0;
+    }
+    .toggle-btn {
+      cursor: pointer;
+    }
+    /* 로고 스타일 */
+    .sidebar-logo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 249px;
+      height: 60px;
+      background-color: #343a40;/* 로고 배경 약간 더 어두운 회색 */
+      border-bottom: 1px solid #dee2e6; /* 얇은 회색 라인 */
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- 좌측 사이드바 -->
+     <!-- sidebar.ejs에 { currentPage }를 넘겨줌 -->
+    <%- include('layouts/sidebar', { currentPage }) %> 
+    
+    
+    <!-- 상단 네비게이션 -->
+    <%- include('layouts/header') %>
+
+        <!-- 본문 -->
+    <%- include(currentPage) %> 
+
+    <!-- 푸터 -->
+    <%- include('layouts/footer') %>
+  </div>
+
+
+</body>
+</html>

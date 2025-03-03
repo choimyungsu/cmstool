@@ -1,0 +1,24 @@
+<!-- Header 영역 시작 -->
+<header class="header d-flex align-items-center px-3">
+    <div class="toggle-btn me-2" id="toggleSidebar">
+      <i class="fas fa-bars fa-lg"></i>
+    </div>
+    
+    <div class="ms-auto">
+      <a href="#" class="text-dark" onclick="toggleFullScreen()"><i class="fas fa-expand fa-lg"></i></a>
+      <a href="#" class="text-dark"><i class="fas fa-user-circle fa-lg"></i></a>
+    </div>
+  </header>
+  <!-- Header 영역 끝 -->
+
+  <script>
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log(`Error attempting to enable full-screen mode: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  </script>

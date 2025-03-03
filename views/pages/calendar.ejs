@@ -1,0 +1,382 @@
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css" rel="stylesheet" />
+<style>
+    .container-fluid {
+        padding: 20px;
+    }
+
+    .card-sales {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        margin-bottom: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card-sales:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header-sales {
+        background-color: #ffffff;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 8px 8px 0 0;
+        /* 상단 모서리만 둥글게 */
+        padding: 15px 20px;
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .card-body-sales {
+        padding: 15px 20px;
+        min-height: 100px;
+    }
+
+    #calendar {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        padding: 10px;
+    }
+
+    .fc .fc-button {
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .fc .fc-button:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .fc-daygrid-day-number {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .event-long {
+        background-color: #ffa500 !important;
+        border-color: #ffa500 !important;
+        border-radius: 4px;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+
+        .card-sales,
+        #calendar {
+            margin: 10px 0;
+        }
+
+        .col-md-3 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .col-md-9 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .card-body-sales {
+            min-height: 80px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+
+        .card-header-sales,
+        .card-body-sales {
+            padding: 10px 15px;
+        }
+
+        .card-body-sales,
+        .fc-daygrid-day-number {
+            font-size: 0.9rem;
+        }
+    }
+
+
+
+    /* 드래그 가능한 요소의 스타일 */
+    .external-event {
+        padding: 5px 10px;
+        margin: 5px 0;
+        cursor: pointer;
+        color: white;
+        border-radius: 4px;
+        display: block;
+        transition: transform 0.2s;
+        width: 100%;
+        /* 가로 길이 동일하게 설정 */
+        text-align: center;
+        /* 텍스트 중앙 정렬 */
+        background-color: #3788d8;
+        /* 기본 색상 (나중에 덮어씌워짐) */
+    }
+
+    .external-event:hover {
+        transform: scale(1.02);
+    }
+
+    #external-events {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .color-option {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        margin-right: 5px;
+        border: 2px solid #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .color-option.active {
+        border-color: #007bff;
+    }
+
+    #addEvent {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+
+    #addEvent:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+
+
+<!-- 최신 FullCalendar 스크립트 -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
+
+
+<main class="content">
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="card card-sales">
+                    <div class="card-header card-header-sales">
+                        <h5 class="card-title">할 일(드래그 하세요)</h5>
+                    </div>
+                    <div class="card-body card-body-sales">
+                        <!-- 여기에 본문 내용 추가 가능 -->
+                        <div id="external-events" class="list-group">
+                            <div class="external-event list-group-item" data-color="#00ff00">Lunch</div>
+                            <div class="external-event list-group-item" data-color="#ffff00">Go home</div>
+                            <div class="external-event list-group-item" data-color="#0000ff">Do homework</div>
+                            <div class="external-event list-group-item" data-color="#ff0000">Work on UI design</div>
+                            <div class="external-event list-group-item" data-color="#ff00ff">Sleep tight</div>
+                        </div>
+                        <div class="form-check mt-2 p-3">
+                            <input type="checkbox" class="form-check-input" id="removeAfterDrop">
+                            <label class="form-check-label" for="removeAfterDrop">Remove after drop</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-sales">
+                    <div class="card-header card-header-sales">
+                        <h5 class="card-title">할일추가</h5>
+                    </div>
+                    <div class="card-body card-body-sales">
+                        <!-- 여기에 본문 내용 추가 가능 -->
+                        <div class="event-form">
+                            <div class="mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="color-option" style="background-color: #0000ff;" data-color="#0000ff">
+                                    </div>
+                                    <div class="color-option" style="background-color: #ffff00;" data-color="#ffff00">
+                                    </div>
+                                    <div class="color-option" style="background-color: #00ff00;" data-color="#00ff00">
+                                    </div>
+                                    <div class="color-option" style="background-color: #ff0000;" data-color="#ff0000">
+                                    </div>
+                                    <div class="color-option" style="background-color: #ff00ff;" data-color="#ff00ff">
+                                    </div>
+
+                                </div>
+                                
+                            </div>
+                            
+
+                            <div class="input-group">
+                                <input id="eventTitle" type="text" class="form-control" placeholder="Event Title">
+            
+                                <div class="input-group-append">
+                                  <button id="addEvent" type="button" class="btn btn-primary">Add</button>
+                                </div>
+                                <!-- /btn-group -->
+                              </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-9">
+                <div id="calendar"></div>
+            </div>
+        </div>
+
+
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'en',
+            editable: true, // 이벤트 수정 가능
+            droppable: true, // 외부 드래그 가능
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            buttonText: {
+                today: '오늘',
+                month: '월간',
+                week: '주간',
+                day: '일간'
+            },
+            drop: function (info) {
+                console.log('Drop event triggered for:', info.draggedEl.innerText); // 디버깅 로그
+                var color = info.draggedEl.dataset.color || '#3788d8';
+                var title = info.draggedEl.innerText;
+
+                // 이미 동일한 제목과 날짜에 이벤트가 있는지 확인
+                var existingEvents = calendar.getEvents().filter(function (event) {
+                    return event.title === title && event.start.toDateString() === info.date.toDateString();
+                });
+
+                if (existingEvents.length === 0) {
+                    var eventData = {
+                        title: title,
+                        start: info.date,
+                        backgroundColor: color,
+                        borderColor: color,
+                        duration: '02:00'
+                    };
+                    calendar.addEvent(eventData);
+                    console.log('New event added:', eventData);
+                } else {
+                    console.log('Duplicate event prevented:', title);
+                }
+
+                if (document.getElementById('removeAfterDrop').checked) {
+                    info.draggedEl.remove();
+                }
+            }
+        });
+        calendar.render();
+
+        // 외부 이벤트 드래그 설정
+        var containerEl = document.getElementById('external-events');
+        new FullCalendar.Draggable(containerEl, {
+            itemSelector: '.external-event', // 드래그 대상 지정
+            eventData: function (eventEl) {
+                return {
+                    title: eventEl.innerText,
+                    backgroundColor: eventEl.dataset.color,
+                    borderColor: eventEl.dataset.color,
+                    create: true // 캘린더에 추가되도록 설정
+                };
+            }
+        });
+
+        // 색상 선택 및 "Add" 버튼 색상 동적 변경
+        var colorOptions = document.querySelectorAll('.color-option');
+        var addButton = document.getElementById('addEvent');
+        var selectedColor = '#0000ff'; // 기본 색상
+
+        colorOptions.forEach(function (option) {
+            option.addEventListener('click', function () {
+                // 모든 옵션에서 active 클래스 제거
+                colorOptions.forEach(opt => opt.classList.remove('active'));
+                // 클릭한 옵션에 active 클래스 추가
+                this.classList.add('active');
+                selectedColor = this.dataset.color;
+                // "Add" 버튼 색상 변경
+                addButton.style.backgroundColor = selectedColor;
+                addButton.style.borderColor = selectedColor;
+            });
+        });
+
+        // "Create Event" 버튼 클릭 처리
+        document.getElementById('addEvent').addEventListener('click', function () {
+            var title = document.getElementById('eventTitle').value;
+
+            if (title) {
+                // Draggable Events에 새로운 이벤트 추가 (선택한 색상으로)
+                var newEventEl = document.createElement('div');
+                newEventEl.className = 'external-event list-group-item';
+                newEventEl.dataset.color = selectedColor;
+                newEventEl.textContent = title;
+                newEventEl.style.backgroundColor = selectedColor; // 색상 즉시 적용
+                newEventEl.style.borderColor = selectedColor; // 테두리 색상 적용
+                containerEl.appendChild(newEventEl);
+
+                // 새로 추가된 이벤트에 드래그 가능성 부여
+                new FullCalendar.Draggable(newEventEl, {
+                    eventData: function () {
+                        return {
+                            title: title,
+                            backgroundColor: selectedColor,
+                            borderColor: selectedColor,
+                            create: true
+                        };
+                    }
+                });
+
+                // 입력 필드 초기화
+                document.getElementById('eventTitle').value = '';
+                // "Add" 버튼 색상 기본값으로 복원
+                addButton.style.backgroundColor = '#007bff';
+                addButton.style.borderColor = '#007bff';
+                selectedColor = '#0000ff'; // 기본 색상 복원
+                colorOptions[0].classList.add('active'); // 기본 색상 활성화
+                colorOptions.forEach((opt, index) => index !== 0 && opt.classList.remove('active'));
+            } else {
+                alert('이벤트 제목을 입력하세요.');
+            }
+        });
+
+
+
+
+
+
+    });
+
+
+
+
+
+
+
+</script>

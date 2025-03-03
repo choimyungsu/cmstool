@@ -1,0 +1,59 @@
+CREATE TABLE tb_user (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(50) NOT NULL,
+    user_name VARCHAR(50) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    tel VARCHAR(50) NOT NULL,
+    organization VARCHAR(100),
+    department VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+CREATE TABLE tb_memo (
+    id SERIAL PRIMARY KEY,
+    memo_title VARCHAR(255) NOT NULL,
+    memo_writer VARCHAR(100) NOT NULL,
+    memo_dt VARCHAR(50), -- 문자열로 저장되는 날짜
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    memo_contents TEXT NOT NULL -- 큰 텍스트 데이터 저장 (Summernote 내용)
+);
+
+-- frappe-gantt // 오픈소스 활용
+-- 
+CREATE TABLE tb_wbs (
+    id SERIAL PRIMARY KEY,                -- 자동 증가하는 기본 키
+    project_id VARCHAR(255) NOT NULL,     -- 프로젝트 ID (문자열 타입)
+    task_name VARCHAR(255) NOT NULL,      -- 작업 이름
+    start_date VARCHAR(255) NOT NULL,     -- 시작일 (문자열로 저장)
+    end_date VARCHAR(255) NOT NULL,       -- 종료일 (문자열로 저장)
+    task_progress INT DEFAULT 0,          -- 작업 진행률 (%)
+    task_user VARCHAR(100),               -- 담당자 이름 또는 ID
+    created_at TIMESTAMP DEFAULT NOW(),   -- 생성 일시
+    updated_at TIMESTAMP DEFAULT NOW()    -- 수정 일시 (업데이트 시 변경 가능)
+);
+
+
+
+-- tb_issue 테이블 생성
+CREATE TABLE tb_issue (
+    id SERIAL PRIMARY KEY,
+    project_id VARCHAR(255),              -- 프로젝트 ID 추가
+    issue_gubun VARCHAR(50),              -- 이슈 구분 (예: 버그, 기능요청 등)
+    issue_title VARCHAR(255) NOT NULL,    -- 이슈 제목 (필수 입력)
+    issue_contents TEXT,                  -- 이슈 내용 (Summernote 대량 텍스트)
+    issue_status VARCHAR(50),             -- 이슈 상태 (예: open, closed 등)
+    issue_progress TEXT,                  -- 진행 상황 (Summernote 대량 텍스트)
+    issue_patch_version VARCHAR(20),      -- 패치 버전 (예: v1.0.0)
+    issue_finish_date VARCHAR(20),        -- 완료일 (문자열 형식)
+    issue_create_date VARCHAR(20),        -- 생성일 (문자열 형식, 필요 시 별도 입력)
+    link_issue_id INTEGER,                -- 연관된 이슈 ID (외래 키)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 시스템 생성일
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 시스템 변경일
+    CONSTRAINT fk_link_issue FOREIGN KEY (link_issue_id) REFERENCES tb_issue(id) ON DELETE SET NULL
+);
+

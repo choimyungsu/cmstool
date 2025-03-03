@@ -1,0 +1,92 @@
+<!-- Sidebar 영역 시작 -->
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">CMS Tool</div>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu1">
+          <i class="fas fa-home me-2"></i> 프로젝트
+        </a>
+        <div class="collapse <%= ['pages/wbs', 'pages/memo', 'pages/calendar','pages/issue' ].includes(currentPage) ? 'show' : '' %>"  id="menu1">
+          <ul class="nav flex-column ms-3">            
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/wbs' ? 'active' : '' %>" href="/wbs">WBS</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'memo' ? 'active' : '' %>" href="/memo">메모</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/issue' ? 'active' : '' %>" href="/issue">이슈관리</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/calendar' ? 'active' : '' %>" href="/calendar">Calander(일정)</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">프로젝트</a></li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu2">
+          <i class="fas fa-users me-2"></i> Users
+        </a>
+        <div class="collapse" id="menu2">
+          <ul class="nav flex-column ms-3">
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 2-1</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 2-2</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 2-3</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 2-4</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 2-5</a></li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu3">
+          <i class="fas fa-envelope me-2"></i> Tool
+        </a>
+        <div class="collapse" id="menu3">
+          <ul class="nav flex-column ms-3">
+            <li class="nav-item"><a class="nav-link" href="#">컬럼비교하기</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 3-2</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 3-3</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 3-4</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 3-5</a></li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu4">
+          <i class="fas fa-chart-bar me-2"></i> Reports
+        </a>
+        <div class="collapse" id="menu4">
+          <ul class="nav flex-column ms-3">
+            <li class="nav-item"><a class="nav-link" href="#">보안이벤트</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">자산관리</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">대시보드</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 4-4</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 4-5</a></li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu5">
+          <i class="fas fa-cog me-2"></i> 관리
+        </a>
+        <div class="collapse <%= ['pages/users'].includes(currentPage) ? 'show' : '' %>" id="menu5">
+          <ul class="nav flex-column ms-3">
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'users' ? 'active' : '' %>" href="/users">사용자</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">권한관리</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">프로세스관리</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">보고서생성</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Submenu 5-5</a></li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+  <!-- Sidebar 영역 끝 -->
+  <style>
+    .nav-link {
+      color: #333;
+      padding: 0.5rem 1rem;
+      transition: background-color 0.3s;
+    }
+    .nav-link.active {
+      background-color: #007bff;
+      color: white !important;
+      border-radius: 4px;
+    }
+    .nav-link:hover {
+      background-color: #f8f9fa;
+    }
+  </style>
