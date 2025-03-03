@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/custom.css">
 <style>
     .textarea-container {
         display: flex;
@@ -5,23 +6,23 @@
     }
 </style>
 <!--begin::App Main-->
-<main class="app-main">
-    <div class="container-fluid py-3">
-        <div class="row g-2 align-items-stretch">
-
-            <div class="container mt-4">
-                <h2>비교</h2>
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+          
+                <h5>각각 라인을 하나의 값으로하여 비교 / 앞뒤 공백은 제거 뒤 비교</h5>
                 <div class="textarea-container">
                     <textarea id="textarea1" class="form-control" rows="10" placeholder="첫 번째 텍스트"></textarea>
                     <textarea id="textarea2" class="form-control" rows="10" placeholder="두 번째 텍스트"></textarea>
                 </div>
                 <button id="compareBtn" class="btn btn-primary mt-2">비교</button>
                 
-                <h3>공통된 값</h3>
+                <h5>공통된 값</h5>
                 <pre id="common" class="border p-2"></pre>
-                <h3>첫 번째에만 있는 값</h3>
+                <h5>첫 번째에만 있는 값</h5>
                 <pre id="onlyInText1" class="border p-2"></pre>
-                <h3>두 번째에만 있는 값</h3>
+                <h5>두 번째에만 있는 값</h5>
                 <pre id="onlyInText2" class="border p-2"></pre>
             </div>
 
