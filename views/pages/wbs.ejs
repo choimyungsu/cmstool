@@ -236,14 +236,14 @@
 
         // 간트 차트 초기화
         const gantt = new Gantt("#gantt", tasksForGantt, {
-            view_mode: "Day", // Week, Month
+            view_mode: "Day", // Day, Week, Month
             column_width: 50, // 주 간격 좁게
             step: 1
         });
 
         // 뷰 모드 변경 이벤트 핸들러
         const viewModeButtons = document.querySelectorAll('.view-mode-btn');
-        let activeViewMode = "Week"; // 초기 활성 모드
+        let activeViewMode = "Day"; // 초기 활성 모드
 
         viewModeButtons.forEach(button => {
             button.addEventListener('click', function() {
@@ -262,8 +262,8 @@
         });
 
         // 초기 활성 버튼 설정
-        document.getElementById('view-week').classList.add('btn-primary');
-        document.getElementById('view-week').classList.remove('btn-outline-primary');
+        document.getElementById('view-day').classList.add('btn-primary');
+        document.getElementById('view-day').classList.remove('btn-outline-primary');
        
         // 삭제 버튼 이벤트 핸들러
         const deleteButtons = document.querySelectorAll('.delete-btn');
