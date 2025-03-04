@@ -6,7 +6,7 @@
         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu1">
           <i class="fas fa-home me-2"></i> 프로젝트
         </a>
-        <div class="collapse <%= ['pages/wbs', 'pages/memo', 'pages/calendar','pages/issue' ].includes(currentPage) ? 'show' : '' %>"  id="menu1">
+        <div class="collapse <%= ['pages/wbs', 'pages/memo', 'pages/calendar', 'pages/issue'].includes(currentPage) ? 'show' : '' %>" id="menu1">
           <ul class="nav flex-column ms-3">            
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/wbs' ? 'active' : '' %>" href="/wbs">WBS</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'memo' ? 'active' : '' %>" href="/memo">메모</a></li>
@@ -50,7 +50,7 @@
         </a>
         <div class="collapse" id="menu4">
           <ul class="nav flex-column ms-3">
-            <li class="nav-item"><a class="nav-link" href="#">보안이벤트</a></li>
+            <li class="nav-item"><a class="nav-link" href="/stellar">보안이벤트</a></li>
             <li class="nav-item"><a class="nav-link" href="#">자산관리</a></li>
             <li class="nav-item"><a class="nav-link" href="#">대시보드</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Submenu 4-4</a></li>
@@ -90,3 +90,4 @@
       background-color: #f8f9fa;
     }
   </style>
+ 
