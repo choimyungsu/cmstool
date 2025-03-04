@@ -245,6 +245,7 @@
         const viewModeButtons = document.querySelectorAll('.view-mode-btn');
         let activeViewMode = "Day"; // 초기 활성 모드
 
+
         viewModeButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const mode = this.getAttribute('data-mode');
@@ -260,6 +261,8 @@
                 }
             });
         });
+
+        
 
         // 초기 활성 버튼 설정
         document.getElementById('view-day').classList.add('btn-primary');
