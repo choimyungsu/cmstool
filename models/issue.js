@@ -1,10 +1,65 @@
 const pool = require('../config/db');
 
 class IssueModel {
-    static async getAllIssues() {
-        const result = await pool.query('SELECT * FROM tb_issue ORDER BY created_at DESC');
-        return result.rows;
+    // static async getAllIssues() {
+    //     const result = await pool.query('SELECT * FROM tb_issue ORDER BY created_at DESC');
+    //     return result.rows;
+    // }
+
+    static async getAllIssues({ where = {} } = {}) {
+        try {
+            // Base query
+            let query = 'SELECT * FROM tb_issue';
+            const conditions = [];
+            const values = [];
+            let paramIndex = 1;
+
+            // Process whereClause
+            if (where.issue_title) {
+                conditions.push(`issue_title LIKE $${paramIndex}`);
+                // Extract the value from the object (e.g., { 'LIKE': '%value%' })
+                const value = where.issue_title['LIKE'] || where.issue_title;
+                values.push(value);
+                paramIndex++;
+            }
+            if (where.issue_status) {
+                conditions.push(`issue_status LIKE $${paramIndex}`);
+                const value = where.issue_status['LIKE'] || where.issue_status;
+                values.push(value);
+                paramIndex++;
+            }
+            if (where.issue_finish_date) {
+                conditions.push(`issue_finish_date = $${paramIndex}`);
+                values.push(where.issue_finish_date); // Exact match, no object here
+                paramIndex++;
+            }
+            if (where.issue_contents) {
+                conditions.push(`issue_contents LIKE $${paramIndex}`);
+                const value = where.issue_contents['LIKE'] || where.issue_contents;
+                values.push(value);
+                paramIndex++;
+            }
+
+            // Append WHERE clause if conditions exist
+            if (conditions.length > 0) {
+                query += ' WHERE ' + conditions.join(' AND ');
+            }
+
+            // Add ORDER BY clause
+            query += ' ORDER BY created_at DESC';
+
+            // Execute query
+            const result = await pool.query(query, values);
+            return result.rows;
+        } catch (error) {
+            console.error('Error in getAllIssues:', error);
+            throw error; // Re-throw to be caught by the controller
+        }
     }
+
+
+
+    
 
     static async getIssueById(id) {
         const result = await pool.query('SELECT * FROM tb_issue WHERE id = $1', [id]);

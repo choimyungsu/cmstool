@@ -6,17 +6,65 @@ const xlsx = require('xlsx');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single('excelFileInput');
 
+const Op = { like: 'LIKE' }; // Mock Op object to avoid ReferenceError
+
 class IssueController {
     // 이슈 목록 페이지
+    // static async getIssues(req, res) {
+    //     try {
+    //         const issues = await IssueModel.getAllIssues();
+    //         res.render('index', { currentPage: 'pages/issue', issues, selectedIssue: null, activeTab: 'issueList' });
+    //     } catch (error) {
+    //         console.error('List error:', error);
+    //         res.status(500).send('서버 오류: ' + error.message);
+    //     }
+    // }
+
+
+
+
     static async getIssues(req, res) {
         try {
-            const issues = await IssueModel.getAllIssues();
-            res.render('index', { currentPage: 'pages/issue', issues, selectedIssue: null, activeTab: 'issueList' });
+            const { search_issue_title, search_issue_status, search_issue_finish_date, search_issue_contents } = req.query;
+    
+            // Build the where clause for Sequelize (or adjust for your DB query method)
+            const whereClause = {};
+            if (search_issue_title) {
+                whereClause.issue_title = { [Op.like]: `%${search_issue_title}%` };
+            }
+            if (search_issue_status) {
+                whereClause.issue_status = { [Op.like]: `%${search_issue_status}%` };
+            }
+            if (search_issue_finish_date) {
+                whereClause.issue_finish_date = search_issue_finish_date; // Exact match for date
+            }
+            if (search_issue_contents) {
+                whereClause.issue_contents = { [Op.like]: `%${search_issue_contents}%` };
+            }
+    
+            const issues = await IssueModel.getAllIssues({ where: whereClause });
+            // Render the template and pass search parameters to retain input values
+            res.render('index', { 
+                currentPage: 'pages/issue', 
+                issues, 
+                selectedIssue: null, 
+                activeTab: 'issueList',
+                search_issue_title: search_issue_title || '', // Pass search values
+                search_issue_status: search_issue_status || '',
+                search_issue_finish_date: search_issue_finish_date || '',
+                search_issue_contents: search_issue_contents || ''
+            });
+            
         } catch (error) {
             console.error('List error:', error);
-            res.status(500).send('서버 오류: ' + error.message);
+            res.status(500).send('Server Error');
         }
-    }
+    };
+
+
+
+
+
 
     // 특정 이슈 상세 조회
     static async getIssueDetail(req, res) {
