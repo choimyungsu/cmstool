@@ -51,6 +51,7 @@ CREATE TABLE tb_issue (
     issue_patch_version VARCHAR(20),      -- 패치 버전 (예: v1.0.0)
     issue_finish_date VARCHAR(20),        -- 완료일 (문자열 형식)
     issue_create_date VARCHAR(20),        -- 생성일 (문자열 형식, 필요 시 별도 입력)
+    issue_fixplan_date VARCHAR(20),        -- fix예정일 (문자열 형식, 필요 시 별도 입력)
     link_issue_id INTEGER,                -- 연관된 이슈 ID (외래 키)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 시스템 생성일
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 시스템 변경일

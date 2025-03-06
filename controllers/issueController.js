@@ -142,7 +142,8 @@ class IssueController {
                     issue_progress: row.issue_progress || '',
                     issue_patch_version: row.issue_patch_version || '',
                     issue_finish_date: row.issue_finish_date || '',
-                    issue_create_date: row.issue_create_date || ''
+                    issue_create_date: row.issue_create_date || '',
+                    issue_fixplan_date: row.issue_fixplan_date || ''
                 }));
 
                 // 데이터베이스에 일괄 삽입
@@ -173,6 +174,7 @@ static async downloadExcel(req, res) {
             '패치 버전': issue.issue_patch_version,
             '완료일': issue.issue_finish_date,
             '생성일': issue.issue_create_date,
+            '조치예정일': issue.issue_fixplan_date,
             '시스템 생성일': issue.created_at,
             '시스템 변경일': issue.updated_at
         }));

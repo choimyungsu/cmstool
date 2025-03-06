@@ -162,6 +162,7 @@
                                         <th class="small" style="width:45%">이슈 제목</th>
                                         <th class="small">상태</th>
                                         <th class="small">생성일</th>
+                                        <th class="small">조치예정일</th>
                                         <th class="small">완료일</th>
                                         <th class="small">보기</th>
                                         <th class="small">삭제</th>
@@ -184,6 +185,9 @@
                                             </td>
                                             <td class="small">
                                                 <%= issue.issue_create_date %>
+                                            </td>
+                                            <td class="small">
+                                                <%= issue.issue_fixplan_date %>
                                             </td>
                                             <td class="small">
                                                 <%= issue.issue_finish_date %>
@@ -221,6 +225,8 @@
                                                 value="<%= issue.issue_patch_version %>">
                                             <input type="hidden" class="issue-data" data-field="issue_finish_date"
                                                 value="<%= issue.issue_finish_date %>">
+                                            <input type="hidden" class="issue-data" data-field="issue_fixplan_date"
+                                                value="<%= issue.issue_fixplan_date %>">    
                                             <input type="hidden" class="issue-data" data-field="issue_create_date"
                                                 value="<%= issue.issue_create_date %>">
                                             <input type="hidden" class="issue-data" data-field="created_at"
@@ -277,6 +283,11 @@
                                     <label class="input-group-text custom-label" for="issue_create_date">생성일</label>
                                     <input type="date" class="form-control custom-input" id="issue_create_date"
                                         name="issue_create_date">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_fixplan_date">조치예정일</label>
+                                    <input type="date" class="form-control custom-input" id="issue_fixplan_date"
+                                        name="issue_fixplan_date">
                                 </div>
                                 <div class="input-group custom-input-group mb-1">
                                     <label class="input-group-text custom-label" for="issue_finish_date">완료일</label>
@@ -339,6 +350,11 @@
                                     <label class="input-group-text custom-label" for="issue_create_date">생성일</label>
                                     <input type="date" class="form-control custom-input" id="issue_create_date"
                                         name="issue_create_date">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="issue_fixplan_date">조치예정일</label>
+                                    <input type="date" class="form-control custom-input" id="issue_fixplan_date"
+                                        name="issue_fixplan_date">
                                 </div>
                                 <div class="input-group custom-input-group mb-1">
                                     <label class="input-group-text custom-label" for="issue_finish_date">완료일</label>
@@ -422,6 +438,7 @@
             $('#updateIssueForm textarea[name="issue_progress"]').val(issueData.issue_progress || '');
             $('#updateIssueForm input[name="issue_patch_version"]').val(issueData.issue_patch_version);
             $('#updateIssueForm input[name="issue_finish_date"]').val(issueData.issue_finish_date);
+            $('#updateIssueForm input[name="issue_fixplan_date"]').val(issueData.issue_fixplan_date);
             $('#updateIssueForm input[name="issue_create_date"]').val(issueData.issue_create_date);
             $('#updateIssueForm input[name="created_at"]').val(issueData.created_at);
             $('#updateIssueForm input[name="updated_at"]').val(issueData.updated_at);
