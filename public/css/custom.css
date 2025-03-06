@@ -1,4 +1,3 @@
-
 .custom-container {
     border: 1px solid gray;
     padding: 5px;
@@ -61,11 +60,16 @@
     font-size: 0.7rem;
 }
 
-
 .custom-table tr {
     line-height: 1; /* 행 높이 최소화 */
     margin: 0;
     padding: 0;
+    /* 배경색 초기화 (late-fix-plan에 의존) */
+    background-color: transparent; /* 기본값 제거 */
+}
+
+.custom-table tr:not(.late-fix-plan) {
+    background-color: #f1f1f1; /* late-fix-plan이 아닌 경우만 기본 배경색 */
 }
 
 .custom-table input.form-control-sm {
@@ -76,8 +80,8 @@
 
 .custom-table input.custom-input {
     padding: 1px;
-    height: 18px; /* 최대한 줄인 높이 */
-    font-size: 0.7rem; /* 글씨 크기 더 작게 */
+    height: 18px;
+    font-size: 0.7rem;
     line-height: 1;
 }
 
@@ -96,7 +100,7 @@
 
 /* 버튼 스타일 */
 .btn-sm i {
-    vertical-align: middle; /* 아이콘 중앙 정렬 */
+    vertical-align: middle;
 }
 
 .btn-outline-primary {
@@ -121,5 +125,5 @@
 }
 
 .fa-xxs {
-    font-size: 0.75em !important; /* 커스텀 초소형 크기 */
+    font-size: 0.75em !important;
 }

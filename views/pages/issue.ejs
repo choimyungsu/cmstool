@@ -59,6 +59,12 @@
         display: flex;
         gap: 5px;
     }
+
+    /* 조치예정일 글씨 스타일 */
+    .late-fix-plan {
+        color: red !important; /* 글씨 빨간색 */
+        font-weight: bold !important; /* 글씨 굵게 */
+    }
 </style>
 
 <main class="content">
@@ -506,6 +512,24 @@
         });
 
 
+
+        // 조치예정일이 오늘보다 늦은 경우 글씨를 빨간색으로 굵게 표시
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        $('tbody tr').each(function () {
+            const fixPlanDateInput = $(this).find('td:nth-child(6)').text().trim();
+            if (!fixPlanDateInput || fixPlanDateInput.trim() === "") {
+                return;
+            }
+            const fixPlanDate = new Date(fixPlanDateInput);      
+            const fixPlanDateOnly = new Date(fixPlanDate);
+            fixPlanDateOnly.setHours(0, 0, 0, 0);
+            
+            if (!isNaN(fixPlanDateOnly.getTime()) && fixPlanDateOnly < today) {     
+                $(this).find('td:nth-child(6)').addClass('late-fix-plan'); // 조치예정일 셀에 클래스 추가
+            }
+        });
 
 
 
