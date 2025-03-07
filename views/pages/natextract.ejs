@@ -1,0 +1,83 @@
+
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+<!--begin::App Main-->
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+
+
+                
+                    <i class="fas fa-share-from-square me-1"  style="cursor: pointer;"></i> NAT 추출하기
+                    
+                    <textarea id="inputText" class="form-control" rows="5" placeholder="여기에 정책 텍스트를 입력하세요"></textarea>
+                    <button class="btn btn-sm btn-primary mt-2" onclick="processText()">변환하기</button>
+                    <br>
+                    <i class="fas fa-folder-open me-1"  style="cursor: pointer;"></i>변환된 텍스트 
+                    <textarea id="outputText" class="form-control" rows="5" readonly></textarea>
+
+                    <i class="fas fa-face-smile-beam me-1"  style="cursor: pointer;"></i>별도 저장된 nat 라인:
+
+                        static 건수 : (<div id="staticcount"
+                            style="display:inline-block;width:200px,background-color:lightgray;">
+                        </div>)
+
+                        /dynamic 건수:(<div id="dynamiccount"
+                            style="display:inline-block;width:200px,background-color:lightgray;"></div>) </label>
+
+                    <textarea id="natText" class="form-control" rows="5" readonly></textarea>
+
+
+            </div>
+        </div>
+    </div>
+</main>
+<!--end::App Main-->
+
+<script>
+    function processText() {
+        const inputText = document.getElementById("inputText").value;
+        const lines = inputText.split("\n");
+        let filteredLines = [];
+        let natLines = [];
+        let twoLines = [];
+        let previousLine = "";
+        let staticcount = 0;
+        let dynamiccount = 0;
+
+        // <--More-->이 포함된 줄과 빈 줄 제거
+        const cleanedLines = lines.filter(line => !line.includes("<--More-->") && line.trim() !== "");
+
+        // 필터링된 라인 처리
+        for (let i = 0; i < cleanedLines.length; i++) {
+
+            let line = cleanedLines[i];
+            // nat로 시작하는 라인 별도 저장
+            if (line.trim().startsWith("nat")) {
+                natLines.push(line);
+                if (line.includes("dynamic")) {
+                    dynamiccount = dynamiccount + 1;
+                } else if (line.includes("static")) {
+                    staticcount = staticcount + 1;
+                }
+            }
+
+            // 일반적인 필터링된 텍스트
+            if (!(line.trim() === "" && !line.trim().startsWith("nat"))) {
+                filteredLines.push(line);
+            }
+            previousLine = line;
+        }
+
+        // 결과 출력
+        document.getElementById("outputText").value = filteredLines.join("\n");
+        document.getElementById("natText").value = natLines.join("\n");
+        document.getElementById("staticcount").textContent = staticcount;
+        document.getElementById("dynamiccount").textContent = dynamiccount;
+
+    }
+
+</script>

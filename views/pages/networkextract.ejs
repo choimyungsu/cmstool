@@ -1,0 +1,110 @@
+<link rel="stylesheet" href="/css/custom.css">
+<style>
+
+.textarea-container {
+        display: flex;
+        gap: 10px;
+    }
+
+
+
+
+    .output-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    pre {
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+        flex: 1;
+    }
+
+    .line-numbers {
+        text-align: right;
+        color: gray;
+        padding-right: 10px;
+    }
+</style>
+
+<!--begin::App Main-->
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+
+                <i class="fas fa-share-from-square me-1"  style="cursor: pointer;"></i>시스코 ASA 방화벽 show run all 로그에서 네트워크 객체 / 서비스 객체 분리하기
+                <br>
+                <div class="textarea-container">
+
+                    <textarea id="inputText" class="form-control" rows="10" placeholder="여기에 ASA 방화벽 전체 정책로그를 붙여넣으세요  단) access-list전까지 로그를 추출(NAT객체의 중복을 제거하기 위함)"></textarea>
+                </div>
+
+                <button class="btn btn-sm btn-primary mt-2" onclick="extractNetworkObjects()">분리하기</button>
+                <br>
+                <i class="fas fa-face-smile-beam me-1"  style="cursor: pointer;"></i>
+                추출된 네트워크 객체 / 네트워크객체 건수 : (<div id="count"
+                    style="display:inline-block;width:200px,background-color:lightgray;"></div>) / 서비스객체 건수 : (<div
+                    id="servicecount" style="display:inline-block;width:200px,background-color:lightgray;"></div>)
+
+
+                <div class="output-container">
+                    <pre id="output"></pre>
+                    <pre id="serviceoutput"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!--end::App Main-->
+
+<script>
+
+    function extractNetworkObjects() {
+
+        const inputText = document.getElementById("inputText").value;
+        const lines = inputText.split("\n");
+        let isObjectSection = false;
+        let extractedObjects = [];
+        let lineNumbers = [];
+        let j = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i]; // 공백 유지
+            // 네트워크 객체 시작 감지
+            if (line.startsWith("object network") || line.startsWith("object-group network") || line.startsWith("name")) {
+                isObjectSection = true;
+                extractedObjects.push(line);
+                j = j + 1; // 라인 번호 저장
+                continue;
+            }
+        }
+
+        document.getElementById("count").textContent = j;
+        document.getElementById("output").textContent = extractedObjects.join("\n");
+
+        let k = 0;
+
+        const lines2 = inputText.split("\n");
+        let isObjectSection2 = false;
+        let extractedObjects2 = [];
+
+        for (let i = 0; i < lines2.length; i++) {
+            let line = lines2[i]; // 공백 유지
+            // 서비스 객체 시작 감지
+            if (line.startsWith("object service") || line.startsWith("object-group service")) {
+                isObjectSection2 = true;
+                extractedObjects2.push(line);
+                k = k + 1; // 라인 번호 저장
+                continue;
+            }
+        }
+
+        document.getElementById("servicecount").textContent = k;
+        document.getElementById("serviceoutput").textContent = extractedObjects2.join("\n");
+
+    }
+
+</script>

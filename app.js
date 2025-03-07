@@ -9,7 +9,8 @@ const userRoutes = require('./routes/userRoutes');
 const memoRoutes = require('./routes/memoRoutes');
 const wbsRoutes = require("./routes/wbsRoutes");
 const issueRoutes = require("./routes/issueRoutes");
-const stellarRoutes = require("./routes/stellarRoutes");
+
+const stellarRoutes = require('./routes/stellarRoutes');
 
 
 // EJS 설정
@@ -34,7 +35,7 @@ app.use('/', userRoutes); // '/users' 경로가 여기서 처리됨
 app.use('/', memoRoutes); // '/memo' 경로가 여기서 처리됨
 app.use('/', wbsRoutes);// '/wbs' 경로가 여기서 처리됨
 app.use('/', issueRoutes);// '/issue' 경로가 여기서 처리됨
-app.use('/', stellarRoutes);// 
+app.use('/', stellarRoutes);
 
 // 루트 경로에서 대시보드 렌더링
 app.get('/', (req, res) => {
@@ -55,10 +56,33 @@ app.get('/calendar', async (req, res) => {
       }
 });
 
+//컬럼비교하기
 app.get('/compare', async (req, res) => {
   try {    
       res.render("index", {
         currentPage:'pages/compare',
+      });
+    } catch (err) {
+      console.error(err);
+    }
+});
+
+//CISCO 네트워크객체,서비스객체 추출
+app.get('/networkextract', async (req, res) => {
+  try {    
+      res.render("index", {
+        currentPage:'pages/networkextract',
+      });
+    } catch (err) {
+      console.error(err);
+    }
+});
+
+//CISCO NAT 정책 추출
+app.get('/natextract', async (req, res) => {
+  try {    
+      res.render("index", {
+        currentPage:'pages/natextract',
       });
     } catch (err) {
       console.error(err);
