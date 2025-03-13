@@ -7,7 +7,7 @@ const memoController = {
   async getMemo(req, res) {
     try {
 
-      console.log("getMemo 요청 수신됨", req.query);
+      //console.log("getMemo 요청 수신됨", req.query);
       const { memo_title, memo_writer,memo_dt,memo_contents } = req.query;
       const memo = await Memo.searchMemo({ memo_title, memo_writer, memo_dt, memo_contents });
 
@@ -16,7 +16,8 @@ const memoController = {
       res.render('index', {  // index.ejs를 렌더링
         title: 'Memo List',
         currentPage: 'pages/memo',  // 동적 페이지로 pages/memo지정 ,
-        Memo: memo  // 사용자 데이터 전달
+        Memo: memo, // 사용자 데이터 전달
+        user: req.session.user 
       });
     } catch (error) {
       console.error(error);
@@ -29,10 +30,10 @@ async searchMemos (req, res) {
 
   try {
 
-    console.log("searchMemos 요청 수신됨", req.query);
+    //console.log("searchMemos 요청 수신됨", req.query);
     const { search_memo_title, search_memo_writer,search_memo_dt,search_memo_contents } = req.query;
     const memo = await Memo.searchMemo({ search_memo_title, search_memo_writer,search_memo_dt,search_memo_contents  });
-    console.log(memo)
+    //console.log(memo)
     return res.json({ success: true, message: 'Memo search successfully', data: memo  });
     /*
     res.render('index', {  // index.ejs를 렌더링
@@ -50,7 +51,7 @@ async searchMemos (req, res) {
 
 async getMemos(req, res) {
   try {
-      console.log("getMemos 요청 수신됨", req.query);
+      //console.log("getMemos 요청 수신됨", req.query);
       const { memo_title, memo_writer, memo_dt, memo_contents } = req.query;
       const memo = await Memo.searchMemo({ memo_title, memo_writer, memo_dt, memo_contents });
 
@@ -63,7 +64,8 @@ async getMemos(req, res) {
       res.render('index', {  
           title: 'Memo List',
           currentPage: 'pages/memo',
-          Memo: memo  
+          Memo: memo  ,
+          user: req.session.user 
       });
 
   } catch (error) {
@@ -75,7 +77,7 @@ async getMemos(req, res) {
   // 메모 등록 처리
   async registerMemo(req, res) {
     try {
-        console.log("POST 요청 수신됨", req.body);
+        //console.log("POST 요청 수신됨", req.body);
         const { memo_title, memo_writer,memo_dt,memo_contents } = req.body;
 
         if (!memo_title || !memo_contents) {
@@ -103,7 +105,7 @@ async updateMemo(req, res) {
       return res.status(400).send('memo_title is required');
     }
 
-    console.log('Updating memo with id:', id, 'data:', memoData);
+    //console.log('Updating memo with id:', id, 'data:', memoData);
     const updatedMemo = await Memo.updateMemo(id, memoData);
 
     if (!updatedMemo) {

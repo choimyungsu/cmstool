@@ -52,7 +52,8 @@ class IssueController {
                 search_issue_title: search_issue_title || '', // Pass search values
                 search_issue_status: search_issue_status || '',
                 search_issue_finish_date: search_issue_finish_date || '',
-                search_issue_contents: search_issue_contents || ''
+                search_issue_contents: search_issue_contents || '',
+                user: req.session.user 
             });
             
         } catch (error) {

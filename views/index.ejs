@@ -89,7 +89,7 @@
     
     
     <!-- 상단 네비게이션 -->
-    <%- include('layouts/header') %>
+    <%- include('layouts/header', { user: user }) %>
 
         <!-- 본문 -->
     <%- include(currentPage) %> 

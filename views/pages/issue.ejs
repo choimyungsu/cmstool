@@ -513,20 +513,24 @@
 
 
 
-        // 조치예정일이 오늘보다 늦은 경우 글씨를 빨간색으로 굵게 표시
+        // 조치예정일이 오늘보다 늦은 경우 빨간색으로 표시 (이슈 상태가 "완료"가 아닌 경우만)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
         $('tbody tr').each(function () {
-            const fixPlanDateInput = $(this).find('td:nth-child(6)').text().trim();
-            if (!fixPlanDateInput || fixPlanDateInput.trim() === "") {
+            const fixPlanDateInput = $(this).find('td:nth-child(6)').text().trim(); // 조치예정일
+            const issueStatus = $(this).find('td:nth-child(4)').text().trim(); // 이슈 상태
+
+            if (!fixPlanDateInput || fixPlanDateInput === "") {
                 return;
             }
-            const fixPlanDate = new Date(fixPlanDateInput);      
+
+            const fixPlanDate = new Date(fixPlanDateInput);
             const fixPlanDateOnly = new Date(fixPlanDate);
             fixPlanDateOnly.setHours(0, 0, 0, 0);
-            
-            if (!isNaN(fixPlanDateOnly.getTime()) && fixPlanDateOnly < today) {     
+
+            // 조치예정일이 오늘보다 이전이고, 이슈 상태가 "완료"가 아닌 경우에만 빨간색 적용
+            if (!isNaN(fixPlanDateOnly.getTime()) && fixPlanDateOnly < today && issueStatus !== "완료") {
                 $(this).find('td:nth-child(6)').addClass('late-fix-plan'); // 조치예정일 셀에 클래스 추가
             }
         });

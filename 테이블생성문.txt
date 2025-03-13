@@ -11,6 +11,9 @@ CREATE TABLE tb_user (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE tb_user
+ADD CONSTRAINT unique_email UNIQUE (email);
+
 
 
 CREATE TABLE tb_memo (
@@ -58,3 +61,66 @@ CREATE TABLE tb_issue (
     CONSTRAINT fk_link_issue FOREIGN KEY (link_issue_id) REFERENCES tb_issue(id) ON DELETE SET NULL
 );
 
+
+--tb_project 테이블 생성
+CREATE TABLE tb_project (
+    id SERIAL PRIMARY KEY,
+    pjt_uid VARCHAR(255) NOT NULL,  -- 프로젝트 유일한 ID
+    pjt_name VARCHAR(255) NOT NULL, -- 프로젝트명
+    pjt_desc TEXT,   -- 프로젝트 설명
+    pjt_open VARCHAR(255), -- 프로젝트 공개여부
+    pjt_start_date VARCHAR(255), -- 프로젝트 시작일
+    pjt_end_date VARCHAR(255),  -- 프로젝트 종료일 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);
+
+
+-- tb_master_code 테이블 생성
+CREATE TABLE tb_master_code (
+    id SERIAL PRIMARY KEY,
+    code_group VARCHAR(50) NOT NULL,
+    code_name VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- tb_slave_code 테이블 생성
+CREATE TABLE tb_slave_code (
+    id SERIAL PRIMARY KEY,
+    master_id INTEGER NOT NULL,
+    code_value VARCHAR(50) NOT NULL,
+    code_name VARCHAR(100) NOT NULL,
+    sort_order INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (master_id) REFERENCES tb_master_code(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+
+-- 프로젝트와 참여인원 매핑
+CREATE TABLE tb_project_user (
+    project_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'MEMBER',
+    joined_at VARCHAR(50) ,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    PRIMARY KEY (project_id, user_id),
+    FOREIGN KEY (project_id) REFERENCES tb_project(id) ,
+    FOREIGN KEY (user_id) REFERENCES tb_user(id) 
+);
+
+
+
+--
+CREATE TABLE tb_treewbs (
+    id SERIAL PRIMARY KEY,           -- Auto-incrementing ID as primary key
+    task VARCHAR(255) NOT NULL,      -- Task name
+    start_date VARCHAR(10),          -- Start date as VARCHAR (e.g., '2025-03-11')
+    end_date VARCHAR(10),            -- End date as VARCHAR (e.g., '2025-03-12')
+    progress INTEGER CHECK (progress >= 0 AND progress <= 100), -- Progress (0-100)
+    assignee VARCHAR(100),           -- Assignee name
+    parent_id VARCHAR(100) 
+);

@@ -19,7 +19,8 @@ const stellarController = {
         top5app,
         killchain,
         top5dstip,
-        currentPage: 'pages/stellar'
+        currentPage: 'pages/stellar',
+        user: req.session.user 
       });
     } catch (err) {
       console.error('Controller Error:', err.stack);

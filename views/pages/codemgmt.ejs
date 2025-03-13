@@ -1,0 +1,260 @@
+<!-- views/codemgmt.ejs -->
+<link rel="stylesheet" href="/css/custom.css">
+<!--begin::App Main-->
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+
+                <div class="code-management container mt-2">
+                    <!-- 부트스트랩 및 폰트어썸 CDN 추가 -->
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+                    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+                    <!-- 커스텀 CSS -->
+                    <style>
+                        /* 테이블 행 높이 및 글씨 크기 조정 */
+                        .table-smaller th,
+                        .table-smaller td {
+                            padding: 0.3rem !important; /* 패딩 줄이기 */
+                            font-size: 0.75rem !important; /* 글씨 크기 축소 */
+                        }
+                        /* 버튼 크기 조정 */
+                        .btn-xs {
+                            padding: 0.1rem 0.3rem !important;
+                            font-size: 0.65rem !important;
+                        }
+                        /* 폼 입력 필드 크기 조정 */
+                        .form-control-smaller {
+                            padding: 0.2rem 0.4rem !important;
+                            font-size: 0.75rem !important;
+                            line-height: 1.2 !important;
+                        }
+                        /* 제목 및 간격 최소화 */
+                        .card-header h3 {
+                            font-size: 1rem !important;
+                            margin-bottom: 0 !important;
+                        }
+                        .card-body {
+                            padding: 0.5rem !important;
+                        }
+                        .form-check-label {
+                            font-size: 0.75rem !important;
+                        }
+                    </style>
+
+                    <!-- 데이터를 별도의 HTML 요소에 저장 -->
+                    <div id="master-codes-data" style="display:none;" data-codes="<%= JSON.stringify(masterCodes || []) %>"></div>
+                    <div id="slave-codes-data" style="display:none;" data-codes="<%= JSON.stringify(slaveCodes || []) %>"></div>
+
+                    <!-- JavaScript 함수 정의 -->
+                    <script>
+                        // 데이터 가져오기 및 파싱
+                        const masterCodesDataElement = document.getElementById('master-codes-data');
+                        const slaveCodesDataElement = document.getElementById('slave-codes-data');
+                        const masterCodes = JSON.parse(masterCodesDataElement.getAttribute('data-codes').replace(/&quot;/g, '"'));
+                        const slaveCodes = JSON.parse(slaveCodesDataElement.getAttribute('data-codes').replace(/&quot;/g, '"'));
+
+                        function editMaster(id) {
+                            const master = masterCodes.find(m => m.id === id);
+                            if (!master) {
+                                alert('Master code not found for ID: ' + id);
+                                return;
+                            }
+                            document.getElementById('editMasterForm').style.display = 'block';
+                            document.querySelector('#editMasterForm [name="id"]').value = master.id;
+                            document.querySelector('#editMasterForm [name="code_group"]').value = master.code_group;
+                            document.querySelector('#editMasterForm [name="code_name"]').value = master.code_name;
+                        }
+
+                        function editSlave(id, masterId) {
+                            const slave = slaveCodes.find(s => s.id === id);
+                            if (!slave) {
+                                alert('Slave code not found for ID: ' + id);
+                                return;
+                            }
+                            document.getElementById('editSlaveForm').style.display = 'block';
+                            document.querySelector('#editSlaveForm [name="id"]').value = slave.id;
+                            document.querySelector('#editSlaveForm [name="master_id"]').value = masterId;
+                            document.querySelector('#editSlaveForm [name="code_value"]').value = slave.code_value;
+                            document.querySelector('#editSlaveForm [name="code_name"]').value = slave.code_name;
+                            document.querySelector('#editSlaveForm [name="sort_order"]').value = slave.sort_order;
+                            document.querySelector('#editSlaveForm [name="is_active"]').checked = slave.is_active;
+                        }
+                    </script>
+
+                    <!-- 마스터 코드 섹션 -->
+                    <div class="card shadow-sm mb-2">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0"><i class="fas fa-folder-open me-1"></i>Master Codes</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-hover table-smaller">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Code Group</th>
+                                        <th>Code Name</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% masterCodes.forEach(master => { %>
+                                        <tr>
+                                            <td><%= master.id %></td>
+                                            <td><%= master.code_group %></td>
+                                            <td><%= master.code_name %></td>
+                                            <td>
+                                                <a href="/codemgmt?master_id=<%= master.id %>" class="btn btn-outline-primary btn-xs me-1">
+                                                    <i class="fas fa-eye"></i> Select
+                                                </a>
+                                                <button onclick="editMaster(<%= master.id %>)" class="btn btn-outline-warning btn-xs me-1">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                                <form action="/codemgmt/master/<%= master.id %>?_method=DELETE" method="POST" style="display:inline;">
+                                                    <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-outline-danger btn-xs">
+                                                        <i class="fas fa-trash-alt"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+
+                            <!-- 마스터 코드 추가 폼 -->
+                            <h3 class="mt-2 fs-6">Add Master Code</h3>
+                            <form action="/codemgmt/master" method="POST" class="row g-2">
+                                <div class="col-md-6">
+                                    <input type="text" name="code_group" class="form-control form-control-smaller" placeholder="Code Group" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="code_name" class="form-control form-control-smaller" placeholder="Code Name" required>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary btn-xs"><i class="fas fa-plus me-1"></i>Add Master Code</button>
+                                </div>
+                            </form>
+
+                            <!-- 마스터 코드 수정 폼 (숨김) -->
+                            <form id="editMasterForm" action="/codemgmt/master/update" method="POST" style="display:none;" class="row g-2 mt-2">
+                                <input type="hidden" name="id">
+                                <div class="col-md-6">
+                                    <input type="text" name="code_group" class="form-control form-control-smaller" placeholder="Code Group" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" name="code_name" class="form-control form-control-smaller" placeholder="Code Name" required>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-success btn-xs"><i class="fas fa-save me-1"></i>Update Master Code</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 마스터와 슬레이브 사이 간격 -->
+                    <div style="height: 15px;"></div>
+
+                    <!-- 슬레이브 코드 섹션 -->
+                    <% if (selectedMaster) { %>
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h3 class="mb-0"><i class="fas fa-file-code me-1"></i>Slave Codes for <%= selectedMaster.code_name %></h3>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-hover table-smaller">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Code Value</th>
+                                            <th>Code Name</th>
+                                            <th>Sort Order</th>
+                                            <th>Is Active</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% slaveCodes.forEach(slave => { %>
+                                            <tr>
+                                                <td><%= slave.id %></td>
+                                                <td><%= slave.code_value %></td>
+                                                <td><%= slave.code_name %></td>
+                                                <td><%= slave.sort_order %></td>
+                                                <td>
+                                                    <span class="badge bg-<%= slave.is_active ? 'success' : 'danger' %>">
+                                                        <%= slave.is_active ? 'Active' : 'Inactive' %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button onclick="editSlave(<%= slave.id %>, <%= selectedMaster.id %>)" class="btn btn-outline-warning btn-xs me-1">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </button>
+                                                    <form action="/codemgmt/slave/<%= slave.id %>/<%= selectedMaster.id %>?_method=DELETE" method="POST" style="display:inline;">
+                                                        <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-outline-danger btn-xs">
+                                                            <i class="fas fa-trash-alt"></i> Delete
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+
+                                <!-- 슬레이브 코드 추가 폼 -->
+                                <h3 class="mt-2 fs-6">Add Slave Code</h3>
+                                <form action="/codemgmt/slave" method="POST" class="row g-2">
+                                    <input type="hidden" name="master_id" value="<%= selectedMaster.id %>">
+                                    <div class="col-md-4">
+                                        <input type="text" name="code_value" class="form-control form-control-smaller" placeholder="Code Value" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" name="code_name" class="form-control form-control-smaller" placeholder="Code Name" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="number" name="sort_order" class="form-control form-control-smaller" placeholder="Sort Order" value="0">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" name="is_active" value="true" class="form-check-input" checked>
+                                            <label class="form-check-label">Active</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary btn-xs"><i class="fas fa-plus me-1"></i>Add Slave Code</button>
+                                    </div>
+                                </form>
+
+                                <!-- 슬레이브 코드 수정 폼 (숨김) -->
+                                <form id="editSlaveForm" action="/codemgmt/slave/update" method="POST" style="display:none;" class="row g-2 mt-2">
+                                    <input type="hidden" name="id">
+                                    <input type="hidden" name="master_id">
+                                    <div class="col-md-4">
+                                        <input type="text" name="code_value" class="form-control form-control-smaller" placeholder="Code Value" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" name="code_name" class="form-control form-control-smaller" placeholder="Code Name" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="number" name="sort_order" class="form-control form-control-smaller" placeholder="Sort Order" value="0">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check">
+                                            <input type="checkbox" name="is_active" value="true" class="form-check-input">
+                                            <label class="form-check-label">Active</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-success btn-xs"><i class="fas fa-save me-1"></i>Update Slave Code</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+<!--end::App Main-->

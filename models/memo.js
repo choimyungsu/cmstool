@@ -96,7 +96,7 @@ static async searchMemo({ search_memo_title, search_memo_writer,search_memo_dt,s
 
       //console.log('SearchMemo SQL', query, values); // 쿼리와 값 분리 출력
       const result = await pool.query(query, values);
-      console.log('SearchMemo SQL result',result)
+      //console.log('SearchMemo SQL result',result)
       return result.rows;
   } catch (error) {
       console.error(error);

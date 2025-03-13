@@ -1,0 +1,85 @@
+
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+<!--begin::App Main-->
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+
+
+                
+                    <i class="fas fa-share-from-square me-1"  style="cursor: pointer;"></i> NAT 추출하기
+                    
+                    <textarea id="inputText" class="form-control" rows="5" placeholder="여기에 정책 텍스트를 입력하세요"></textarea>
+                    <button class="btn btn-sm btn-primary mt-2" onclick="processText()">변환하기</button>
+                    <br>
+                    <i class="fas fa-folder-open me-1"  style="cursor: pointer;"></i>변환된 텍스트 
+                    <textarea id="outputText" class="form-control" rows="5" readonly></textarea>
+
+                    <i class="fas fa-face-smile-beam me-1"  style="cursor: pointer;"></i><label>별도 저장된 라인:
+                        nat 건수: (<div id="natcount" style="display:inline-block;width:100px;background-color:lightgray;"></div>)
+                        static 건수: (<div id="staticcount" style="display:inline-block;width:100px;background-color:lightgray;"></div>)
+                        dynamic 건수: (<div id="dynamiccount" style="display:inline-block;width:100px;background-color:lightgray;"></div>)
+                        global 건수: (<div id="globalcount" style="display:inline-block;width:100px;background-color:lightgray;"></div>)
+                    </label>
+
+                    <textarea id="natText" class="form-control" rows="5" readonly></textarea>
+
+
+            </div>
+        </div>
+    </div>
+</main>
+<!--end::App Main-->
+
+<script>
+    function processText() {
+        const inputText = document.getElementById("inputText").value;
+        const lines = inputText.split("\n");
+        let filteredLines = [];
+        let natLines = [];
+        let staticcount = 0;
+        let dynamiccount = 0;
+        let natcount = 0;
+        let globalcount = 0;
+
+        // <--More-->이 포함된 줄과 빈 줄 제거
+        const cleanedLines = lines.filter(line => !line.includes("<--More-->") && line.trim() !== "");
+
+        // 필터링된 라인 처리
+        for (let i = 0; i < cleanedLines.length; i++) {
+            let line = cleanedLines[i].trim();
+
+            // nat, global, static 패턴 처리
+            if (line.startsWith("nat")) {
+                natLines.push(line);
+                natcount++;
+                if (line.includes("dynamic")) {
+                    dynamiccount++;
+                } else if (line.includes("static")) {
+                    staticcount++;
+                }
+            } else if (line.startsWith("global (")) {
+                natLines.push(line);
+                globalcount++;
+            } else if (line.startsWith("static (")) {
+                natLines.push(line);
+                staticcount++;
+            } else {
+                // 패턴에 맞지 않는 라인은 일반 텍스트로 처리
+                filteredLines.push(line);
+            }
+        }
+
+        // 결과 출력
+        document.getElementById("outputText").value = filteredLines.join("\n");
+        document.getElementById("natText").value = natLines.join("\n");
+        document.getElementById("natcount").textContent = natcount;
+        document.getElementById("staticcount").textContent = staticcount;
+        document.getElementById("dynamiccount").textContent = dynamiccount;
+        document.getElementById("globalcount").textContent = globalcount;
+    }
+</script>

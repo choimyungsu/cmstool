@@ -1,0 +1,390 @@
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/css/custom.css">
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .custom-container {
+        border: 1px solid gray;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    .nav-tabs .nav-link {
+        color: #2c2f31;
+        background-color: rgb(212, 210, 210);
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        margin-right: 5px;
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: #007bff !important;
+        color: white !important;
+    }
+
+    #nav-new-project-tab.nav-link.active {
+        background-color: #28a745 !important;
+        color: white !important;
+    }
+
+    #nav-project-detail-tab.nav-link.active {
+        background-color: #17a2b8 !important;
+        color: white !important;
+    }
+
+    .nav-tabs .nav-link:hover {
+        background-color: #f8f9fa;
+    }
+
+    .btn-sm i {
+        font-size: 0.75rem;
+        vertical-align: middle;
+    }
+
+    .import-export-buttons .btn {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.7rem;
+        height: 25px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .import-export-buttons {
+        margin-left: auto;
+        display: flex;
+        gap: 5px;
+    }
+
+    /* 라디오 버튼 스타일 */
+    .radio-group {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+</style>
+
+<main class="content">
+    <div class="container-fluid">
+        <!-- 검색 조건 -->
+        <div class="row mb-2">
+            <div class="container custom-container">
+                <h1 class="mb-1 custom-title d-flex justify-content-between align-items-center" id="toggleSearch">
+                    <span>
+                        <i class="fas fa-search me-1" style="cursor: pointer;"></i>
+                        Search
+                    </span>
+                    <i class="fas fa-caret-down" style="cursor: pointer;"></i>
+                </h1>
+
+                <div id="searchForm" style="display: none;">
+                    <form id="searchProjectForm" method="GET" action="/project">
+                        <div class="input-group custom-input-group mb-1">
+                            <label class="input-group-text custom-label" for="search_pjt_uid">프로젝트 UID</label>
+                            <input type="text" class="form-control custom-input" id="search_pjt_uid" name="search_pjt_uid" value="<%= search_pjt_uid %>">
+                        </div>
+                        <div class="input-group custom-input-group mb-1">
+                            <label class="input-group-text custom-label" for="search_pjt_name">프로젝트 이름</label>
+                            <input type="text" class="form-control custom-input" id="search_pjt_name" name="search_pjt_name" value="<%= search_pjt_name %>">
+                        </div>
+                        <div class="input-group custom-input-group mb-1">
+                            <label class="input-group-text custom-label" for="search_pjt_open">공개 여부</label>
+                            <input type="text" class="form-control custom-input" id="search_pjt_open" name="search_pjt_open" value="<%= search_pjt_open %>">
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary" id="searchButton">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="container custom-container">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-project-list-tab" data-bs-toggle="tab" data-bs-target="#nav-project-list" type="button" role="tab" aria-controls="nav-project-list" aria-selected="true">프로젝트 목록</button>
+                        <button class="nav-link" id="nav-new-project-tab" data-bs-toggle="tab" data-bs-target="#nav-new-project" type="button" role="tab" aria-controls="nav-new-project" aria-selected="false">새 프로젝트 추가</button>
+                        <button class="nav-link" id="nav-project-detail-tab" data-bs-toggle="tab" data-bs-target="#nav-project-detail" type="button" role="tab" aria-controls="nav-project-detail" aria-selected="false">프로젝트 상세</button>
+                        <div class="import-export-buttons">
+                            <form id="excelImportForm" enctype="multipart/form-data">
+                                <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
+                                <button type="button" class="btn btn-success import-excel-btn" id="importExcelBtn">
+                                    <i class="fas fa-upload"></i> Excel Import
+                                </button>
+                            </form>
+                            <a href="/project/export" class="btn btn-primary">
+                                <i class="fas fa-download"></i> Excel Download
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="tab-content" id="nav-tabContent">
+                    <!-- 프로젝트 목록 탭 -->
+                    <div class="tab-pane fade show active" id="nav-project-list" role="tabpanel" aria-labelledby="nav-project-list-tab">
+                        <div style="margin-top: 15px;">
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th class="small">ID</th>
+                                        <th class="small">UID</th>
+                                        <th class="small" style="width:45%">프로젝트 이름</th>
+                                        <th class="small">공개 여부</th>
+                                        <th class="small">시작일</th>
+                                        <th class="small">종료일</th>
+                                        <th class="small">보기</th>
+                                        <th class="small">삭제</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% projects.forEach(project => { %>
+                                        <tr data-project-id="<%= project.id %>">
+                                            <td class="small"><%= project.id %></td>
+                                            <td class="small"><%= project.pjt_uid %></td>
+                                            <td class="small"><%= project.pjt_name %></td>
+                                            <td class="small"><%= project.pjt_open %></td>
+                                            <td class="small"><%= project.pjt_start_date %></td>
+                                            <td class="small"><%= project.pjt_end_date %></td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm view-btn" data-project-id="<%= project.id %>">
+                                                    <i class="fas fa-eye" style="font-size: 0.75rem;"></i>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <form id="delete-form-<%= project.id %>" action="/deleteProject/<%= project.id %>" method="POST" style="display: inline;">
+                                                    <button type="button" class="btn btn-danger btn-sm delete-btn" data-project-id="<%= project.id %>">
+                                                        <i class="fas fa-trash-alt" style="font-size: 0.75rem;"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                            <input type="hidden" class="project-data" data-field="pjt_uid" value="<%= project.pjt_uid %>">
+                                            <input type="hidden" class="project-data" data-field="pjt_name" value="<%= project.pjt_name %>">
+                                            <input type="hidden" class="project-data" data-field="pjt_desc" value="<%= project.pjt_desc || '' %>">
+                                            <input type="hidden" class="project-data" data-field="pjt_open" value="<%= project.pjt_open %>">
+                                            <input type="hidden" class="project-data" data-field="pjt_start_date" value="<%= project.pjt_start_date %>">
+                                            <input type="hidden" class="project-data" data-field="pjt_end_date" value="<%= project.pjt_end_date %>">
+                                            <input type="hidden" class="project-data" data-field="created_at" value="<%= project.created_at %>">
+                                            <input type="hidden" class="project-data" data-field="updated_at" value="<%= project.updated_at %>">
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 새 프로젝트 추가 탭 -->
+                    <div class="tab-pane fade" id="nav-new-project" role="tabpanel" aria-labelledby="nav-new-project-tab">
+                        <div style="margin-top: 15px;">
+                            <form action="/createProject" method="POST">
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_uid">프로젝트 UID</label>
+                                    <input type="text" class="form-control custom-input" id="pjt_uid" name="pjt_uid" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_name">프로젝트 이름</label>
+                                    <input type="text" class="form-control custom-input" id="pjt_name" name="pjt_name" required>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_desc">설명</label>
+                                    <textarea class="form-control custom-input summernote" id="pjt_desc" name="pjt_desc"></textarea>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_open">공개 여부</label>
+                                    <input type="text" class="form-control custom-input" id="pjt_open" name="pjt_open">
+                                    
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_start_date">시작일</label>
+                                    <input type="date" class="form-control custom-input" id="pjt_start_date" name="pjt_start_date">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_end_date">종료일</label>
+                                    <input type="date" class="form-control custom-input" id="pjt_end_date" name="pjt_end_date">
+                                </div>
+                                <button type="submit" class="btn btn-success btn-sm" style="font-size: 0.75rem;">추가</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 프로젝트 상세 탭 -->
+                    <div class="tab-pane fade" id="nav-project-detail" role="tabpanel" aria-labelledby="nav-project-detail-tab">
+                        <div style="margin-top: 15px;" id="project-detail-content">
+                            <h5>프로젝트 상세 정보</h5>
+                            <form id="updateProjectForm" method="POST">
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label">ID</label>
+                                    <input type="text" class="form-control custom-input" name="id" readonly>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_uid">프로젝트 UID</label>
+                                    <input type="text" class="form-control custom-input" id="pjt_uid" name="pjt_uid">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_name">프로젝트 이름</label>
+                                    <input type="text" class="form-control custom-input" id="pjt_name" name="pjt_name">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_desc">설명</label>
+                                    <textarea class="form-control custom-input summernote" id="pjt_desc_detail" name="pjt_desc"></textarea>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_open">공개 여부</label>
+                                    <input type="text" class="form-control custom-input" id="pjt_open" name="pjt_open">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_start_date">시작일</label>
+                                    <input type="date" class="form-control custom-input" id="pjt_start_date" name="pjt_start_date">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label" for="pjt_end_date">종료일</label>
+                                    <input type="date" class="form-control custom-input" id="pjt_end_date" name="pjt_end_date">
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label">시스템 생성일</label>
+                                    <input type="text" class="form-control custom-input" name="created_at" readonly>
+                                </div>
+                                <div class="input-group custom-input-group mb-1">
+                                    <label class="input-group-text custom-label">시스템 변경일</label>
+                                    <input type="text" class="form-control custom-input" name="updated_at" readonly>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm" style="font-size: 0.75rem;">수정</button>
+                                <form id="delete-form-detail" action="" method="POST" style="display: inline;">
+                                    <button type="button" class="btn btn-danger btn-sm delete-btn" id="detail-delete-btn" style="font-size: 0.75rem;">
+                                        <i class="fas fa-trash-alt" style="font-size: 0.75rem;"></i> 삭제
+                                    </button>
+                                </form>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 삭제 확인 모달 -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">삭제 확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                정말로 이 프로젝트를 삭제하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete" autofocus>확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Summernote JS (jQuery 다음에 로드) -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    // Summernote 초기화 - DOM이 완전히 로드된 후 실행
+    $('.summernote').summernote({
+        height: 200,
+        minHeight: null,
+        maxHeight: null,
+        focus: true,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
+
+    // "보기" 버튼 클릭 시 상세 탭으로 이동 및 데이터 표시
+    $('.view-btn').on('click', function () {
+        const projectId = $(this).data('project-id');
+        const $row = $(`tr[data-project-id="${projectId}"]`);
+        const projectData = {};
+        $row.find('.project-data').each(function () {
+            const field = $(this).data('field');
+            projectData[field] = $(this).val();
+        });
+
+        $('#updateProjectForm').attr('action', `/updateProject/${projectId}`);
+        $('#updateProjectForm input[name="id"]').val(projectId);
+        $('#updateProjectForm input[name="pjt_uid"]').val(projectData.pjt_uid);
+        $('#updateProjectForm input[name="pjt_name"]').val(projectData.pjt_name);
+        $('#updateProjectForm textarea[name="pjt_desc"]').summernote('code', projectData.pjt_desc || '');
+        $('#updateProjectForm input[name="pjt_open"]').val(projectData.pjt_open);
+        $('#updateProjectForm input[name="pjt_start_date"]').val(projectData.pjt_start_date);
+        $('#updateProjectForm input[name="pjt_end_date"]').val(projectData.pjt_end_date);
+        $('#updateProjectForm input[name="created_at"]').val(projectData.created_at);
+        $('#updateProjectForm input[name="updated_at"]').val(projectData.updated_at);
+
+        $('#delete-form-detail').attr('action', `/deleteProject/${projectId}`);
+        $('#nav-project-detail-tab').tab('show');
+    });
+
+    // 삭제 버튼 이벤트
+    $('.delete-btn').on('click', function () {
+        const projectId = $(this).data('project-id') || $('#updateProjectForm input[name="id"]').val();
+        const deleteForm = document.getElementById(`delete-form-${projectId}`) || document.getElementById('delete-form-detail');
+        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+
+        document.getElementById('confirmDelete').onclick = function () {
+            deleteForm.submit();
+            modal.hide();
+        };
+        modal.show();
+    });
+
+    // 엑셀 임포트 이벤트
+    const importExcelBtn = document.getElementById('importExcelBtn');
+    const excelFileInput = document.getElementById('excelFileInput');
+    importExcelBtn.addEventListener('click', function () {
+        excelFileInput.click();
+    });
+
+    excelFileInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const formData = new FormData(document.getElementById('excelImportForm'));
+            formData.append('excelFileInput', file);
+            fetch('/project/import', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('데이터가 성공적으로 import되었습니다.');
+                    location.reload();
+                } else {
+                    alert('import 중 오류가 발생했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('import 중 오류가 발생했습니다.');
+            });
+        }
+    });
+
+    // 검색 토글
+    document.getElementById("toggleSearch").addEventListener("click", function () {
+        let form = document.getElementById("searchForm");
+        form.style.display = (form.style.display === "none" || form.style.display === "") ? "block" : "none";
+    });
+});
+</script>

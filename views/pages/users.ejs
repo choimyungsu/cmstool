@@ -28,11 +28,15 @@
     .dt-buttons .buttons-colvis:last-child {
         margin-right: 0 !important;
     }
+
+    /* 모달 스타일 */
+    .modal-content {
+        font-size: 0.7rem;
+    }
 </style>
 
 <main class="content">
     <div class="container-fluid">
-
         <div class="row mb-2">
             <div class="container custom-container">
 
@@ -47,38 +51,41 @@
 
 
                 <div id="createForm" style="display: block;">
-                    <form action="/register" method="POST">
-                        <div class="input-group custom-input-group mb-1">
-                            <label class="input-group-text custom-label" for="user_id">User ID</label>
-                            <input type="text" class="form-control custom-input" id="user_id" name="user_id" required>
-                        </div>
-                        <div class="input-group custom-input-group mb-1">
-                            <label class="input-group-text custom-label" for="user_name">User명</label>
-                            <input type="text" class="form-control custom-input" id="user_name" name="user_name" required>
-                        </div>
-                        <div class="input-group custom-input-group mb-1">
-                            <label class="input-group-text custom-label" for="password">Password</label>
-                            <input type="password" class="form-control custom-input" id="password" name="password" required>
-                        </div>
-                        <div class="input-group custom-input-group mb-1">
-                            <label class="input-group-text custom-label" for="email">Email</label>
-                            <input type="email" class="form-control custom-input" id="email" name="email" required>
-                        </div>
-                        <div class="input-group custom-input-group mb-1">
-                            <label class="input-group-text custom-label" for="tel">Tel</label>
-                            <input type="text" class="form-control custom-input" id="tel" name="tel" required>
-                        </div>
-                        <div class="input-group custom-input-group mb-1">
-                            <label class="input-group-text custom-label" for="organization">Organization</label>
-                            <input type="text" class="form-control custom-input" id="organization" name="organization">
-                        </div>
-                        <div class="input-group custom-input-group mb-1">
-                            <label class="input-group-text custom-label" for="department">Department</label>
-                            <input type="text" class="form-control custom-input" id="department" name="department">
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm custom-btn">Register</button>
+                    <form id="registerForm" action="/register" method="POST">
+                      <div class="input-group custom-input-group mb-1">
+                        <label class="input-group-text custom-label" for="user_id">User ID</label>
+                        <input type="text" class="form-control custom-input" id="user_id" name="user_id" required>
+                      </div>
+                      <div class="input-group custom-input-group mb-1">
+                        <label class="input-group-text custom-label" for="user_name">User명</label>
+                        <input type="text" class="form-control custom-input" id="user_name" name="user_name" required>
+                      </div>
+                      <div class="input-group custom-input-group mb-1">
+                        <label class="input-group-text custom-label" for="password">Password</label>
+                        <input type="password" class="form-control custom-input" id="password" name="password" required>
+                      </div>
+                      <div class="input-group custom-input-group mb-1">
+                        <label class="input-group-text custom-label" for="email">Email</label>
+                        <input type="email" class="form-control custom-input" id="email" name="email" required>
+                      </div>
+                      <div class="input-group custom-input-group mb-1">
+                        <label class="input-group-text custom-label" for="tel">Tel</label>
+                        <input type="text" class="form-control custom-input" id="tel" name="tel" required>
+                      </div>
+                      <div class="input-group custom-input-group mb-1">
+                        <label class="input-group-text custom-label" for="organization">Organization</label>
+                        <input type="text" class="form-control custom-input" id="organization" name="organization">
+                      </div>
+                      <div class="input-group custom-input-group mb-1">
+                        <label class="input-group-text custom-label" for="department">Department</label>
+                        <input type="text" class="form-control custom-input" id="department" name="department">
+                      </div>
+                      <button type="submit" class="btn btn-primary btn-sm custom-btn">Register</button>
                     </form>
-                </div>
+                  </div>
+
+
+
             </div>
         </div>
 
@@ -178,6 +185,25 @@
         </div>
     </div>
 </main>
+
+
+<!-- Bootstrap Modal for Error -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Registration Error</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="errorMessage">
+                <!-- 에러 메시지가 여기에 동적으로 삽입됨 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- Font Awesome CDN -->
@@ -310,6 +336,34 @@
         document.getElementById("toggleCreate").addEventListener("click", function () {
             let form2 = document.getElementById("createForm");
             form2.style.display = (form2.style.display === "none" || form2.style.display === "") ? "block" : "none";
+        });
+
+        // 등록 폼 AJAX 제출
+        $('#registerForm').on('submit', function (e) {
+        e.preventDefault(); // 기본 폼 제출 방지
+        console.log('Form submitted'); // 디버깅 로그
+        const formData = $(this).serialize();
+        console.log('Form Data:', formData); // 디버깅 로그
+
+        $.ajax({
+            url: '/register',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+            console.log('AJAX Success:', response);
+            if (response.success) {
+                window.location.href = response.redirect;
+            } else {
+                $('#errorMessage').text(response.message);
+                new bootstrap.Modal(document.getElementById('errorModal')).show();
+            }
+            },
+            error: function (xhr, status, error) {
+            console.log('AJAX Error:', xhr.responseText, status, error);
+            $('#errorMessage').text('An unexpected error occurred: ' + (xhr.responseJSON ? xhr.responseJSON.message : error));
+            new bootstrap.Modal(document.getElementById('errorModal')).show();
+            }
+        });
         });
 
         $("#searchButton").on("click", function () {    

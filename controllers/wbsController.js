@@ -9,7 +9,11 @@ const upload = multer({ storage: storage }).single('excelFileInput');
 // WBS 목록 페이지
 exports.listWbs = async (req, res) => {
     const tasks = await Wbs.getAllWbs();
-    res.render("index", { currentPage: "pages/wbs", tasks });
+    res.render("index", { 
+        currentPage: "pages/wbs", 
+        tasks,
+        user: req.session.user  
+    });
 };
 
 // WBS 생성
