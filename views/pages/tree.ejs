@@ -1,0 +1,1188 @@
+<!-- views/tree.ejs -->
+<link rel="stylesheet" href="/css/custom.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.16/themes/default/style.min.css">
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+
+<main class="content">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="container custom-container">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="mb-2 d-flex">
+              <button id="addNode" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i></button>
+              <button id="editNode" class="btn btn-warning btn-sm me-2"><i class="fas fa-edit"></i></button>
+              <button id="deleteNode" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash"></i></button>
+              <button id="expandAll" class="btn btn-success btn-sm me-2"><i class="fas fa-expand"></i></button>
+              <button id="collapseAll" class="btn btn-success btn-sm me-2"><i class="fas fa-compress"></i></button>
+              <input type="text" id="treeSearch" class="form-control form-control-sm" placeholder="노드 검색" style="width: 150px;">
+            </div>
+            <div id="tree-container" class="p-2">
+              <div id="jstree"></div>
+            </div>
+          </div>
+          <div class="col-md-9">
+            <div id="data-table" class="p-2">
+              <ul class="nav nav-tabs custom-tabs" id="dataTabs" role="tablist">
+                <li class="nav-item">
+                  <a class="nav-link" id="list-tab" data-bs-toggle="tab" href="#list" role="tab">리스트</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="detail-tab" data-bs-toggle="tab" href="#detail" role="tab">상세</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="existing-link-tab" data-bs-toggle="tab" href="#existing-link" role="tab">기존자료 연결</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="create-link-tab" data-bs-toggle="tab" href="#create-link" role="tab">자료생성 연결</a>
+                </li>
+              </ul>
+              <div class="tab-content" id="dataTabContent">
+                <!-- 리스트 탭 -->
+                <div class="tab-pane fade show active" id="list" role="tabpanel">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th class="hidden">ID</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Assignee</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="contents-list"></tbody>
+                  </table>
+                </div>
+
+                <!-- 상세 탭 -->
+                <div class="tab-pane fade" id="detail" role="tabpanel">
+                  <form id="contentDetailForm" class="p-4">
+                    <input type="hidden" id="detailId">
+                    <div class="form-row">
+                      <label for="detailTitle">Title</label>
+                      <input type="text" class="form-control" id="detailTitle">
+                    </div>
+                    <div class="form-row">
+                      <label for="detailGubun">Gubun</label>
+                      <input type="text" class="form-control" id="detailGubun">
+                    </div>
+                    <div class="form-row">
+                      <label for="detailNote1">Note1</label>
+                      <div id="detailSummernote"></div>
+                    </div>
+                    <div class="form-row">
+                      <label for="detailNote2">Note2</label>
+                      <textarea class="form-control" id="detailNote2"></textarea>
+                    </div>
+                    <div class="form-row">
+                      <label for="detailNote3">Note3</label>
+                      <textarea class="form-control" id="detailNote3"></textarea>
+                    </div>
+                    <div class="form-row-triple">
+                      <div>
+                        <label for="detailStatus">Status</label>
+                        <select class="form-control" id="detailStatus">
+                          <option value="">선택</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label for="detailCreateUser">Create User</label>
+                        <input type="text" class="form-control" id="detailCreateUser">
+                      </div>
+                      <div>
+                        <label for="detailAssignee">Assignee</label>
+                        <input type="text" class="form-control" id="detailAssignee">
+                      </div>
+                    </div>
+                    <div class="form-row-triple">
+                      <div>
+                        <label for="detailStartDate">Start Date</label>
+                        <input type="text" class="form-control" id="detailStartDate">
+                      </div>
+                      <div>
+                        <label for="detailEndDate">End Date</label>
+                        <input type="text" class="form-control" id="detailEndDate">
+                      </div>
+                      <div>
+                        <label for="detailPlanDate">Plan Date</label>
+                        <input type="text" class="form-control" id="detailPlanDate">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <label for="detailMemo1">Memo1</label>
+                      <input type="text" class="form-control" id="detailMemo1">
+                    </div>
+                    <div class="form-row">
+                      <label for="detailMemo2">Memo2</label>
+                      <input type="text" class="form-control" id="detailMemo2">
+                    </div>
+                    <div class="text-center mt-4">
+                      <button type="button" id="saveDetail" class="btn btn-primary me-2">수정</button>
+                      <button type="button" id="deleteDetail" class="btn btn-danger">삭제</button>
+                      <button type="button" id="linkDetail" class="btn btn-success me-2" style="display: none;">링크</button>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- 기존자료 연결 탭 -->
+                <div class="tab-pane fade" id="existing-link" role="tabpanel">
+                  <div id="searchSectionWrapper">
+                    <div id="searchSection">
+                      <div class="search-row">
+                        <input type="text" id="integratedSearch" placeholder="통합 검색 (Title, Note1, Note2, Note3, Memo1, Memo2)">
+                      </div>
+                      <div class="search-row">
+                        <select id="searchStatus">
+                          <option value="">Status 선택</option>
+                        </select>
+                        <input type="text" id="searchCreateUser" placeholder="Create User">
+                        <input type="text" id="searchAssignee" placeholder="Assignee">
+                      </div>
+                      <button id="searchBtn" class="btn btn-primary">검색</button>
+                    </div>
+                  </div>
+                  <table id="searchResults" class="mt-3 display compact" style="width:100%">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Assignee</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="searchResultsBody"></tbody>
+                  </table>
+                </div>
+
+                <!-- 자료생성 연결 탭 -->
+                <div class="tab-pane fade" id="create-link" role="tabpanel">
+                  <form id="createContentForm" class="p-4">
+                    <div class="form-row">
+                      <label for="newTitle">Title</label>
+                      <input type="text" class="form-control" id="newTitle" required>
+                    </div>
+                    <div class="form-row">
+                      <label for="newGubun">Gubun</label>
+                      <input type="text" class="form-control" id="newGubun">
+                    </div>
+                    <div class="form-row">
+                      <label for="newNote1">Note1</label>
+                      <div id="newSummernote"></div>
+                    </div>
+                    <div class="form-row">
+                      <label for="newNote2">Note2</label>
+                      <textarea class="form-control" id="newNote2"></textarea>
+                    </div>
+                    <div class="form-row">
+                      <label for="newNote3">Note3</label>
+                      <textarea class="form-control" id="newNote3"></textarea>
+                    </div>
+                    <div class="form-row-triple">
+                      <div>
+                        <label for="newStatus">Status</label>
+                        <select class="form-control" id="newStatus">
+                          <option value="">선택</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label for="newCreateUser">Create User</label>
+                        <input type="text" class="form-control" id="newCreateUser">
+                      </div>
+                      <div>
+                        <label for="newAssignee">Assignee</label>
+                        <input type="text" class="form-control" id="newAssignee">
+                      </div>
+                    </div>
+                    <div class="form-row-triple">
+                      <div>
+                        <label for="newStartDate">Start Date</label>
+                        <input type="text" class="form-control" id="newStartDate">
+                      </div>
+                      <div>
+                        <label for="newEndDate">End Date</label>
+                        <input type="text" class="form-control" id="newEndDate">
+                      </div>
+                      <div>
+                        <label for="newPlanDate">Plan Date</label>
+                        <input type="text" class="form-control" id="newPlanDate">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <label for="newMemo1">Memo1</label>
+                      <input type="text" class="form-control" id="newMemo1">
+                    </div>
+                    <div class="form-row">
+                      <label for="newMemo2">Memo2</label>
+                      <input type="text" class="form-control" id="newMemo2">
+                    </div>
+                    <div class="text-center mt-4">
+                      <button type="button" id="saveNewContent" class="btn btn-primary">저장</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal for Delete Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">노드 삭제 확인</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        이 노드를 삭제하시겠습니까? 하위 노드도 함께 삭제됩니다.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">삭제</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="messageModalLabel">알림</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="messageModalText"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-white">
+        <h5 class="modal-title" id="confirmModalLabel">확인</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmModalText"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-warning" id="confirmModalBtn">확인</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #tree-container {
+    overflow-y: auto;
+    font-size: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 80vh; /* 트리 영역 높이를 100%로 설정 */
+  }
+
+  #data-table {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    flex-grow: 1;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.7rem;
+    table-layout: fixed;
+  }
+
+  table th,
+  table td {
+    border: 1px solid #e0e0e0;
+    padding: 0.2rem;
+    vertical-align: middle;
+    text-align: left;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 길면 ...으로 표시 */
+  }
+
+  table thead th {
+    background-color: #1a2a44;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .selected-row {
+    background-color: #e6ffe6 !important;
+    transition: background-color 0.3s ease;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  table input[type="text"],
+  table input[type="number"] {
+    width: 100%;
+    font-size: 0.7rem;
+    border: 1px solid #ccc;
+    padding: 0.1rem;
+    box-sizing: border-box;
+    background-color: #f1f1f1;
+  }
+
+  table input[type="text"]::placeholder {
+    color: #999;
+  }
+
+  .action-btn {
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+    margin: 0 0.1rem;
+    font-size: 0.8rem;
+    transition: color 0.2s ease;
+  }
+
+  .action-btn:hover {
+    color: #007bff;
+  }
+
+  .text-warning {
+    color: #ffc107;
+  }
+
+  .text-danger {
+    color: #dc3545;
+  }
+
+  /* Title 링크 호버 효과 */
+  table td:nth-child(2):hover {
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  table td:nth-child(2) a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  table td:nth-child(2) a:hover {
+    color: white;
+  }
+
+  /* 커스텀 탭 스타일 */
+  .custom-tabs .nav-item {
+    margin-right: 5px; /* 탭 간 간격 줄임 */
+  }
+
+  .custom-tabs .nav-link {
+    background-color: #adb5bd; /* 더 연한 회색 */
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.75rem; /* 탭 크기 작게 */
+    font-size: 0.75rem; /* 글씨 크기 작게 */
+    transition: background-color 0.3s;
+  }
+
+  .custom-tabs .nav-link.active {
+    background-color: #007bff; /* 선택된 탭: 파란색 */
+    color: white;
+    font-weight: bold;
+  }
+
+  .custom-tabs .nav-link:hover {
+    background-color: #9aa3ad; /* 호버 시 약간 진한 회색 */
+  }
+
+  .custom-container {
+    border: 1px solid gray;
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  /* 상세 탭 스타일 */
+  .form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+  }
+
+  .form-row label {
+    width: 100px;
+    margin-right: 5px;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .form-control {
+    flex: 1;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    transition: border-color 0.3s;
+  }
+
+  .form-control:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 5px rgba(108, 99, 255, 0.3);
+  }
+
+  .form-row-triple {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 12px;
+  }
+
+  .form-row-triple > div {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .form-row-triple label {
+    width: 100px;
+    margin-right: 5px;
+    font-size: 0.85rem;
+    color: #333;
+    font-weight: 600;
+  }
+
+  #searchSection {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 0;
+    display: block; /* 펼쳐진 상태로 시작 */
+  }
+
+  .search-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .search-row input,
+  .search-row select {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+  }
+
+
+/* 기존 스타일 유지, DataTables 관련 수정 */
+#searchResults_wrapper {
+    font-size: 0.7rem; /* 폰트 크기 최소화 */
+  }
+
+  #searchResults_wrapper .dataTables_length,
+  #searchResults_wrapper .dataTables_filter {
+    display: none; /* DataTables 자체 검색 및 길이 선택 숨김 (커스텀 검색 사용) */
+  }
+
+  #searchResults_wrapper .dataTables_paginate {
+    margin-top: 5px; /* 페이징 간격 최소화 */
+  }
+
+  #searchResults_wrapper .dataTables_paginate .paginate_button {
+    padding: 2px 5px; /* 버튼 크기 최소화 */
+    font-size: 0.7rem;
+  }
+
+  #searchResults_wrapper .dataTables_info {
+    font-size: 0.7rem; /* 정보 텍스트 크기 최소화 */
+    margin-top: 5px;
+  }
+
+  #searchResults {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.7rem;
+    table-layout: fixed; /* 고정 레이아웃 유지 */
+  }
+
+  #searchResults th,
+  #searchResults td {
+    border: 1px solid #e0e0e0;
+    padding: 0.2rem;
+    vertical-align: middle;
+    text-align: left;
+    white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 길면 ...으로 표시 */
+  }
+
+  
+
+  /* 기존 스타일 재사용 */
+  #searchResults thead th {
+    background-color: #1a2a44;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  #searchResults td:nth-child(2):hover {
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  #searchResults td:nth-child(2) a {
+    color: inherit;
+    text-decoration: none;
+    display: block; /* 링크가 셀 전체를 채우도록 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #searchResults td:nth-child(2) a:hover {
+    color: white;
+  }
+
+
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.16/jstree.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<!-- views/tree.ejs (HTML 및 CSS는 동일, <script> 부분만 수정) -->
+  <script>
+    $(document).ready(function () {
+      let currentTreeId = null;
+      let currentContentId = null;
+      let lastAjax = null; // 이전 요청을 추적하기 위한 변수
+  
+      // 메시지 모달 표시 함수
+      function showMessageModal(message) {
+        $('#messageModalText').text(message);
+        $('#messageModal').modal('show');
+      }
+  
+      // 확인 모달 표시 함수
+      function showConfirmModal(message, callback) {
+        $('#confirmModalText').text(message);
+        $('#confirmModal').modal('show');
+        $('#confirmModalBtn').off('click').on('click', function () {
+          $('#confirmModal').modal('hide');
+          callback();
+        });
+      }
+  
+      // jstree 초기화
+      $('#jstree').jstree({
+        'core': {
+          'data': function (obj, callback) {
+            $.get('/tree/data', function (data) {
+              const treeData = buildTree(data);
+              callback.call(this, treeData);
+              $('#list-tab').tab('show'); // 초기 로딩 시 리스트 탭 활성화
+            }).fail(function (xhr, status, error) {
+              console.error('Error fetching tree data:', error);
+            });
+          },
+          'check_callback': true
+        },
+        'plugins': ['dnd', 'search'],
+        'search': {
+          'show_only_matches': true,
+          'show_only_matches_children': true
+        }
+      });
+  
+      // 검색 기능 구현
+      $('#treeSearch').on('keyup', function () {
+        const searchString = $(this).val();
+        $('#jstree').jstree(true).search(searchString);
+      });
+  
+      // 트리 데이터를 계층 구조로 변환
+      function buildTree(data) {
+        const map = {};
+        const roots = [];
+  
+        // 노드를 seq 기준으로 정렬
+        data.sort((a, b) => a.seq - b.seq);
+  
+        data.forEach(node => {
+          map[node.id] = { id: node.id, text: node.task, children: [], data: node };
+        });
+  
+        data.forEach(node => {
+          if (node.parent_id && map[node.parent_id]) {
+            map[node.parent_id].children.push(map[node.id]);
+          } else {
+            roots.push(map[node.id]);
+          }
+        });
+  
+        return roots;
+      }
+  
+      // 컨텐츠 리스트 갱신 함수 (중복 제거 및 비동기 요청 관리)
+      function updateContentsList() {
+        const treeInstance = $('#jstree').jstree(true);
+        const selectedNode = treeInstance.get_selected(true)[0];
+        if (!selectedNode) return;
+  
+        // 이전 요청 취소
+        if (lastAjax) {
+          lastAjax.abort();
+        }
+  
+        currentTreeId = selectedNode.id;
+        $('#contents-list').empty(); // 기존 데이터 완전히 제거
+  
+        lastAjax = $.ajax({
+          url: `/treecontents/linked/${currentTreeId}`,
+          method: 'GET',
+          success: function (contents) {
+            // 중복 제거
+            const uniqueContents = Array.from(new Map(contents.map(item => [item.id, item])).values());
+            uniqueContents.forEach(content => {
+              $('#contents-list').append(`
+                <tr data-id="${content.id}">
+                  <td class="hidden">${content.id}</td>
+                  <td><a href="#" class="content-link">${content.title || ''}</a></td>
+                  <td>${content.status || ''}</td>
+                  <td>${content.assignee || ''}</td>
+                  <td>
+                    <i class="fas fa-unlink action-btn text-danger unlink-content" data-id="${content.id}"></i>
+                  </td>
+                </tr>
+              `);
+            });
+  
+            // 컨텐츠가 하나일 경우 자동으로 상세 탭으로 이동
+            if (uniqueContents.length === 1) {
+              loadDetailContent(uniqueContents[0].id);
+            }
+          },
+          error: function (xhr, status, error) {
+            if (status !== 'abort') { // 요청이 취소된 경우는 오류로 처리하지 않음
+              console.error('Error fetching linked contents:', error);
+              showMessageModal('링크된 컨텐츠를 가져오는 중 오류가 발생했습니다.');
+            }
+          },
+          complete: function () {
+            lastAjax = null; // 요청 완료 후 lastAjax 초기화
+          }
+        });
+      }
+  
+      // 상세 정보 로드 및 표시
+      function loadDetailContent(contentId) {
+        currentContentId = contentId;
+        $.get(`/contents/data?id=${contentId}`, function (data) {
+          const content = data; // 서버가 단일 객체를 반환
+          if (content) {
+            $('#detailId').val(content.id);
+            $('#detailTitle').val(content.title || '');
+            $('#detailGubun').val(content.gubun || '');
+            $('#detailSummernote').summernote('code', content.note1 || '');
+            $('#detailNote2').val(content.note2 || '');
+            $('#detailNote3').val(content.note3 || '');
+            $('#detailStatus').val(content.status || '');
+            $('#detailCreateUser').val(content.create_user || '');
+            $('#detailAssignee').val(content.assignee || '');
+            $('#detailStartDate').val(content.start_date || '');
+            $('#detailEndDate').val(content.end_date || '');
+            $('#detailPlanDate').val(content.plan_date || '');
+            $('#detailMemo1').val(content.memo1 || '');
+            $('#detailMemo2').val(content.memo2 || '');
+            $('#detail-tab').tab('show');
+            console.log('Loaded content:', content); // 디버깅용 로그
+  
+            // 링크 여부 확인
+            if (currentTreeId) {
+              $.get(`/treecontents/linked/${currentTreeId}`, function (linkedContents) {
+                const isLinked = linkedContents.some(item => item.id == contentId);
+                if (isLinked) {
+                  $('#linkDetail').hide(); // 이미 링크되어 있으면 버튼 숨김
+                } else {
+                  $('#linkDetail').show(); // 링크되어 있지 않으면 버튼 표시
+                }
+              }).fail(function (xhr, status, error) {
+                console.error('Error checking linked contents:', error);
+                $('#linkDetail').hide(); // 오류 발생 시 버튼 숨김
+              });
+            } else {
+              $('#linkDetail').hide(); // 트리 노드가 선택되지 않았으면 버튼 숨김
+            }
+          } else {
+            console.error('No content found for ID:', contentId);
+            showMessageModal('컨텐츠 데이터를 가져올 수 없습니다.');
+          }
+        }).fail(function (xhr, status, error) {
+          console.error('Error fetching content data:', error);
+          showMessageModal('컨텐츠 데이터를 가져오는 중 오류가 발생했습니다.');
+        });
+      }
+  
+      // 모든 노드 펼치기
+      function expandAllNodes() {
+        $('#jstree').jstree(true).open_all();
+      }
+  
+      // 모든 노드 닫기
+      function collapseAllNodes() {
+        $('#jstree').jstree(true).close_all();
+      }
+  
+      $('#expandAll').click(expandAllNodes);
+      $('#collapseAll').click(collapseAllNodes);
+  
+      $('#jstree').on('select_node.jstree', function (e, data) {
+        $('#list-tab').tab('show'); // 트리 노드 클릭 시 리스트 탭으로 이동
+        updateContentsList();
+      });
+  
+      // 드래그앤드랍 후 업데이트 (seq 포함)
+      $('#jstree').on('move_node.jstree', function (e, data) {
+        const nodeId = data.node.id;
+        const newParentId = data.parent === '#' ? null : data.parent;
+        const newPosition = data.position;
+  
+        $.ajax({
+          url: `/tree/update/${nodeId}`,
+          method: 'PUT',
+          data: { parent_id: newParentId, seq: newPosition },
+          success: function () {
+            updateContentsList();
+            $('#jstree').jstree(true).refresh();
+          },
+          error: function (xhr, status, error) {
+            console.error('Error updating node parent and seq:', error);
+            showMessageModal('노드 순서 업데이트에 실패했습니다.');
+          }
+        });
+      });
+  
+      // 노드 이름 변경 시 DB 업데이트
+      $('#jstree').on('rename_node.jstree', function (e, data) {
+        const nodeId = data.node.id;
+        const newText = data.text;
+        $.ajax({
+          url: `/tree/update/${nodeId}`,
+          method: 'PUT',
+          data: { task: newText },
+          success: function () {
+            // 성공 시 아무 작업 불필요
+          },
+          error: function (xhr, status, error) {
+            console.error('Error updating node task:', error);
+          }
+        });
+      });
+  
+      // 노드 더블클릭 시 수정 모드
+      $('#jstree').on('dblclick.jstree', function (e) {
+        const instance = $.jstree.reference(e.target);
+        const node = instance.get_node(e.target);
+        if (node) {
+          instance.edit(node);
+        }
+      });
+  
+      // 노드 추가
+      $('#addNode').click(function () {
+        let ref = $('#jstree').jstree(true);
+        let sel = ref.get_selected();
+        if (!sel.length) sel = ['#'];
+        const parentId = sel[0] === '#' ? null : sel[0];
+        $.post('/tree/create', { task: '새 노드', parent_id: parentId }, function (newNode) {
+          ref.create_node(sel[0], { id: newNode.id, text: newNode.task });
+          ref.open_node(sel[0]);
+          updateContentsList();
+        }).fail(function (xhr, status, error) {
+          console.error('Error creating node:', error);
+        });
+      });
+  
+      // 노드 수정
+      $('#editNode').click(function () {
+        let ref = $('#jstree').jstree(true);
+        let sel = ref.get_selected();
+        if (sel.length) ref.edit(sel[0]);
+      });
+  
+      // 모달로 노드 삭제 확인
+      let nodeToDelete = null;
+      function showDeleteModal(nodeId) {
+        nodeToDelete = nodeId;
+        $('#deleteModal').modal('show');
+      }
+      $('#confirmDelete').click(function () {
+        if (nodeToDelete) {
+          $.ajax({
+            url: `/tree/delete/${nodeToDelete}`,
+            method: 'DELETE',
+            success: function () {
+              $('#jstree').jstree(true).delete_node(nodeToDelete);
+              updateContentsList();
+              $('#deleteModal').modal('hide');
+            },
+            error: function (xhr, status, error) {
+              console.error('Error deleting node:', error);
+            }
+          });
+        }
+      });
+  
+      $('#deleteNode').click(function () {
+        let ref = $('#jstree').jstree(true);
+        let sel = ref.get_selected();
+        if (sel.length) showDeleteModal(sel[0]);
+      });
+  
+      // 컨텐츠 링크 클릭 시 상세 탭으로 이동
+      $(document).on('click', '.content-link', function (e) {
+        e.preventDefault();
+        const contentId = $(this).closest('tr').data('id');
+        loadDetailContent(contentId);
+      });
+  
+      // 컨텐츠 링크 해제
+      $(document).on('click', '.unlink-content', function () {
+        const contentId = $(this).data('id');
+        showConfirmModal(`컨텐츠 ID ${contentId}의 링크를 해제하시겠습니까?`, function () {
+          $.ajax({
+            url: `/treecontents/unlink/${currentTreeId}/${contentId}`,
+            method: 'DELETE',
+            success: function () {
+              updateContentsList();
+            },
+            error: function (xhr, status, error) {
+              console.error('Error unlinking content:', error);
+            }
+          });
+        });
+      });
+  
+      // 상세 수정
+      $('#saveDetail').click(function () {
+        const id = $('#detailId').val();
+        const content = {
+          title: $('#detailTitle').val(),
+          gubun: $('#detailGubun').val(),
+          note1: $('#detailSummernote').summernote('code'),
+          note2: $('#detailNote2').val(),
+          note3: $('#detailNote3').val(),
+          status: $('#detailStatus').val(),
+          create_user: $('#detailCreateUser').val(),
+          assignee: $('#detailAssignee').val(),
+          start_date: $('#detailStartDate').val(),
+          end_date: $('#detailEndDate').val(),
+          plan_date: $('#detailPlanDate').val(),
+          memo1: $('#detailMemo1').val(),
+          memo2: $('#detailMemo2').val()
+        };
+        $.ajax({
+          url: `/contents/update/${id}`,
+          method: 'PUT',
+          data: content,
+          success: function () {
+            showMessageModal('수정되었습니다.');
+            updateContentsList();
+          },
+          error: function (xhr, status, error) {
+            console.error('Error updating content:', error);
+          }
+        });
+      });
+  
+      // 상세 삭제
+      $('#deleteDetail').click(function () {
+        const id = $('#detailId').val();
+        if (id) {
+          showConfirmModal('정말 삭제하시겠습니까?', function () {
+            $.ajax({
+              url: `/contents/delete/${id}`,
+              method: 'DELETE',
+              success: function () {
+                $('#list-tab').tab('show');
+                updateContentsList();
+              },
+              error: function (xhr, status, error) {
+                console.error('Error deleting content:', error);
+              }
+            });
+          });
+        }
+      });
+  
+      // DataTables 초기화
+      let searchTable = $('#searchResults').DataTable({
+        paging: true,
+        pageLength: 10,
+        searching: true,
+        ordering: true,
+        info: true,
+        lengthChange: false,
+        language: {
+          paginate: {
+            previous: "이전",
+            next: "다음"
+          },
+          info: "Showing _START_ to _END_ of _TOTAL_ entries"
+        },
+        columns: [
+          { data: 'id', width: "10%", visible: true, defaultContent: '' },
+          { 
+            data: 'title', 
+            width: "30%", 
+            visible: true, 
+            defaultContent: 'N/A',
+            render: function (data, type, row) {
+              return `<a href="#" class="content-link">${data || 'N/A'}</a>`;
+            }
+          },
+          { data: 'status', width: "20%", visible: true, defaultContent: 'N/A' },
+          { data: 'assignee', width: "20%", visible: true, defaultContent: 'N/A' },
+          { 
+            data: null, 
+            width: "20%", 
+            visible: true, 
+            render: function (data, type, row) {
+              return `<button class="btn btn-primary btn-sm link-content" data-id="${row.id || ''}">링크</button>`;
+            }
+          }
+        ],
+        autoWidth: false
+      });
+  
+      // 검색 결과 로드 및 DB 조회
+      function loadSearchResults() {
+        const integratedSearch = $('#integratedSearch').val().toLowerCase();
+        const searchStatus = $('#searchStatus').val();
+        const searchCreateUser = $('#searchCreateUser').val().toLowerCase();
+        const searchAssignee = $('#searchAssignee').val().toLowerCase();
+  
+        // 서버로 검색 요청 보내기
+        $.ajax({
+          url: '/contents/search',
+          method: 'GET',
+          data: {
+            integratedSearch: integratedSearch,
+            status: searchStatus,
+            createUser: searchCreateUser,
+            assignee: searchAssignee
+          },
+          success: function (data) {
+            // 응답 데이터 구조 확인
+            //console.log('Server response:', data);
+  
+            // DataTables 데이터 갱신
+            searchTable.clear(); // 기존 데이터 제거
+  
+            // 데이터를 배열로 준비
+            const rowsData = data.map(content => {
+              const rowData = {
+                id: content.id !== undefined ? content.id : null, // id 필드 확인
+                title: content.title || '', // title 필드 확인
+                status: content.status || '', // status 필드 확인
+                assignee: content.assignee || '' // assignee 필드 확인
+              };
+              console.log('Row data:', rowData); // 각 행 데이터 확인
+              return rowData;
+            });
+  
+            // 한 번에 모든 행 추가
+            searchTable.rows.add(rowsData).draw();
+  
+            // 각 행에 data-id 속성 추가
+            searchTable.rows().every(function () {
+              const rowNode = this.node();
+              const rowData = this.data();
+              $(rowNode).data('id', rowData.id);
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error('Error fetching search results:', error);
+            showMessageModal('검색 결과를 가져오는 중 오류가 발생했습니다.');
+          }
+        });
+      }
+  
+      // 검색 버튼 클릭 이벤트
+      $('#searchBtn').on('click', function () {
+        loadSearchResults();
+      });
+  
+      // 초기 검색 결과 로드
+      loadSearchResults();
+  
+      // 컨텐츠 링크 버튼 클릭
+      $(document).on('click', '#searchResults .link-content', function () {
+        const contentId = $(this).closest('tr').data('id');
+        if (contentId === undefined) {
+          console.error('Content ID is undefined for this row:', $(this).closest('tr'));
+          showMessageModal('컨텐츠 ID를 찾을 수 없습니다.');
+          return;
+        }
+        if (currentTreeId) {
+          showConfirmModal(`컨텐츠 ID ${contentId}를 링크하시겠습니까?`, function () {
+            $.post('/treecontents/link', { tree_id: currentTreeId, contents_id: contentId }, function () {
+              updateContentsList();
+              $('#existing-link-tab').tab('show');
+            });
+          });
+        } else {
+          showMessageModal('트리 노드를 선택해주세요.');
+        }
+      });
+  
+      // 컨텐츠 링크 클릭 시 상세 탭으로 이동
+      $(document).on('click', '#searchResults .content-link', function (e) {
+        e.preventDefault();
+        const contentId = $(this).closest('tr').data('id');
+        if (contentId === undefined) {
+          console.error('Content ID is undefined for this row:', $(this).closest('tr'));
+          showMessageModal('컨텐츠 ID를 찾을 수 없습니다.');
+          return;
+        }
+        loadDetailContent(contentId);
+      });
+  
+      // 상세 화면 링크 버튼 클릭
+      $('#linkDetail').on('click', function () {
+        const contentId = $('#detailId').val();
+        if (!contentId) {
+          showMessageModal('컨텐츠 ID를 찾을 수 없습니다.');
+          return;
+        }
+        if (!currentTreeId) {
+          showMessageModal('트리 노드를 선택해주세요.');
+          return;
+        }
+        showConfirmModal(`컨텐츠 ID ${contentId}를 링크하시겠습니까?`, function () {
+          $.post('/treecontents/link', { tree_id: currentTreeId, contents_id: contentId }, function () {
+            showMessageModal('컨텐츠가 성공적으로 링크되었습니다.');
+            updateContentsList();
+            $('#linkDetail').hide(); // 링크 성공 후 버튼 숨김
+            $('#detail-tab').tab('show');
+          }).fail(function (xhr, status, error) {
+            console.error('Error linking content:', error);
+            showMessageModal('컨텐츠 링크에 실패했습니다.');
+          });
+        });
+      });
+  
+      // 새 컨텐츠 생성 및 링크
+      $('#saveNewContent').click(function () {
+        if (!currentTreeId) {
+          showMessageModal('트리 노드를 선택해주세요.');
+          return;
+        }
+  
+        const newContent = {
+          title: $('#newTitle').val(),
+          gubun: $('#newGubun').val(),
+          note1: $('#newSummernote').summernote('code'),
+          note2: $('#newNote2').val(),
+          note3: $('#newNote3').val(),
+          status: $('#newStatus').val(),
+          create_user: $('#newCreateUser').val(),
+          assignee: $('#newAssignee').val(),
+          start_date: $('#newStartDate').val(),
+          end_date: $('#newEndDate').val(),
+          plan_date: $('#newPlanDate').val(),
+          memo1: $('#newMemo1').val(),
+          memo2: $('#newMemo2').val()
+        };
+  
+        if (!newContent.title) {
+          showMessageModal('제목은 필수 입력 항목입니다.');
+          return;
+        }
+  
+        $.ajax({
+          url: '/contents/create',
+          method: 'POST',
+          data: newContent,
+          success: function (response) {
+            const newContentId = response.id;
+            $.post('/treecontents/link', { tree_id: currentTreeId, contents_id: newContentId }, function () {
+              showMessageModal('컨텐츠가 생성되고 링크되었습니다.');
+              $('#create-link-tab').tab('show');
+              $('#createContentForm')[0].reset(); // 폼 초기화
+              $('#newSummernote').summernote('reset'); // Summernote 초기화
+              updateContentsList();
+            }).fail(function (xhr, status, error) {
+              console.error('Error linking content:', error);
+              showMessageModal('컨텐츠 링크에 실패했습니다.');
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error('Error creating content:', error);
+            showMessageModal('컨텐츠 생성에 실패했습니다.');
+          }
+        });
+      });
+  
+      // Summernote 초기화
+      $('#detailSummernote').summernote({
+        height: 200,
+        placeholder: '여기에 내용을 입력하세요'
+      });
+      $('#newSummernote').summernote({
+        height: 200,
+        placeholder: '여기에 내용을 입력하세요'
+      });
+  
+      // 상태 코드 로드
+      $.get('/contents/statuscodes', function (statusCodes) {
+        const select = $('#detailStatus, #searchStatus, #newStatus');
+        select.empty();
+        select.append('<option value="">선택</option>');
+        statusCodes.forEach(sc => {
+          select.append(`<option value="${sc.code_value}">${sc.code_name}</option>`);
+        });
+        console.log('Status codes loaded:', statusCodes); // 디버깅용 로그
+      }).fail(function (xhr, status, error) {
+        console.error('Error fetching status codes:', error);
+        showMessageModal('상태 코드를 가져오는 중 오류가 발생했습니다.');
+      });
+  
+      // 탭 변경 시 업데이트
+      $('#dataTabs a').on('shown.bs.tab', function (e) {
+        const href = $(e.target).attr('href');
+        if (href === '#list') {
+          updateContentsList();
+        }
+      });
+    });
+  </script>

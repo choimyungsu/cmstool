@@ -1,237 +1,71 @@
-<DOCUMENT>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.16/themes/default/style.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="/css/custom.css">
+
+    <link rel="stylesheet" href="/css/custom.css">   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.16/themes/default/style.min.css">
 
-        <!-- [Previous links and styles remain unchanged until the main content] -->
-        
-        <style>
-            /* [Previous styles remain unchanged] */
-            body {
-                font-size: 0.75rem;
-                background-color: #f8f9fa;
-                color: #333;
-                height: 100vh;
-                margin: 0;
-            }
-        
-            #tree-container {
-                overflow-y: auto;
-                border: 1px solid #dee2e6;
-                border-radius: 0.25rem;
-                padding: 0.5rem;
-                background-color: #fff;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                height: 100%;
-            }
-        
-            #data-table {
-                background-color: #fff;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                border: none;
-                flex-grow: 1;
-            }
-        
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 0.7rem;
-                table-layout: fixed;
-            }
-        
-            table th,
-            table td {
-                border: 1px solid #e0e0e0;
-                padding: 0.2rem;
-                vertical-align: middle;
-                text-align: left;
-            }
-        
-            table thead th {
-                background-color: #1a2a44;
-                color: #ffffff;
-                font-size: 0.75rem;
-                font-weight: 600;
-                position: sticky;
-                top: 0;
-                z-index: 1;
-            }
-        
-            .selected-row {
-                background-color: #e6ffe6 !important;
-                transition: background-color 0.3s ease;
-            }
-        
-            .hidden {
-                display: none;
-            }
-        
-            table input[type="text"],
-            table input[type="number"] {
-                width: 100%;
-                font-size: 0.7rem;
-                border: 1px solid #ccc;
-                padding: 0.1rem;
-                box-sizing: border-box;
-                background-color: #f1f1f1;
-            }
-        
-            table input[type="text"]::placeholder {
-                color: #999;
-            }
-        
-            .action-btn {
-                cursor: pointer;
-                padding: 0.1rem 0.3rem;
-                margin: 0 0.1rem;
-                font-size: 0.8rem;
-                transition: color 0.2s ease;
-            }
-        
-            .action-btn:hover {
-                color: #007bff;
-            }
-        
-            .text-warning { color: #ffc107; }
-            .text-danger { color: #dc3545; }
-        
-            .nav-tabs .nav-link.active {
-                background-color: #007bff !important;
-                color: white !important;
-            }
-        
-            .nav-tabs .nav-link:hover {
-                background-color: #f8f9fa;
-            }
-        
-            /* .custom-container {
-                padding: 1rem;
-                background-color: #ffffff;
-                border-radius: 0.5rem;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-            } */
 
-            
-        
-            @media (max-width: 768px) {
-                .col-md-3,
-                .col-md-9 {
-                    flex: 0 0 100%;
-                    max-width: 100%;
-                }
-            }
-        
-            .gantt-controls {
-                padding: 0.5rem 0;
-                background-color: #fff;
-                border-bottom: 1px solid #dee2e6;
-                z-index: 10;
-            }
-        
-            #nav-gantt {
-                height: 100%;
-                width: 100%;
-            }
-        
-            .tab-pane {
-                position: relative;
-                flex-grow: 1;
-                display: flex;
-                flex-direction: column;
-            }
-        
-            .row {
-                height: 100%;
-            }
-        
-            /* Add style for indented tasks */
-            .task-indent {
-                padding-left: 1rem; /* Base indentation */
-            }
-            .task-indent-1 { padding-left: 2rem; }
-            .task-indent-2 { padding-left: 3rem; }
-            .task-indent-3 { padding-left: 4rem; }
-            /* Add more levels as needed */
-        </style>
-        
-        <main class="content">
-            <div class="container-fluid">
-                <div class="row mb-2">
-                    <div class="container custom-container">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="mb-2">
-                                    <button id="addNode" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i></button>
-                                    <button id="editNode" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button>
-                                    <button id="deleteNode" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                                    <button id="expandAll" class="btn btn-success btn-sm"><i class="fas fa-expand"></i></button>
-                                </div>
-                                <div id="tree-container" class="p-2">
-                                    <div id="jstree"></div>
-                                </div>
+    <main class="content">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="container custom-container">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="mb-2 d-flex">
+                                <button id="addNode" class="btn btn-primary btn-sm me-2"><i class="fas fa-plus"></i></button>
+                                <button id="editNode" class="btn btn-warning btn-sm me-2"><i class="fas fa-edit"></i></button>
+                                <button id="deleteNode" class="btn btn-danger btn-sm me-2"><i class="fas fa-trash"></i></button>
+                                <button id="expandAll" class="btn btn-success btn-sm me-2"><i class="fas fa-expand"></i></button>
+                                <button id="collapseAll" class="btn btn-success btn-sm me-2"><i class="fas fa-compress"></i></button>
+                                <!-- 검색 입력창 추가 -->
+                                <input type="text" id="treeSearch" class="form-control form-control-sm" placeholder="노드 검색" style="width: 150px;">
                             </div>
-                            <div class="col-md-9">
-                                <div id="data-table" class="p-2">
-                                    <ul class="nav nav-tabs" id="dataTabs" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link active" id="schedule-tab" data-bs-toggle="tab" href="#schedule" role="tab">일정</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link" id="gantt-tab" data-bs-toggle="tab" href="#gantt" role="tab">간트챠트</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content" id="dataTabContent">
-                                        <div class="tab-pane fade show active" id="schedule" role="tabpanel">
-                                            <table>
-                                                <thead>
-                                                    <tr>
-                                                        <th class="hidden">ID</th>
-                                                        <th width="40%">Task</th>
-                                                        <th>시작일</th>
-                                                        <th>종료일</th>
-                                                        <th>진척율</th>
-                                                        <th>담당자</th>
-                                                        <th>수정/삭제</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="table-body"></tbody>
-                                            </table>
-                                        </div>
-                                        <div class="tab-pane fade" id="gantt" role="tabpanel">
-                                            <div class="gantt-controls mb-3">
-                                                <div>
-                                                    <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-day" data-mode="Day">Day</button>
-                                                    <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-week" data-mode="Week">Week</button>
-                                                    <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-month" data-mode="Month">Month</button>
-                                                </div>
-                                            </div>
-                                            <div style="min-height: 400px; position: relative;">
-                                                <div id="nav-gantt" style="height: 100%;"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div id="tree-container" class="p-2">
+                                <div id="jstree"></div>
                             </div>
                         </div>
-        
-                        <!-- Modal for Delete Confirmation -->
-                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteModalLabel">노드 삭제 확인</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="col-md-9">
+                            <div id="data-table" class="p-2">
+                                <ul class="nav nav-tabs" id="dataTabs" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="schedule-tab" data-bs-toggle="tab" href="#schedule" role="tab">일정</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="gantt-tab" data-bs-toggle="tab" href="#gantt" role="tab">간트챠트</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="dataTabContent">
+                                    <div class="tab-pane fade show active" id="schedule" role="tabpanel">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th class="hidden">ID</th>
+                                                    <th width="40%">Task</th>
+                                                    <th>시작일</th>
+                                                    <th>종료일</th>
+                                                    <th>진척율</th>
+                                                    <th>담당자</th>
+                                                    <th>수정/삭제</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table-body"></tbody>
+                                        </table>
                                     </div>
-                                    <div class="modal-body">
-                                        이 노드를 삭제하시겠습니까? 하위 노드도 함께 삭제됩니다.
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                                        <button type="button" class="btn btn-danger" id="confirmDelete">삭제</button>
+                                    <div class="tab-pane fade" id="gantt" role="tabpanel">
+                                        <div class="gantt-controls mb-3">
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-day" data-mode="Day">Day</button>
+                                                <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-week" data-mode="Week">Week</button>
+                                                <button class="btn btn-sm btn-outline-primary view-mode-btn" id="view-month" data-mode="Month">Month</button>
+                                                <!-- 엑셀 다운로드 버튼 추가 -->
+                                                <button class="btn btn-sm btn-outline-success" id="downloadExcel">엑셀 다운로드</button>
+                                                <!-- 엑셀 업로드 버튼 및 입력 추가 -->
+                                                <input type="file" id="uploadExcel" accept=".xlsx, .xls" style="display: none;">
+                                                <button class="btn btn-sm btn-outline-success" id="uploadExcelBtn">엑셀 업로드</button>
+                                            </div>
+                                        </div>
+                                        <div style="min-height: 400px; position: relative;">
+                                            <div id="nav-gantt" style="height: 100%;"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -239,18 +73,197 @@
                     </div>
                 </div>
             </div>
-        </main>
-        
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.16/jstree.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.min.js"></script>
-        
-        <script>
+        </div>
+    </main>
+
+    <!-- Modal for Delete Confirmation -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">노드 삭제 확인</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    이 노드를 삭제하시겠습니까? 하위 노드도 함께 삭제됩니다.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">삭제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <style>
+
+        #tree-container {
+            overflow-y: auto;
+            font-size: 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 0.5rem;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        #data-table {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: none;
+            flex-grow: 1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+            table-layout: fixed;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #e0e0e0;
+            padding: 0.2rem;
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        table thead th {
+            background-color: #1a2a44;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .selected-row {
+            background-color: #e6ffe6 !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table input[type="text"],
+        table input[type="number"] {
+            width: 100%;
+            font-size: 0.7rem;
+            border: 1px solid #ccc;
+            padding: 0.1rem;
+            box-sizing: border-box;
+            background-color: #f1f1f1;
+        }
+
+        table input[type="text"]::placeholder {
+            color: #999;
+        }
+
+        .action-btn {
+            cursor: pointer;
+            padding: 0.1rem 0.3rem;
+            margin: 0 0.1rem;
+            font-size: 0.8rem;
+            transition: color 0.2s ease;
+        }
+
+        .action-btn:hover {
+            color: #007bff;
+        }
+
+        .text-warning {
+            color: #ffc107;
+        }
+
+        .text-danger {
+            color: #dc3545;
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: #007bff !important;
+            color: white !important;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background-color: #f8f9fa;
+        }
+
+        .custom-container {
+            border: 1px solid gray;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+
+
+        /* @media (max-width: 768px) {
+                .col-md-3,
+                .col-md-9 {
+                    flex: 0 0 100%;
+                    max-width: 100%;
+                }
+            } */
+
+        .gantt-controls {
+            padding: 0.5rem 0;
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            z-index: 10;
+        }
+
+        #nav-gantt {
+            height: 100%;
+            width: 100%;
+        }
+
+        .tab-pane {
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .row {
+            height: 100%;
+        }
+
+        /* Add style for indented tasks */
+        .task-indent {
+            padding-left: 1rem;
+            /* Base indentation */
+        }
+
+        .task-indent-1 {
+            padding-left: 2rem;
+        }
+
+        .task-indent-2 {
+            padding-left: 3rem;
+        }
+
+        .task-indent-3 {
+            padding-left: 4rem;
+        }
+
+        /* Add more levels as needed */
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.16/jstree.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
         $(document).ready(function () {
             let ganttData = [];
             let ganttInstance = null;
-        
+
             // Enhanced date normalization function
             function normalizeDate(dateStr) {
                 if (!dateStr) return '';
@@ -265,7 +278,7 @@
                 }
                 return date.toISOString().split('T')[0];
             }
-        
+
             // Calculate node depth recursively
             function getNodeDepth(nodeId, treeInstance) {
                 let depth = 0;
@@ -276,7 +289,7 @@
                 }
                 return depth;
             }
-        
+
             // jstree 초기화
             $('#jstree').jstree({
                 'core': {
@@ -296,9 +309,19 @@
                     },
                     'check_callback': true
                 },
-                'plugins': ['dnd']
+                'plugins': ['dnd', 'search'], // search 플러그인 추가
+                'search': {
+                    'show_only_matches': true, // 검색 결과만 표시
+                    'show_only_matches_children': true // 하위 노드도 표시
+                }
             });
-        
+
+            // 검색 기능 구현
+        $('#treeSearch').on('keyup', function () {
+            const searchString = $(this).val();
+            $('#jstree').jstree(true).search(searchString);
+        });
+
             // 트리 데이터를 계층 구조로 변환
             function buildTree(data) {
                 const map = {};
@@ -315,13 +338,13 @@
                 });
                 return roots;
             }
-        
+
             // Gantt 차트용 데이터로 변환 (평탄화)
             function flattenForGantt(data) {
                 return data
                     .map(node => {
-                        const progress = node.progress !== undefined && node.progress !== null 
-                            ? parseInt(node.progress, 10) 
+                        const progress = node.progress !== undefined && node.progress !== null
+                            ? parseInt(node.progress, 10)
                             : 0;
                         return {
                             id: String(node.id),
@@ -334,7 +357,7 @@
                     })
                     .filter(task => task.start && task.end);
             }
-        
+
             // Gantt 차트 렌더링 함수
             function renderGanttChart(viewMode = 'Day') {
                 const ganttContainer = $('#nav-gantt');
@@ -359,7 +382,7 @@
                     ganttContainer.html('<p class="mt-3">간트 차트 렌더링 오류</p>');
                 }
             }
-        
+
             // 테이블 갱신 함수
             function updateTable() {
                 const treeInstance = $('#jstree').jstree(true);
@@ -369,8 +392,8 @@
                     const data = node.data || {};
                     const startDate = data.start_date ? normalizeDate(data.start_date) : '';
                     const endDate = data.end_date ? normalizeDate(data.end_date) : '';
-                    const progress = (data.progress !== undefined && data.progress !== null && !isNaN(parseInt(data.progress, 10))) 
-                        ? parseInt(data.progress, 10) 
+                    const progress = (data.progress !== undefined && data.progress !== null && !isNaN(parseInt(data.progress, 10)))
+                        ? parseInt(data.progress, 10)
                         : 0; // Ensure progress is a valid number
                     const assignee = data.assignee || '';
                     const depth = getNodeDepth(node.id, treeInstance);
@@ -403,7 +426,7 @@
                 }
                 matchHeights();
             }
-        
+
             // 트리와 테이블 높이 맞추기
             function matchHeights() {
                 const treeContainer = $('#tree-container');
@@ -411,22 +434,37 @@
                 const tableHeight = tableContainer.outerHeight();
                 treeContainer.css('height', tableHeight + 'px');
             }
-        
+
             // 모든 노드 펼치기 함수
             function expandAllNodes() {
                 $('#jstree').jstree(true).open_all();
             }
-        
+
+            // 모든 노드 닫기 함수 (추가)
+            function collapseAllNodes() {
+                $('#jstree').jstree(true).close_all();
+            }
+
+            // 모든 노드 펼치기 버튼 클릭 이벤트
+            $('#expandAll').click(function () {
+                expandAllNodes();
+            });
+
+            // 모든 노드 닫기 버튼 클릭 이벤트 (추가)
+            $('#collapseAll').click(function () {
+                collapseAllNodes();
+            });
+
             // 초기 테이블 렌더링
             $('#jstree').on('ready.jstree', updateTable);
-        
+
             // 노드 선택 시 테이블 행 강조
             $('#jstree').on('select_node.jstree', function (e, data) {
                 let selectedId = data.node.id;
                 $('#table-body tr').removeClass('selected-row');
                 $(`#table-body tr[data-id="${selectedId}"]`).addClass('selected-row');
             });
-        
+
             // 드래그앤드랍 후 전체 업데이트
             $('#jstree').on('move_node.jstree', function (e, data) {
                 const nodeId = data.node.id;
@@ -443,7 +481,7 @@
                     }
                 });
             });
-        
+
             // 노드 이름 변경 시 테이블 즉시 반영 및 DB 업데이트
             $('#jstree').on('rename_node.jstree', function (e, data) {
                 let nodeId = data.node.id;
@@ -451,7 +489,7 @@
                 $(`#row-${nodeId} td:nth-child(2)`).text(newText);
                 updateNodeInDB(nodeId);
             });
-        
+
             // 노드 더블클릭 시 수정 모드
             $('#jstree').on('dblclick.jstree', function (e) {
                 const instance = $.jstree.reference(e.target);
@@ -460,20 +498,153 @@
                     instance.edit(node);
                 }
             });
-        
-            // 테이블 입력 변경 시 DB 업데이트
-            $('#table-body').on('change blur', 'input', function () {
-                const nodeId = $(this).closest('tr').data('id');
-                const input = $(this);
-                const isAssignee = input.hasClass('assignee-input');
-                const newValue = input.val();
-                console.log(`Change/Blur detected on node ${nodeId}, isAssignee: ${isAssignee}, new value: ${newValue}`);
-                if (isAssignee) {
-                    input.val(newValue); // Immediate feedback
-                }
-                updateNodeInDB(nodeId);
+
+            // 테이블 입력 변경 시 즉시 DB 업데이트 -- 화면로딩이 번거로워서 없앴음
+            // $('#table-body').on('change blur', 'input', function () {
+            //     const nodeId = $(this).closest('tr').data('id');
+            //     const input = $(this);
+            //     const isAssignee = input.hasClass('assignee-input');
+            //     const newValue = input.val();
+            //     console.log(`Change/Blur detected on node ${nodeId}, isAssignee: ${isAssignee}, new value: ${newValue}`);
+            //     if (isAssignee) {
+            //         input.val(newValue); // Immediate feedback
+            //     }
+            //     updateNodeInDB(nodeId);
+            // });
+
+
+
+            // 엑셀 다운로드 기능
+            $('#downloadExcel').click(function () {
+                const treeInstance = $('#jstree').jstree(true);
+                const nodes = treeInstance.get_json('#', { flat: true });
+                const excelData = nodes.map(node => {
+                    const data = node.data || {};
+                    return {
+                        'ID': node.id,
+                        'Parent ID': node.parent === '#' ? '' : node.parent,
+                        'Task': node.text,
+                        'Start Date': data.start_date ? normalizeDate(data.start_date) : '',
+                        'End Date': data.end_date ? normalizeDate(data.end_date) : '',
+                        'Progress': (data.progress !== undefined && data.progress !== null) ? parseInt(data.progress, 10) : 0,
+                        'Assignee': data.assignee || ''
+                    };
+                });
+
+                const ws = XLSX.utils.json_to_sheet(excelData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "WBS");
+                XLSX.writeFile(wb, "WBS_Data.xlsx");
             });
-        
+
+            // 엑셀 업로드 기능
+            $('#uploadExcelBtn').click(function () {
+                $('#uploadExcel').click();
+            });
+
+            $('#uploadExcel').change(function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+                    // 서버로 업로드할 데이터 준비
+                    const uploadData = jsonData.map(row => ({
+                        id: row['ID'] ? String(row['ID']) : null,
+                        parent_id: row['Parent ID'] ? String(row['Parent ID']) : null,
+                        task: row['Task'] || 'Unnamed Task',
+                        start_date: row['Start Date'] || null,
+                        end_date: row['End Date'] || null,
+                        progress: row['Progress'] !== undefined ? parseInt(row['Progress']) : 0,
+                        assignee: row['Assignee'] || ''
+                    }));
+
+                    console.log("uploadDate", uploadData );
+
+                    // 서버에 데이터 전송
+                    $.ajax({
+                        url: '/treewbs/upload',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(uploadData),
+                        success: function (response) {
+                            console.log('Upload successful:', response);
+                            $('#jstree').jstree(true).refresh(); // 트리 새로고침
+                            updateTable();
+                            renderGanttChart();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Upload failed:', error);
+                            alert('엑셀 업로드에 실패했습니다.');
+                        }
+                    });
+
+                    // 파일 입력 초기화
+                    $('#uploadExcel').val('');
+                };
+                reader.readAsArrayBuffer(file);
+            });
+
+            // 테이블에서 수정 버튼 클릭 시 DB 업데이트
+        $(document).on('click', '.edit-row', function () {
+            let nodeId = $(this).data('id');
+            // 트리에서 노드 편집 모드로 전환 (기존 기능 유지)
+            $('#jstree').jstree(true).edit(nodeId);
+            // 행의 입력값을 읽고 DB 업데이트
+            updateNodeInDB(nodeId);
+        });
+
+        // DB 업데이트 헬퍼 함수
+        function updateNodeInDB(nodeId) {
+            const row = $(`#row-${nodeId}`);
+            const node = {
+                task: row.find('td:nth-child(2)').text(),
+                start_date: row.find('input[type="text"]').eq(0).val() || null,
+                end_date: row.find('input[type="text"]').eq(1).val() || null,
+                progress: row.find('input[type="number"]').val() || 0,
+                assignee: row.find('input.assignee-input').val() || ''
+            };
+            console.log(`Sending update for node ${nodeId} with data:`, node);
+            $.ajax({
+                url: `/treewbs/update/${nodeId}`,
+                method: 'PUT',
+                data: node,
+                success: function (response) {
+                    console.log(`Update successful for node ${nodeId}, response:`, response);
+                    const treeInstance = $('#jstree').jstree(true);
+                    const treeNode = treeInstance.get_node(nodeId);
+                    if (treeNode && treeNode.data) {
+                        treeNode.data = {
+                            ...treeNode.data,
+                            start_date: node.start_date,
+                            end_date: node.end_date,
+                            progress: node.progress,
+                            assignee: node.assignee
+                        };
+                        console.log(`Updated treeNode.data for ${nodeId}:`, treeNode.data);
+                    } else {
+                        console.warn(`Tree node ${nodeId} not found or has no data`);
+                    }
+                    updateTable();
+                    const assigneeInput = $(`#row-${nodeId} td:nth-child(6) input`);
+                    assigneeInput.val(node.assignee);
+                    console.log(`Forced assignee update for node ${nodeId} to: ${node.assignee}`);
+                },
+                error: function (xhr, status, error) {
+                    console.error(`Error updating node ${nodeId}:`, error);
+                    const inputs = row.find('input');
+                    inputs.each(function () {
+                        $(this).val($(this).data('original'));
+                    });
+                }
+            });
+        }
+
             // 노드 추가
             $('#addNode').click(function () {
                 let ref = $('#jstree').jstree(true);
@@ -488,19 +659,16 @@
                     console.error('Error creating node:', error);
                 });
             });
-        
+
             // 노드 수정 (트리에서)
             $('#editNode').click(function () {
                 let ref = $('#jstree').jstree(true);
                 let sel = ref.get_selected();
                 if (sel.length) ref.edit(sel[0]);
             });
-        
-            // 모든 노드 펼치기 버튼 클릭 이벤트
-            $('#expandAll').click(function () {
-                expandAllNodes();
-            });
-        
+
+            
+
             // 모달로 노드 삭제 확인
             let nodeToDelete = null;
             function showDeleteModal(nodeId) {
@@ -523,88 +691,43 @@
                     });
                 }
             });
-        
+
             // 트리에서 삭제 버튼
             $('#deleteNode').click(function () {
                 let ref = $('#jstree').jstree(true);
                 let sel = ref.get_selected();
                 if (sel.length) showDeleteModal(sel[0]);
             });
-        
+
             // 테이블에서 삭제 버튼
             $(document).on('click', '.delete-row', function () {
                 showDeleteModal($(this).data('id'));
             });
-        
+
             // 테이블에서 수정 버튼
             $(document).on('click', '.edit-row', function () {
                 let nodeId = $(this).data('id');
                 $('#jstree').jstree(true).edit(nodeId);
             });
-        
-            // DB 업데이트 헬퍼 함수
-            function updateNodeInDB(nodeId) {
-                const row = $(`#row-${nodeId}`);
-                const node = {
-                    task: row.find('td:nth-child(2)').text(),
-                    start_date: row.find('input[type="text"]').eq(0).val() || null,
-                    end_date: row.find('input[type="text"]').eq(1).val() || null,
-                    progress: row.find('input[type="number"]').val() || 0,
-                    assignee: row.find('input.assignee-input').val() || ''
-                };
-                console.log(`Sending update for node ${nodeId} with data:`, node);
-                $.ajax({
-                    url: `/treewbs/update/${nodeId}`,
-                    method: 'PUT',
-                    data: node,
-                    success: function (response) {
-                        console.log(`Update successful for node ${nodeId}, response:`, response);
-                        const treeInstance = $('#jstree').jstree(true);
-                        const treeNode = treeInstance.get_node(nodeId);
-                        if (treeNode && treeNode.data) {
-                            treeNode.data = {
-                                ...treeNode.data,
-                                start_date: node.start_date,
-                                end_date: node.end_date,
-                                progress: node.progress,
-                                assignee: node.assignee
-                            };
-                            console.log(`Updated treeNode.data for ${nodeId}:`, treeNode.data);
-                        } else {
-                            console.warn(`Tree node ${nodeId} not found or has no data`);
-                        }
-                        updateTable();
-                        const assigneeInput = $(`#row-${nodeId} td:nth-child(6) input`);
-                        assigneeInput.val(node.assignee);
-                        console.log(`Forced assignee update for node ${nodeId} to: ${node.assignee}`);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error(`Error updating node ${nodeId}:`, error);
-                        const inputs = row.find('input');
-                        inputs.each(function () {
-                            $(this).val($(this).data('original'));
-                        });
-                    }
-                });
-            }
-        
+
+            
+
             // 탭 변경 시 Gantt 차트 렌더링
             $('#dataTabs a').on('shown.bs.tab', function (e) {
                 if ($(e.target).attr('href') === '#gantt') {
                     renderGanttChart();
                 }
             });
-        
+
             // 뷰 모드 버튼 처리
             $('.view-mode-btn').on('click', function () {
                 const viewMode = $(this).data('mode');
                 renderGanttChart(viewMode);
             });
-        
+
             // 창 크기 변경 시 높이 재조정
             $(window).resize(function () {
                 matchHeights();
             });
         });
-        </script>
-        </DOCUMENT>
+    </script>

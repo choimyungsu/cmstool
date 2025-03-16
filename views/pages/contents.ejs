@@ -1,0 +1,620 @@
+<!-- contents.ejs (HTML 및 CSS는 수정된 부분만 포함, <script> 부분도 일부 수정) -->
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { border: 1px solid #dee2e6; padding: 8px; text-align: left; }
+    th { background-color: #1a2a44; color: white; }
+    .action-btn { cursor: pointer; margin-right: 10px; }
+    .text-warning { color: #ffc107; }
+    .text-danger { color: #dc3545; }
+    textarea { width: 100%; min-height: 100px; }
+
+    /* 탭 콘텐츠 스타일 */
+    .tab-content { padding: 20px; }
+
+    /* 탭 스타일 (Bootstrap 기본 색상 유지 및 비활성 탭 회색 처리) */
+    .nav-tabs .nav-link {
+        border: 1px solid #dee2e6;
+        color: #6c757d; /* 비활성 탭 회색 */
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #007bff; /* Bootstrap 기본 파란색 */
+        color: white;
+        border-color: #007bff;
+    }
+    .nav-tabs .nav-link:hover:not(.active) {
+        background-color: #e9ecef; /* 호버 시 약간 밝은 회색 */
+        color: #495057;
+    }
+
+    /* 탭 간 간격 */
+    .nav-tabs .nav-item {
+        margin-right: 10px; /* 탭 간 간격 */
+    }
+
+    /* 검색 영역 스타일 */
+    #searchSectionWrapper {
+        border: 1px solid #dee2e6; /* 회색 보더 */
+        border-radius: 10px; /* 라운딩 */
+        margin-bottom: 20px;
+    }
+    #searchSection {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 0;
+        display: none; /* 초기에는 접힌 상태 */
+    }
+    #searchToggleBtn {
+        width: 100%;
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1rem;
+    }
+    #searchToggleBtn:hover {
+        background: #0056b3;
+    }
+    .search-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    .search-row input, .search-row select {
+        flex: 1;
+        padding: 6px 10px;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+    }
+
+    /* 폼 스타일 */
+    #contentForm {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        width: 100%; /* 화면 100% 너비 */
+    }
+
+    /* 폼 라벨과 입력란 스타일 */
+    .form-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+    }
+    .form-row label {
+        width: 100px;
+        margin-right: 5px;
+        color: #333;
+        font-weight: 600;
+    }
+    .form-control {
+        flex: 1;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        transition: border-color 0.3s;
+    }
+    .form-control:focus {
+        border-color: #6c63ff;
+        box-shadow: 0 0 5px rgba(108, 99, 255, 0.3);
+    }
+
+    /* Summernote 스타일 */
+    #summernote {
+        flex: 1;
+    }
+    .note-editor {
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+    }
+
+    /* 한 줄에 세 개 필드 배치 */
+    .form-row-triple {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 12px;
+    }
+    .form-row-triple > div {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+    .form-row-triple label {
+        width: 100px;
+        margin-right: 5px;
+        font-size: 0.85rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+    /* 버튼 스타일 */
+    .btn-primary, .btn-danger, .btn-new {
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        transition: transform 0.2s, background-color 0.3s;
+    }
+    .btn-primary {
+        background: linear-gradient(90deg, #6c63ff 0%, #4e46e5 100%);
+        border: none;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(90deg, #4e46e5 0%, #6c63ff 100%);
+        transform: translateY(-2px);
+    }
+    .btn-danger {
+        background: linear-gradient(90deg, #ff6b6b 0%, #ee5253 100%);
+        border: none;
+    }
+    .btn-danger:hover {
+        background: linear-gradient(90deg, #ee5253 0%, #ff6b6b 100%);
+        transform: translateY(-2px);
+    }
+    .btn-new {
+        background: linear-gradient(90deg, #28a745 0%, #218838 100%); /* 초록색 계열 */
+        border: none;
+        margin-right: 10px;
+    }
+    .btn-new:hover {
+        background: linear-gradient(90deg, #218838 0%, #28a745 100%);
+        transform: translateY(-2px);
+    }
+
+    /* 페이징 스타일 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .pagination button {
+        padding: 5px 10px;
+        margin: 0 5px;
+        border: 1px solid #dee2e6;
+        background: white;
+        cursor: pointer;
+    }
+    .pagination button.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    .pagination button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    
+</style>
+
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+                <div class="container-fluid mt-3">
+                    <!-- 검색 영역 (탭 위로 이동) -->
+                    <div id="searchSectionWrapper">
+                        <button id="searchToggleBtn">
+                            <span><i class="fas fa-search"></i> Search</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="searchSection">
+                            <div class="search-row">
+                                <input type="text" id="integratedSearch" placeholder="통합 검색 (Title, Note1, Note2, Note3, Memo1, Memo2)">
+                            </div>
+                            <div class="search-row">
+                                <select id="searchStatus">
+                                    <option value="">Status 선택</option>
+                                    <% statusCodes.forEach(sc => { %>
+                                        <option value="<%= sc.code_value %>"><%= sc.code_name %></option>
+                                    <% }); %>
+                                </select>
+                                <input type="text" id="searchCreateUser" placeholder="Create User">
+                                <input type="text" id="searchAssignee" placeholder="Assignee">
+                            </div>
+                            <button id="searchBtn" class="btn btn-primary">검색</button>
+                        </div>
+                    </div>
+
+                    <!-- 탭 네비게이션 -->
+                    <ul class="nav nav-tabs" id="contentTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="list-tab" data-bs-toggle="tab" data-bs-target="#list" type="button" role="tab">리스트</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab">추가</button>
+                        </li>
+                    </ul>
+
+                    <!-- 탭 콘텐츠 -->
+                    <div class="tab-content" id="contentTabContent">
+                        <!-- 리스트 탭 -->
+                        <div class="tab-pane fade show active" id="list" role="tabpanel">
+                            <!-- 리스트 테이블 -->
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <!-- ID 열 제거 -->
+                                        <th>Title</th>
+                                        <th>Gubun</th>
+                                        <th>Status</th>
+                                        <th>Create User</th>
+                                        <th>Assignee</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Plan Date</th>
+                                        <th>Memo1</th>
+                                        <th>Memo2</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contentsTable"></tbody>
+                            </table>
+
+                            <!-- 페이징 -->
+                            <div class="pagination" id="pagination"></div>
+                        </div>
+
+                        <!-- 추가 탭 -->
+                        <div class="tab-pane fade" id="add" role="tabpanel">
+                            <form id="contentForm" class="p-4">
+                                <input type="hidden" id="editId">
+                                <div class="form-row">
+                                    <label for="editTitle">Title</label>
+                                    <input type="text" class="form-control" id="editTitle">
+                                </div>
+                                <div class="form-row">
+                                    <label for="editGubun">Gubun</label>
+                                    <input type="text" class="form-control" id="editGubun">
+                                </div>
+                                <div class="form-row">
+                                    <label for="editNote1">Note1</label>
+                                    <div id="summernote"></div>
+                                </div>
+                                <div class="form-row">
+                                    <label for="editNote2">Note2</label>
+                                    <textarea class="form-control" id="editNote2"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <label for="editNote3">Note3</label>
+                                    <textarea class="form-control" id="editNote3"></textarea>
+                                </div>
+                                <!-- Status, Create User, Assignee 한 줄 -->
+                                <div class="form-row-triple">
+                                    <div>
+                                        <label for="editStatus">Status</label>
+                                        <select class="form-control" id="editStatus">
+                                            <option value="">선택</option>
+                                            <% statusCodes.forEach(sc => { %>
+                                                <option value="<%= sc.code_value %>"><%= sc.code_name %></option>
+                                            <% }); %>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="editCreateUser">Create User</label>
+                                        <input type="text" class="form-control" id="editCreateUser">
+                                    </div>
+                                    <div>
+                                        <label for="editAssignee">Assignee</label>
+                                        <input type="text" class="form-control" id="editAssignee">
+                                    </div>
+                                </div>
+                                <!-- Start Date, End Date, Plan Date 한 줄 -->
+                                <div class="form-row-triple">
+                                    <div>
+                                        <label for="editStartDate">Start Date</label>
+                                        <input type="text" class="form-control" id="editStartDate">
+                                    </div>
+                                    <div>
+                                        <label for="editEndDate">End Date</label>
+                                        <input type="text" class="form-control" id="editEndDate">
+                                    </div>
+                                    <div>
+                                        <label for="editPlanDate">Plan Date</label>
+                                        <input type="text" class="form-control" id="editPlanDate">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label for="editMemo1">Memo1</label>
+                                    <input type="text" class="form-control" id="editMemo1">
+                                </div>
+                                <div class="form-row">
+                                    <label for="editMemo2">Memo2</label>
+                                    <input type="text" class="form-control" id="editMemo2">
+                                </div>
+                                <div class="text-center mt-4">
+                                    <button type="button" id="newContent" class="btn btn-new me-2">신규 생성</button>
+                                    <button type="button" id="saveContent" class="btn btn-primary me-2">저장</button>
+                                    <button type="button" id="deleteContent" class="btn btn-danger">삭제</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+<!-- contents.ejs (HTML 및 CSS는 동일, <script> 부분만 수정) -->
+    <!-- contents.ejs (HTML 및 CSS는 동일, <script> 부분만 수정) -->
+<script>
+    $(document).ready(function () {
+        const statusCodes = '<%- JSON.stringify(statusCodes) %>';
+        const itemsPerPage = 10; // 페이지당 항목 수
+        let currentPage = 1;
+        let totalItems = 0;
+        let allData = [];
+        let end;
+
+        // Summernote 초기화
+        $('#summernote').summernote({
+            height: 200,
+            placeholder: '여기에 내용을 입력하세요'
+        });
+
+        // 검색 영역 토글 및 아이콘 변경
+        $('#searchToggleBtn').click(function () {
+            $('#searchSection').slideToggle();
+            const icon = $(this).find('.fa-chevron-down, .fa-chevron-up');
+            icon.toggleClass('fa-chevron-down fa-chevron-up');
+        });
+
+        // 데이터 로드 및 필터링
+        function loadContents(page = 1) {
+            currentPage = page; // 현재 페이지 업데이트
+            const integratedSearch = $('#integratedSearch').val().toLowerCase();
+            const searchStatus = $('#searchStatus').val();
+            const searchCreateUser = $('#searchCreateUser').val().toLowerCase();
+            const searchAssignee = $('#searchAssignee').val().toLowerCase();
+
+            $.get('/contents/data', function (data) {
+                allData = data || []; // 데이터가 null일 경우 빈 배열로 초기화
+
+                // 필터링
+                let filteredData = allData.filter(content => {
+                    const matchesIntegrated = !integratedSearch || 
+                        (content.title?.toLowerCase().includes(integratedSearch) ||
+                         content.note1?.toLowerCase().includes(integratedSearch) ||
+                         content.note2?.toLowerCase().includes(integratedSearch) ||
+                         content.note3?.toLowerCase().includes(integratedSearch) ||
+                         content.memo1?.toLowerCase().includes(integratedSearch) ||
+                         content.memo2?.toLowerCase().includes(integratedSearch));
+                    const matchesStatus = !searchStatus || content.status === searchStatus;
+                    const matchesCreateUser = !searchCreateUser || content.create_user?.toLowerCase().includes(searchCreateUser);
+                    const matchesAssignee = !searchAssignee || content.assignee?.toLowerCase().includes(searchAssignee);
+
+                    return matchesIntegrated && matchesStatus && matchesCreateUser && matchesAssignee;
+                });
+
+                totalItems = filteredData.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+                // 페이지별 데이터 슬라이싱
+                const start = (page - 1) * itemsPerPage;
+                end = start + itemsPerPage;
+                const paginatedData = filteredData.slice(start, end);
+
+                // 테이블 업데이트
+                const tbody = $('#contentsTable');
+                tbody.empty();
+                paginatedData.forEach(content => {
+                    tbody.append(`
+                        <tr data-id="${content.id}">
+                            <td><a href="#" class="content-link" data-id="${content.id}">${content.title || ''}</a></td>
+                            <td>${content.gubun || ''}</td>
+                            <td>${content.status || ''}</td>
+                            <td>${content.create_user || ''}</td>
+                            <td>${content.assignee || ''}</td>
+                            <td>${content.start_date || ''}</td>
+                            <td>${content.end_date || ''}</td>
+                            <td>${content.plan_date || ''}</td>
+                            <td>${content.memo1 || ''}</td>
+                            <td>${content.memo2 || ''}</td>
+                            <td>
+                                <i class="fas fa-edit action-btn text-warning edit-row" data-id="${content.id}"></i>
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                // 페이징 업데이트
+                updatePagination(totalPages, page);
+            }).fail(function (xhr, status, error) {
+                console.error('Error loading contents:', error);
+                alert('데이터를 불러오는 데 실패했습니다.');
+            });
+        }
+
+        // 페이징 버튼 생성
+        function updatePagination(totalPages, currentPage) {
+            const pagination = $('#pagination');
+            pagination.empty();
+
+            // 이전 버튼
+            pagination.append(`
+                <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>이전</button>
+            `);
+
+            // 페이지 번호
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.append(`
+                    <button class="page-number ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>
+                `);
+            }
+
+            // 다음 버튼
+            pagination.append(`
+                <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>다음</button>
+            `);
+
+            // 이벤트 바인딩
+            $('.prev-page').on('click', function () {
+                if (currentPage > 1) {
+                    loadContents(currentPage - 1);
+                }
+            });
+
+            $('.next-page').on('click', function () {
+                if (currentPage < totalPages) {
+                    loadContents(currentPage + 1);
+                }
+            });
+
+            $('.page-number').on('click', function () {
+                const page = parseInt($(this).data('page'));
+                loadContents(page);
+            });
+        }
+
+        // 초기 로드
+        loadContents();
+
+        // 검색 버튼 클릭
+        $('#searchBtn').click(function () {
+            currentPage = 1; // 검색 시 첫 페이지로 리셋
+            loadContents();
+        });
+
+        // 편집 버튼 및 Title 링크 클릭 (추가 탭으로 전환)
+        $(document).on('click', '.edit-row, .content-link', function (e) {
+            e.preventDefault(); // 링크 기본 동작 방지
+            const id = $(this).data('id');
+            // id가 유효한지 확인
+            if (!id || id === 'undefined') {
+                console.error('Invalid content ID:', id);
+                alert('유효하지 않은 콘텐츠 ID입니다.');
+                return;
+            }
+            $.get(`/contents/data?id=${id}`, function (data) {
+                // data가 배열이 아닌 단일 객체로 반환된다고 가정
+                const content = data; // data.find() 대신 직접 data 사용
+                if (content && content.id == id) { // id 일치 여부 확인
+                    $('#editId').val(content.id);
+                    $('#editTitle').val(content.title || '');
+                    $('#editGubun').val(content.gubun || '');
+                    $('#summernote').summernote('code', content.note1 || '');
+                    $('#editNote2').val(content.note2 || '');
+                    $('#editNote3').val(content.note3 || '');
+                    $('#editStatus').val(content.status || '');
+                    $('#editCreateUser').val(content.create_user || '');
+                    $('#editAssignee').val(content.assignee || '');
+                    $('#editStartDate').val(content.start_date || '');
+                    $('#editEndDate').val(content.end_date || '');
+                    $('#editPlanDate').val(content.plan_date || '');
+                    $('#editMemo1').val(content.memo1 || '');
+                    $('#editMemo2').val(content.memo2 || '');
+                    $('#add-tab').tab('show'); // 추가 탭으로 전환
+                } else {
+                    console.error('Content not found for ID:', id);
+                    alert('해당 콘텐츠를 찾을 수 없습니다.');
+                }
+            }).fail(function (xhr, status, error) {
+                console.error('Error fetching content data:', error);
+                alert('콘텐츠 데이터를 가져오는 데 실패했습니다.');
+            });
+        });
+
+        // 신규 생성 버튼 클릭
+        $('#newContent').click(function () {
+            const newContent = {
+                title: $('#editTitle').val(),
+                gubun: $('#editGubun').val(),
+                note1: $('#summernote').summernote('code'),
+                note2: $('#editNote2').val(),
+                note3: $('#editNote3').val(),
+                status: $('#editStatus').val(),
+                create_user: $('#editCreateUser').val(),
+                assignee: $('#editAssignee').val(),
+                start_date: $('#editStartDate').val(),
+                end_date: $('#editEndDate').val(),
+                plan_date: $('#editPlanDate').val(),
+                memo1: $('#editMemo1').val(),
+                memo2: $('#editMemo2').val()
+            };
+
+            $.ajax({
+                url: '/contents/create',
+                method: 'POST',
+                data: newContent,
+                success: function (response) {
+                    alert('신규 콘텐츠가 생성되었습니다.');
+                    $('#editId').val(''); // ID는 새로운 항목이므로 빈값으로 설정
+                    loadContents(currentPage); // 리스트 새로고침
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error creating content:', error);
+                    alert('콘텐츠 생성에 실패했습니다.');
+                }
+            });
+        });
+
+        // 저장 버튼 클릭
+        $('#saveContent').click(function () {
+            const id = $('#editId').val() || null;
+            const content = {
+                title: $('#editTitle').val(),
+                gubun: $('#editGubun').val(),
+                note1: $('#summernote').summernote('code'),
+                note2: $('#editNote2').val(),
+                note3: $('#editNote3').val(),
+                status: $('#editStatus').val(),
+                create_user: $('#editCreateUser').val(),
+                assignee: $('#editAssignee').val(),
+                start_date: $('#editStartDate').val(),
+                end_date: $('#editEndDate').val(),
+                plan_date: $('#editPlanDate').val(),
+                memo1: $('#editMemo1').val(),
+                memo2: $('#editMemo2').val()
+            };
+            const url = id ? `/contents/update/${id}` : '/contents/create';
+            const method = id ? 'PUT' : 'POST';
+            $.ajax({
+                url: url,
+                method: method,
+                data: content,
+                success: function () {
+                    $('#list-tab').tab('show'); // 리스트 탭으로 복귀
+                    loadContents(currentPage);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving content:', error);
+                }
+            });
+        });
+
+        // 삭제 버튼 클릭
+        $('#deleteContent').click(function () {
+            const id = $('#editId').val();
+            if (id && confirm('정말 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: `/contents/delete/${id}`,
+                    method: 'DELETE',
+                    success: function () {
+                        $('#list-tab').tab('show'); // 리스트 탭으로 복귀
+                        loadContents(currentPage);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error deleting content:', error);
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -14,6 +14,7 @@ router.get('/treewbs/data', treewbsController.getAll);
 router.post('/treewbs/create', treewbsController.create);
 router.put('/treewbs/update/:id', treewbsController.update);
 router.delete('/treewbs/delete/:id', treewbsController.delete);
+router.post('/treewbs/upload', treewbsController.upload);
 //router.post('/treewbs/batch-save', treewbsController.batchSave);
 
 module.exports = router;

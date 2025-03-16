@@ -165,8 +165,8 @@
                     const td = document.createElement('td');
                     cell = cell.replace(/"/g, ''); // 따옴표 제거
                     let displayValue = cell;
-                    // Addresses 컬럼에서 세미콜론(;)으로 구분된 값을 줄바꿈으로 변환
-                    if (headers[idx].replace(/"/g, '') === 'Addresses' && cell.includes(';')) {
+                    // 컬럼에서 세미콜론(;)으로 구분된 값을 줄바꿈으로 변환
+                    if (cell.includes(';')) {
                         displayValue = cell.split(';').join('\n');
                     }
                     td.textContent = displayValue;

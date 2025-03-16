@@ -98,8 +98,6 @@ CREATE TABLE tb_slave_code (
     FOREIGN KEY (master_id) REFERENCES tb_master_code(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-
-
 -- 프로젝트와 참여인원 매핑
 CREATE TABLE tb_project_user (
     project_id INTEGER NOT NULL,
@@ -112,9 +110,7 @@ CREATE TABLE tb_project_user (
     FOREIGN KEY (user_id) REFERENCES tb_user(id) 
 );
 
-
-
---
+-- 트리구조 wbs
 CREATE TABLE tb_treewbs (
     id SERIAL PRIMARY KEY,           -- Auto-incrementing ID as primary key
     task VARCHAR(255) NOT NULL,      -- Task name
@@ -124,3 +120,73 @@ CREATE TABLE tb_treewbs (
     assignee VARCHAR(100),           -- Assignee name
     parent_id VARCHAR(100) 
 );
+
+
+-- 모든관리
+CREATE TABLE tb_tree (
+    id SERIAL PRIMARY KEY,          
+    task VARCHAR(255) NOT NULL,
+    seq INT NOT NULL DEFAULT 0,  
+    parent_id VARCHAR(100) 
+);
+
+
+
+
+CREATE TABLE tb_contents (
+    id SERIAL PRIMARY KEY,                -- 자동 증가하는 기본 키
+    title VARCHAR,                       -- 제목
+    gubun VARCHAR,                       -- 구분
+    note1 TEXT,                          -- 대량 텍스트용
+    note2 TEXT,                          -- 대량 텍스트용
+    note3 TEXT,                          -- 대량 텍스트용
+    status VARCHAR,                      -- 상태
+    create_user VARCHAR,                 -- 생성자
+    assignee VARCHAR,                    -- 담당자
+    start_date VARCHAR,                  -- 시작일
+    end_date VARCHAR,                    -- 종료일
+    plan_date VARCHAR,                   -- 계획일
+    memo1 VARCHAR,                       -- 메모1
+    memo2 VARCHAR,                       -- 메모2
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 생성 시간 (자동)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- 수정 시간 (자동)
+);
+
+/*###########트리거까진 생성하지 말자###############*/
+
+-- updated_at을 자동 갱신하기 위한 트리거 함수 생성
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- tb_contents 테이블에 트리거 설정
+CREATE TRIGGER trigger_update_updated_at
+BEFORE UPDATE ON tb_contents
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+/*###########트리거까진 생성하지 말자###############*/
+
+-- tree메뉴와 contents 매핑
+
+CREATE TABLE tb_tree_contents (
+    id SERIAL PRIMARY KEY,                       -- 자동 증가 기본 키
+    tree_id INTEGER NOT NULL,                    -- tb_tree의 id 참조
+    contents_id INTEGER NOT NULL,                -- tb_contents의 id 참조
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 생성 시간 (자동)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 수정 시간 (자동)
+    CONSTRAINT fk_tree FOREIGN KEY (tree_id) REFERENCES tb_tree(id) ON DELETE CASCADE,  -- tb_tree 외래 키
+    CONSTRAINT fk_contents FOREIGN KEY (contents_id) REFERENCES tb_contents(id) ON DELETE CASCADE,  -- tb_contents 외래 키
+    CONSTRAINT unique_tree_contents UNIQUE (tree_id, contents_id)  -- 중복 매핑 방지
+);
+
+
+
+
+
+
+

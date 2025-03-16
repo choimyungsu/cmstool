@@ -18,6 +18,8 @@ const codemgmtRoutes = require('./routes/codemgmtRoutes');
 const projectUserRoutes = require('./routes/projectUserRoutes');
 const authRoutes = require('./routes/authRoutes');
 const treewbsRoutes = require('./routes/treewbsRoutes');
+const contentsRoutes = require('./routes/contentsRoutes');
+const treeRoutes = require('./routes/treeRoutes');
 
 // EJS 설정
 app.set('view engine', 'ejs');
@@ -62,6 +64,8 @@ app.use('/', codemgmtRoutes);
 app.use('/', projectUserRoutes);
 app.use('/', authRoutes);
 app.use('/', treewbsRoutes);
+app.use('/', contentsRoutes); // '/contents'로 시작하는 경로 처리
+app.use('/', treeRoutes); // '/tree'로 시작하는 경로 처리
 
 // 루트 경로에서 대시보드 렌더링
 app.get('/', (req, res) => {
