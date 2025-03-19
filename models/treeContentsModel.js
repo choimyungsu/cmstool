@@ -23,7 +23,7 @@ const treeContentsModel = {
     // 특정 트리에 연결된 컨텐츠 조회
     async getLinkedContents(treeId) {
         const result = await pool.query(
-            `SELECT c.* FROM tb_tree_contents tc
+            `SELECT c.id,c.title,c.status,c.assignee FROM tb_tree_contents tc
              JOIN tb_contents c ON tc.contents_id = c.id
              WHERE tc.tree_id = $1`,
             [treeId]
