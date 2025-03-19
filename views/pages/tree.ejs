@@ -46,7 +46,7 @@
                     <thead>
                       <tr>
                         <th class="hidden">ID</th>
-                        <th>Title</th>
+                        <th width="50%">Title</th>
                         <th>Status</th>
                         <th>Assignee</th>
                         <th>Actions</th>
@@ -676,7 +676,7 @@
               $('#contents-list').append(`
                 <tr data-id="${content.id}">
                   <td class="hidden">${content.id}</td>
-                  <td><a href="#" class="content-link">${content.title || ''}</a></td>
+                  <td width="50%"><a href="#" class="content-link">${content.title || ''}</a></td>
                   <td>${content.status || ''}</td>
                   <td>${content.assignee || ''}</td>
                   <td>
