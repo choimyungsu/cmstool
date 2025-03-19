@@ -4,7 +4,7 @@ const pool = require("../config/db");
 const contentsModel = {
     // 모든 데이터 조회
     async getAll() {
-        const result = await pool.query('SELECT * FROM tb_contents ORDER BY id');
+        const result = await pool.query('SELECT id, title, gubun, status, create_user FROM tb_contents ORDER BY id');
         return result.rows;
     },
 
