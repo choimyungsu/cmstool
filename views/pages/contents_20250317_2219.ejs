@@ -3,9 +3,6 @@
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <!-- Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-
 
 <style>
     table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
@@ -246,22 +243,24 @@
                         <!-- 리스트 탭 -->
                         <div class="tab-pane fade show active" id="list" role="tabpanel">
                             <!-- 리스트 테이블 -->
-                            <table id="contentsTable">
+                            <table>
                                 <thead>
                                     <tr>
+                                        <!-- ID 열 제거 -->
                                         <th>Title</th>
                                         <th>Gubun</th>
                                         <th>Status</th>
                                         <th>Create User</th>
-                                        <!-- <th>Assignee</th>
+                                        <th>Assignee</th>
                                         <th>Start Date</th>
                                         <th>End Date</th>
                                         <th>Plan Date</th>
                                         <th>Memo1</th>
-                                        <th>Memo2</th> -->
+                                        <th>Memo2</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
+                                <tbody id="contentsTable"></tbody>
                             </table>
 
                             <!-- 페이징 -->
@@ -352,234 +351,270 @@
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-<!-- DataTables JS (after jQuery) -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <!-- contents.ejs (HTML 및 CSS는 동일, <script> 부분만 수정) -->
     <!-- contents.ejs (HTML 및 CSS는 동일, <script> 부분만 수정) -->
-        <script>
-            $(document).ready(function () {
-                const statusCodes = '<%- JSON.stringify(statusCodes) %>';
-                let dataTable;
-        
-                // Summernote 초기화
-                $('#summernote').summernote({
-                    height: 200,
-                    placeholder: '여기에 내용을 입력하세요'
+<script>
+    $(document).ready(function () {
+        const statusCodes = '<%- JSON.stringify(statusCodes) %>';
+        const itemsPerPage = 10; // 페이지당 항목 수
+        let currentPage = 1;
+        let totalItems = 0;
+        let allData = [];
+        let end;
+
+        // Summernote 초기화
+        $('#summernote').summernote({
+            height: 200,
+            placeholder: '여기에 내용을 입력하세요'
+        });
+
+        // 검색 영역 토글 및 아이콘 변경
+        $('#searchToggleBtn').click(function () {
+            $('#searchSection').slideToggle();
+            const icon = $(this).find('.fa-chevron-down, .fa-chevron-up');
+            icon.toggleClass('fa-chevron-down fa-chevron-up');
+        });
+
+        // 데이터 로드 및 필터링
+        function loadContents(page = 1) {
+            currentPage = page; // 현재 페이지 업데이트
+            const integratedSearch = $('#integratedSearch').val().toLowerCase();
+            const searchStatus = $('#searchStatus').val();
+            const searchCreateUser = $('#searchCreateUser').val().toLowerCase();
+            const searchAssignee = $('#searchAssignee').val().toLowerCase();
+
+            $.get('/contents/data', function (data) {
+                allData = data || []; // 데이터가 null일 경우 빈 배열로 초기화
+
+                // 필터링
+                let filteredData = allData.filter(content => {
+                    const matchesIntegrated = !integratedSearch || 
+                        (content.title?.toLowerCase().includes(integratedSearch) ||
+                         content.note1?.toLowerCase().includes(integratedSearch) ||
+                         content.note2?.toLowerCase().includes(integratedSearch) ||
+                         content.note3?.toLowerCase().includes(integratedSearch) ||
+                         content.memo1?.toLowerCase().includes(integratedSearch) ||
+                         content.memo2?.toLowerCase().includes(integratedSearch));
+                    const matchesStatus = !searchStatus || content.status === searchStatus;
+                    const matchesCreateUser = !searchCreateUser || content.create_user?.toLowerCase().includes(searchCreateUser);
+                    const matchesAssignee = !searchAssignee || content.assignee?.toLowerCase().includes(searchAssignee);
+
+                    return matchesIntegrated && matchesStatus && matchesCreateUser && matchesAssignee;
                 });
-        
-                // 검색 영역 토글 및 아이콘 변경
-                $('#searchToggleBtn').click(function () {
-                    $('#searchSection').slideToggle();
-                    const icon = $(this).find('.fa-chevron-down, .fa-chevron-up');
-                    icon.toggleClass('fa-chevron-down fa-chevron-up');
+
+                totalItems = filteredData.length;
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+                // 페이지별 데이터 슬라이싱
+                const start = (page - 1) * itemsPerPage;
+                end = start + itemsPerPage;
+                const paginatedData = filteredData.slice(start, end);
+
+                // 테이블 업데이트
+                const tbody = $('#contentsTable');
+                tbody.empty();
+                paginatedData.forEach(content => {
+                    tbody.append(`
+                        <tr data-id="${content.id}">
+                            <td><a href="#" class="content-link" data-id="${content.id}">${content.title || ''}</a></td>
+                            <td>${content.gubun || ''}</td>
+                            <td>${content.status || ''}</td>
+                            <td>${content.create_user || ''}</td>
+                            <td>${content.assignee || ''}</td>
+                            <td>${content.start_date || ''}</td>
+                            <td>${content.end_date || ''}</td>
+                            <td>${content.plan_date || ''}</td>
+                            <td>${content.memo1 || ''}</td>
+                            <td>${content.memo2 || ''}</td>
+                            <td>
+                                <i class="fas fa-edit action-btn text-warning edit-row" data-id="${content.id}"></i>
+                            </td>
+                        </tr>
+                    `);
                 });
-        
-                // DataTable 초기화 및 데이터 로드
-                function initializeDataTable(data) {
-                    if (dataTable) {
-                        dataTable.destroy(); // 기존 테이블 제거
-                    }
-        
-                    dataTable = $('#contentsTable').DataTable({
-                        data: data,
-                        columns: [
-                            { data: 'title', render: function (data, type, row) {
-                                return `<a href="#" class="content-link" data-id="${row.id}">${data || ''}</a>`;
-                            }},
-                            { data: 'gubun', defaultContent: '' },
-                            { data: 'status', defaultContent: '' },
-                            { data: 'create_user', defaultContent: '' },
-                            // { data: 'assignee', defaultContent: '' },
-                            // { data: 'start_date', defaultContent: '' },
-                            // { data: 'end_date', defaultContent: '' },
-                            // { data: 'plan_date', defaultContent: '' },
-                            // { data: 'memo1', defaultContent: '' },
-                            // { data: 'memo2', defaultContent: '' },
-                            { data: null, render: function (data, type, row) {
-                                return `<i class="fas fa-edit action-btn text-warning edit-row" data-id="${row.id}"></i>`;
-                            }}
-                        ],
-                        pageLength: 10, // 페이지당 10개 항목
-                        lengthChange: false, // 항목 수 선택 비활성화
-                        searching: false, // DataTables 기본 검색 비활성화 (커스텀 검색 사용)
-                        ordering: true, // 정렬 활성화
-                        info: true, // 정보 표시
-                        paging: true, // 페이징 활성화
-                        language: {
-                            paginate: {
-                                previous: '이전',
-                                next: '다음'
-                            },
-                            info: '총 _TOTAL_개 중 _START_ - _END_ 표시'
-                        }
-                    });
-                }
-        
-                // 데이터 로드 및 필터링
-                function loadContents() {
-                    const integratedSearch = $('#integratedSearch').val().toLowerCase();
-                    const searchStatus = $('#searchStatus').val();
-                    const searchCreateUser = $('#searchCreateUser').val().toLowerCase();
-                    const searchAssignee = $('#searchAssignee').val().toLowerCase();
-        
-                    $.get('/contents/data', function (data) {
-                        let allData = data || []; // 데이터가 null일 경우 빈 배열로 초기화
-        
-                        // 필터링
-                        let filteredData = allData.filter(content => {
-                            const matchesIntegrated = !integratedSearch || 
-                                (content.title?.toLowerCase().includes(integratedSearch) ||
-                                 content.note1?.toLowerCase().includes(integratedSearch) ||
-                                 content.note2?.toLowerCase().includes(integratedSearch) ||
-                                 content.note3?.toLowerCase().includes(integratedSearch) ||
-                                 content.memo1?.toLowerCase().includes(integratedSearch) ||
-                                 content.memo2?.toLowerCase().includes(integratedSearch));
-                            const matchesStatus = !searchStatus || content.status === searchStatus;
-                            const matchesCreateUser = !searchCreateUser || content.create_user?.toLowerCase().includes(searchCreateUser);
-                            const matchesAssignee = !searchAssignee || content.assignee?.toLowerCase().includes(searchAssignee);
-        
-                            return matchesIntegrated && matchesStatus && matchesCreateUser && matchesAssignee;
-                        });
-        
-                        // DataTable 초기화 및 데이터 적용
-                        initializeDataTable(filteredData);
-                    }).fail(function (xhr, status, error) {
-                        console.error('Error loading contents:', error);
-                        alert('데이터를 불러오는 데 실패했습니다.');
-                    });
-                }
-        
-                // 초기 로드
-                loadContents();
-        
-                // 검색 버튼 클릭
-                $('#searchBtn').click(function () {
-                    loadContents(); // 검색 시 테이블 새로고침
-                });
-        
-                // 편집 버튼 및 Title 링크 클릭 (추가 탭으로 전환)
-                $(document).on('click', '.edit-row, .content-link', function (e) {
-                    e.preventDefault(); // 링크 기본 동작 방지
-                    const id = $(this).data('id');
-                    if (!id || id === 'undefined') {
-                        console.error('Invalid content ID:', id);
-                        alert('유효하지 않은 콘텐츠 ID입니다.');
-                        return;
-                    }
-                    $.get(`/contents/data?id=${id}`, function (data) {
-                        const content = data;
-                        if (content && content.id == id) {
-                            $('#editId').val(content.id);
-                            $('#editTitle').val(content.title || '');
-                            $('#editGubun').val(content.gubun || '');
-                            $('#summernote').summernote('code', content.note1 || '');
-                            $('#editNote2').val(content.note2 || '');
-                            $('#editNote3').val(content.note3 || '');
-                            $('#editStatus').val(content.status || '');
-                            $('#editCreateUser').val(content.create_user || '');
-                            $('#editAssignee').val(content.assignee || '');
-                            $('#editStartDate').val(content.start_date || '');
-                            $('#editEndDate').val(content.end_date || '');
-                            $('#editPlanDate').val(content.plan_date || '');
-                            $('#editMemo1').val(content.memo1 || '');
-                            $('#editMemo2').val(content.memo2 || '');
-                            $('#add-tab').tab('show'); // 추가 탭으로 전환
-                        } else {
-                            console.error('Content not found for ID:', id);
-                            alert('해당 콘텐츠를 찾을 수 없습니다.');
-                        }
-                    }).fail(function (xhr, status, error) {
-                        console.error('Error fetching content data:', error);
-                        alert('콘텐츠 데이터를 가져오는 데 실패했습니다.');
-                    });
-                });
-        
-                // 신규 생성 버튼 클릭
-                $('#newContent').click(function () {
-                    const newContent = {
-                        title: $('#editTitle').val(),
-                        gubun: $('#editGubun').val(),
-                        note1: $('#summernote').summernote('code'),
-                        note2: $('#editNote2').val(),
-                        note3: $('#editNote3').val(),
-                        status: $('#editStatus').val(),
-                        create_user: $('#editCreateUser').val(),
-                        assignee: $('#editAssignee').val(),
-                        start_date: $('#editStartDate').val(),
-                        end_date: $('#editEndDate').val(),
-                        plan_date: $('#editPlanDate').val(),
-                        memo1: $('#editMemo1').val(),
-                        memo2: $('#editMemo2').val()
-                    };
-        
-                    $.ajax({
-                        url: '/contents/create',
-                        method: 'POST',
-                        data: newContent,
-                        success: function (response) {
-                            alert('신규 콘텐츠가 생성되었습니다.');
-                            $('#editId').val('');
-                            loadContents(); // 테이블 새로고침
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error creating content:', error);
-                            alert('콘텐츠 생성에 실패했습니다.');
-                        }
-                    });
-                });
-        
-                // 저장 버튼 클릭
-                $('#saveContent').click(function () {
-                    const id = $('#editId').val() || null;
-                    const content = {
-                        title: $('#editTitle').val(),
-                        gubun: $('#editGubun').val(),
-                        note1: $('#summernote').summernote('code'),
-                        note2: $('#editNote2').val(),
-                        note3: $('#editNote3').val(),
-                        status: $('#editStatus').val(),
-                        create_user: $('#editCreateUser').val(),
-                        assignee: $('#editAssignee').val(),
-                        start_date: $('#editStartDate').val(),
-                        end_date: $('#editEndDate').val(),
-                        plan_date: $('#editPlanDate').val(),
-                        memo1: $('#editMemo1').val(),
-                        memo2: $('#editMemo2').val()
-                    };
-                    const url = id ? `/contents/update/${id}` : '/contents/create';
-                    const method = id ? 'PUT' : 'POST';
-                    $.ajax({
-                        url: url,
-                        method: method,
-                        data: content,
-                        success: function () {
-                            $('#list-tab').tab('show'); // 리스트 탭으로 복귀
-                            loadContents();
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error saving content:', error);
-                        }
-                    });
-                });
-        
-                // 삭제 버튼 클릭
-                $('#deleteContent').click(function () {
-                    const id = $('#editId').val();
-                    if (id && confirm('정말 삭제하시겠습니까?')) {
-                        $.ajax({
-                            url: `/contents/delete/${id}`,
-                            method: 'DELETE',
-                            success: function () {
-                                $('#list-tab').tab('show'); // 리스트 탭으로 복귀
-                                loadContents();
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Error deleting content:', error);
-                            }
-                        });
-                    }
-                });
+
+                // 페이징 업데이트
+                updatePagination(totalPages, page);
+            }).fail(function (xhr, status, error) {
+                console.error('Error loading contents:', error);
+                alert('데이터를 불러오는 데 실패했습니다.');
             });
-        </script>
+        }
+
+        // 페이징 버튼 생성
+        function updatePagination(totalPages, currentPage) {
+            const pagination = $('#pagination');
+            pagination.empty();
+
+            // 이전 버튼
+            pagination.append(`
+                <button class="prev-page" ${currentPage === 1 ? 'disabled' : ''}>이전</button>
+            `);
+
+            // 페이지 번호
+            for (let i = 1; i <= totalPages; i++) {
+                pagination.append(`
+                    <button class="page-number ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>
+                `);
+            }
+
+            // 다음 버튼
+            pagination.append(`
+                <button class="next-page" ${currentPage === totalPages ? 'disabled' : ''}>다음</button>
+            `);
+
+            // 이벤트 바인딩
+            $('.prev-page').on('click', function () {
+                if (currentPage > 1) {
+                    loadContents(currentPage - 1);
+                }
+            });
+
+            $('.next-page').on('click', function () {
+                if (currentPage < totalPages) {
+                    loadContents(currentPage + 1);
+                }
+            });
+
+            $('.page-number').on('click', function () {
+                const page = parseInt($(this).data('page'));
+                loadContents(page);
+            });
+        }
+
+        // 초기 로드
+        loadContents();
+
+        // 검색 버튼 클릭
+        $('#searchBtn').click(function () {
+            currentPage = 1; // 검색 시 첫 페이지로 리셋
+            loadContents();
+        });
+
+        // 편집 버튼 및 Title 링크 클릭 (추가 탭으로 전환)
+        $(document).on('click', '.edit-row, .content-link', function (e) {
+            e.preventDefault(); // 링크 기본 동작 방지
+            const id = $(this).data('id');
+            // id가 유효한지 확인
+            if (!id || id === 'undefined') {
+                console.error('Invalid content ID:', id);
+                alert('유효하지 않은 콘텐츠 ID입니다.');
+                return;
+            }
+            $.get(`/contents/data?id=${id}`, function (data) {
+                // data가 배열이 아닌 단일 객체로 반환된다고 가정
+                const content = data; // data.find() 대신 직접 data 사용
+                if (content && content.id == id) { // id 일치 여부 확인
+                    $('#editId').val(content.id);
+                    $('#editTitle').val(content.title || '');
+                    $('#editGubun').val(content.gubun || '');
+                    $('#summernote').summernote('code', content.note1 || '');
+                    $('#editNote2').val(content.note2 || '');
+                    $('#editNote3').val(content.note3 || '');
+                    $('#editStatus').val(content.status || '');
+                    $('#editCreateUser').val(content.create_user || '');
+                    $('#editAssignee').val(content.assignee || '');
+                    $('#editStartDate').val(content.start_date || '');
+                    $('#editEndDate').val(content.end_date || '');
+                    $('#editPlanDate').val(content.plan_date || '');
+                    $('#editMemo1').val(content.memo1 || '');
+                    $('#editMemo2').val(content.memo2 || '');
+                    $('#add-tab').tab('show'); // 추가 탭으로 전환
+                } else {
+                    console.error('Content not found for ID:', id);
+                    alert('해당 콘텐츠를 찾을 수 없습니다.');
+                }
+            }).fail(function (xhr, status, error) {
+                console.error('Error fetching content data:', error);
+                alert('콘텐츠 데이터를 가져오는 데 실패했습니다.');
+            });
+        });
+
+        // 신규 생성 버튼 클릭
+        $('#newContent').click(function () {
+            const newContent = {
+                title: $('#editTitle').val(),
+                gubun: $('#editGubun').val(),
+                note1: $('#summernote').summernote('code'),
+                note2: $('#editNote2').val(),
+                note3: $('#editNote3').val(),
+                status: $('#editStatus').val(),
+                create_user: $('#editCreateUser').val(),
+                assignee: $('#editAssignee').val(),
+                start_date: $('#editStartDate').val(),
+                end_date: $('#editEndDate').val(),
+                plan_date: $('#editPlanDate').val(),
+                memo1: $('#editMemo1').val(),
+                memo2: $('#editMemo2').val()
+            };
+
+            $.ajax({
+                url: '/contents/create',
+                method: 'POST',
+                data: newContent,
+                success: function (response) {
+                    alert('신규 콘텐츠가 생성되었습니다.');
+                    $('#editId').val(''); // ID는 새로운 항목이므로 빈값으로 설정
+                    loadContents(currentPage); // 리스트 새로고침
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error creating content:', error);
+                    alert('콘텐츠 생성에 실패했습니다.');
+                }
+            });
+        });
+
+        // 저장 버튼 클릭
+        $('#saveContent').click(function () {
+            const id = $('#editId').val() || null;
+            const content = {
+                title: $('#editTitle').val(),
+                gubun: $('#editGubun').val(),
+                note1: $('#summernote').summernote('code'),
+                note2: $('#editNote2').val(),
+                note3: $('#editNote3').val(),
+                status: $('#editStatus').val(),
+                create_user: $('#editCreateUser').val(),
+                assignee: $('#editAssignee').val(),
+                start_date: $('#editStartDate').val(),
+                end_date: $('#editEndDate').val(),
+                plan_date: $('#editPlanDate').val(),
+                memo1: $('#editMemo1').val(),
+                memo2: $('#editMemo2').val()
+            };
+            const url = id ? `/contents/update/${id}` : '/contents/create';
+            const method = id ? 'PUT' : 'POST';
+            $.ajax({
+                url: url,
+                method: method,
+                data: content,
+                success: function () {
+                    $('#list-tab').tab('show'); // 리스트 탭으로 복귀
+                    loadContents(currentPage);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving content:', error);
+                }
+            });
+        });
+
+        // 삭제 버튼 클릭
+        $('#deleteContent').click(function () {
+            const id = $('#editId').val();
+            if (id && confirm('정말 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: `/contents/delete/${id}`,
+                    method: 'DELETE',
+                    success: function () {
+                        $('#list-tab').tab('show'); // 리스트 탭으로 복귀
+                        loadContents(currentPage);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error deleting content:', error);
+                    }
+                });
+            }
+        });
+    });
+</script>
