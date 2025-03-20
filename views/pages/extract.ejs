@@ -1,0 +1,64 @@
+<link rel="stylesheet" href="/css/custom.css">
+<style>
+    .textarea-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .output-container {
+        margin-top: 10px;
+    }
+
+    pre {
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+        flex: 1;
+    }
+</style>
+
+<!--begin::App Main-->
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+
+                <i class="fas fa-share-from-square me-1" style="cursor: pointer;"></i>추출하고자 하는 라인에 포함된 값으로 필터링<br>
+                <div class="textarea-container">
+                    <textarea id="inputText" class="form-control" rows="10"
+                        placeholder="여기에 ASA 방화벽 정책 로그를 입력하세요"></textarea>
+                    <input type="text" id="keyword" class="form-control" placeholder="필터링할 키워드 입력">
+                    예시) access-list
+                    <button class="btn btn-sm btn-primary" onclick="extractFilteredObjects()">추출</button>
+                </div>
+
+                <div class="output-container">
+                    <p>추출된 건수: <span id="count">0</span></p>
+                    <textarea id="output" class="form-control" rows="10" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!--end::App Main-->
+
+<script>
+    function extractFilteredObjects() {
+        const inputText = document.getElementById("inputText").value;
+        const keyword = document.getElementById("keyword").value.toLowerCase();
+
+        const lines = inputText.split("\n");
+        let extractedLines = [];
+
+        for (let line of lines) {
+            if (keyword && line.toLowerCase().includes(keyword)) {
+                extractedLines.push(line);
+            }
+        }
+
+        document.getElementById("count").textContent = extractedLines.length;
+        document.getElementById("output").value = extractedLines.join("\n");
+    }
+</script>

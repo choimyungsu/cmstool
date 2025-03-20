@@ -20,6 +20,7 @@ const authRoutes = require('./routes/authRoutes');
 const treewbsRoutes = require('./routes/treewbsRoutes');
 const contentsRoutes = require('./routes/contentsRoutes');
 const treeRoutes = require('./routes/treeRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // EJS 설정
 app.set('view engine', 'ejs');
@@ -66,14 +67,15 @@ app.use('/', authRoutes);
 app.use('/', treewbsRoutes);
 app.use('/', contentsRoutes); // '/contents'로 시작하는 경로 처리
 app.use('/', treeRoutes); // '/tree'로 시작하는 경로 처리
+app.use('/', dashboardRoutes);
 
 // 루트 경로에서 대시보드 렌더링
-app.get('/', (req, res) => {
-  res.render("index", {
-    currentPage: 'pages/home',
-    user: req.session.user // user 객체 전달
-  });
-});
+// app.get('/', (req, res) => {
+//   res.render("index", {
+//     currentPage: 'pages/home',
+//     user: req.session.user // user 객체 전달
+//   });
+// });
 
 app.get('/calendar', async (req, res) => {
   try {
@@ -140,6 +142,18 @@ app.get('/csvreadtable', async (req, res) => {
   try {
     res.render("index", {
       currentPage: 'pages/csvreadtable',
+      user: req.session.user // user 객체 전달
+    });
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// 입력한 정보를 기반으로 추출
+app.get('/extract', async (req, res) => {
+  try {
+    res.render("index", {
+      currentPage: 'pages/extract',
       user: req.session.user // user 객체 전달
     });
   } catch (err) {
