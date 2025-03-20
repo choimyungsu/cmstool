@@ -6,10 +6,12 @@ const contentsController = {
     async getAllPage(req, res) {
         try {
             const statusCodes = await contentsModel.getStatusCodes();
+            const gubunCodes = await contentsModel.getGubunCodes();
             res.render('index', {
                 currentPage: 'pages/contents',
                 user: req.session.user,
-                statusCodes: statusCodes // 셀렉트 박스용 상태 코드
+                statusCodes: statusCodes, // 셀렉트 박스용 상태 코드
+                gubunCodes: gubunCodes   // 셀렉트 박스용 Gubun 코드
             });
         } catch (error) {
             console.error('Error rendering contents page:', error);
@@ -82,12 +84,24 @@ const contentsController = {
         }
     },
 
+    // Gubun 코드 조회 (JSON)
+    async getGubunCodes(req, res) {
+        try {
+            const gubunCodes = await contentsModel.getGubunCodes();
+            res.json(gubunCodes);
+        } catch (error) {
+            console.error('Error fetching gubun codes:', error);
+            res.status(500).json({ error: error.message });
+        }
+    },
+
     // 검색 기능 추가
     async search(req, res) {
         try {
-            const { integratedSearch, status, createUser, assignee } = req.query;
+            const { integratedSearch, gubun, status, createUser, assignee } = req.query;
             const contents = await contentsModel.search({
                 integratedSearch: integratedSearch || '',
+                gubun: gubun || '',
                 status: status || '',
                 createUser: createUser || '',
                 assignee: assignee || ''

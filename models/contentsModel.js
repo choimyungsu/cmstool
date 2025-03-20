@@ -65,20 +65,31 @@ const contentsModel = {
         return result.rows[0];
     },
 
-    // 상태 코드 조회 (tb_master_code와 tb_slave_code에서)
-    async getStatusCodes() {
+    // 코드 조회 (tb_master_code와 tb_slave_code에서)
+    async getCodesByGroup(codeGroup) {
         const result = await pool.query(`
             SELECT sc.id, sc.code_value, sc.code_name
             FROM tb_master_code mc
             JOIN tb_slave_code sc ON mc.id = sc.master_id
-            WHERE mc.code_group = 'status'
+            WHERE mc.code_group = $1
             ORDER BY sc.sort_order
-        `);
+        `, [codeGroup]);
         return result.rows;
     },
 
+    // 상태 코드 조회
+    async getStatusCodes() {
+        return await this.getCodesByGroup('status');
+    },
+
+    // Gubun 코드 조회
+    async getGubunCodes() {
+        return await this.getCodesByGroup('contents_gubun');
+    },
+
 // 검색 기능
-async search({ integratedSearch, status, createUser, assignee }) {
+   // 검색 기능
+   async search({ integratedSearch, gubun, status, createUser, assignee }) {
     let query = 'SELECT * FROM tb_contents WHERE 1=1';
     const values = [];
     let paramIndex = 1;
@@ -93,6 +104,12 @@ async search({ integratedSearch, status, createUser, assignee }) {
             OR LOWER(memo2) LIKE $${paramIndex})
         `;
         values.push(`%${integratedSearch}%`);
+        paramIndex++;
+    }
+
+    if (gubun) {
+        query += ` AND gubun = $${paramIndex}`;
+        values.push(gubun);
         paramIndex++;
     }
 
@@ -118,14 +135,7 @@ async search({ integratedSearch, status, createUser, assignee }) {
 
     const result = await pool.query(query, values);
     return result.rows;
-}
-
-
-
-
-
-
-
+   }
 };
 
 module.exports = contentsModel;

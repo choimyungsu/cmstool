@@ -8,16 +8,90 @@
 
 
 <style>
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { border: 1px solid #dee2e6; padding: 8px; text-align: left; }
-    th { background-color: #1a2a44; color: white; }
-    .action-btn { cursor: pointer; margin-right: 10px; }
-    .text-warning { color: #ffc107; }
-    .text-danger { color: #dc3545; }
-    textarea { width: 100%; min-height: 100px; }
+    /* 테이블 스타일 개선 */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem; /* 글씨 크기 작게 조정 */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 테이블에 그림자 추가 */
+        border-radius: 8px;
+        overflow: hidden; /* 모서리 라운딩을 위해 */
+    }
+    th, td {
+        border: 0.1px solid #e0e4e8; /* 더 부드러운 보더 색상 */
+        padding: 6px 10px; /* 패딩 줄여서 행 높이 감소 */
+        text-align: left;
+    }
+    th {
+        background: linear-gradient(90deg, #1a2a44 0%, #2c3e50 100%); /* 그라데이션 배경 */
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    td {
+        background-color: #ffffff;
+        color: #333;
+        transition: background-color 0.3s ease; /* 호버 효과를 위한 전환 */
+    }
+    tr:nth-child(even) td {
+        background-color: #f8f9fa; /* 짝수 행에 연한 배경색 */
+    }
+    tr:hover td {
+        background-color: #e9ecef; /* 호버 시 배경색 변경 */
+    }
+
+    /* 링크 스타일 개선 */
+    .content-link {
+        color: #007bff; /* 기본 링크 색상 */
+        text-decoration: none; /* 밑줄 제거 */
+        position: relative; /* 밑줄 애니메이션을 위해 */
+        transition: color 0.3s ease; /* 색상 전환 부드럽게 */
+    }
+    .content-link:hover {
+        color: #0056b3; /* 호버 시 색상 변경 */
+    }
+    .content-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 1px;
+        bottom: -2px;
+        left: 0;
+        background-color: #0056b3; /* 호버 시 밑줄 색상 */
+        transition: width 0.3s ease; /* 밑줄 애니메이션 */
+    }
+    .content-link:hover::after {
+        width: 100%; /* 호버 시 밑줄이 왼쪽에서 오른쪽으로 확장 */
+    }
+
+    /* 테이블 컨테이너 스타일 */
+    #contentsTable_wrapper {
+        max-height: 600px; /* 테이블 높이 고정 (20개 항목이 보이도록) */
+        overflow: hidden; /* 세로 스크롤 제거 */
+    }
+
+    
+    /* 스크롤바 숨기기 (브라우저별) */
+    .dataTables_paginate::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
+    }
+    .dataTables_paginate {
+        -ms-overflow-style: none; /* IE, Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+
+    /* DataTables 정보 스타일 */
+    .dataTables_info {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 10px;
+    }
 
     /* 탭 콘텐츠 스타일 */
-    .tab-content { padding: 20px; }
+    .tab-content {
+        padding: 20px;
+    }
 
     /* 탭 스타일 (Bootstrap 기본 색상 유지 및 비활성 탭 회색 처리) */
     .nav-tabs .nav-link {
@@ -175,31 +249,6 @@
         background: linear-gradient(90deg, #218838 0%, #28a745 100%);
         transform: translateY(-2px);
     }
-
-    /* 페이징 스타일 */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-    .pagination button {
-        padding: 5px 10px;
-        margin: 0 5px;
-        border: 1px solid #dee2e6;
-        background: white;
-        cursor: pointer;
-    }
-    .pagination button.active {
-        background: #007bff;
-        color: white;
-        border-color: #007bff;
-    }
-    .pagination button:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-    }
-
-    
 </style>
 
 <main class="content">
@@ -218,6 +267,12 @@
                                 <input type="text" id="integratedSearch" placeholder="통합 검색 (Title, Note1, Note2, Note3, Memo1, Memo2)">
                             </div>
                             <div class="search-row">
+                                <select id="searchGubun">
+                                    <option value="">Gubun 선택</option>
+                                    <% gubunCodes.forEach(gc => { %>
+                                        <option value="<%= gc.code_value %>"><%= gc.code_name %></option>
+                                    <% }); %>
+                                </select>
                                 <select id="searchStatus">
                                     <option value="">Status 선택</option>
                                     <% statusCodes.forEach(sc => { %>
@@ -253,19 +308,9 @@
                                         <th>Gubun</th>
                                         <th>Status</th>
                                         <th>Create User</th>
-                                        <!-- <th>Assignee</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Plan Date</th>
-                                        <th>Memo1</th>
-                                        <th>Memo2</th> 
-                                        <th>Actions</th>-->
                                     </tr>
                                 </thead>
                             </table>
-
-                            <!-- 페이징 -->
-                            <div class="pagination" id="pagination"></div>
                         </div>
 
                         <!-- 추가 탭 -->
@@ -278,7 +323,12 @@
                                 </div>
                                 <div class="form-row">
                                     <label for="editGubun">Gubun</label>
-                                    <input type="text" class="form-control" id="editGubun">
+                                    <select class="form-control" id="editGubun">
+                                        <option value="">선택</option>
+                                        <% gubunCodes.forEach(gc => { %>
+                                            <option value="<%= gc.code_value %>"><%= gc.code_name %></option>
+                                        <% }); %>
+                                    </select>
                                 </div>
                                 <div class="form-row">
                                     <label for="editNote1">Note1</label>
@@ -356,230 +406,222 @@
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
-<!-- contents.ejs (HTML 및 CSS는 동일, <script> 부분만 수정) -->
-    <!-- contents.ejs (HTML 및 CSS는 동일, <script> 부분만 수정) -->
-        <script>
-            $(document).ready(function () {
-                const statusCodes = '<%- JSON.stringify(statusCodes) %>';
-                let dataTable;
-        
-                // Summernote 초기화
-                $('#summernote').summernote({
-                    height: 200,
-                    placeholder: '여기에 내용을 입력하세요'
-                });
-        
-                // 검색 영역 토글 및 아이콘 변경
-                $('#searchToggleBtn').click(function () {
-                    $('#searchSection').slideToggle();
-                    const icon = $(this).find('.fa-chevron-down, .fa-chevron-up');
-                    icon.toggleClass('fa-chevron-down fa-chevron-up');
-                });
-        
-                // DataTable 초기화 및 데이터 로드
-                function initializeDataTable(data) {
-                    if (dataTable) {
-                        dataTable.destroy(); // 기존 테이블 제거
-                    }
-        
-                    dataTable = $('#contentsTable').DataTable({
-                        data: data,
-                        columns: [
-                            { data: 'title', render: function (data, type, row) {
-                                return `<a href="#" class="content-link" data-id="${row.id}">${data || ''}</a>`;
-                            }},
-                            { data: 'gubun', defaultContent: '' },
-                            { data: 'status', defaultContent: '' },
-                            { data: 'create_user', defaultContent: '' },
-                            // { data: 'assignee', defaultContent: '' },
-                            // { data: 'start_date', defaultContent: '' },
-                            // { data: 'end_date', defaultContent: '' },
-                            // { data: 'plan_date', defaultContent: '' },
-                            // { data: 'memo1', defaultContent: '' },
-                            // { data: 'memo2', defaultContent: '' },
-                            // { data: null, render: function (data, type, row) {
-                            //     return `<i class="fas fa-edit action-btn text-warning edit-row" data-id="${row.id}"></i>`;
-                            // }}
-                        ],
-                        pageLength: 10, // 페이지당 10개 항목
-                        lengthChange: false, // 항목 수 선택 비활성화
-                        searching: false, // DataTables 기본 검색 비활성화 (커스텀 검색 사용)
-                        ordering: true, // 정렬 활성화
-                        info: true, // 정보 표시
-                        paging: true, // 페이징 활성화
-                        language: {
-                            paginate: {
-                                previous: '이전',
-                                next: '다음'
-                            },
-                            info: '총 _TOTAL_개 중 _START_ - _END_ 표시'
-                        }
-                    });
+<script>
+    $(document).ready(function () {
+        const statusCodes = '<%- JSON.stringify(statusCodes) %>';
+        const gubunCodes = '<%- JSON.stringify(gubunCodes) %>';
+        let dataTable;
+
+        // Summernote 초기화
+        $('#summernote').summernote({
+            height: 200,
+            placeholder: '여기에 내용을 입력하세요'
+        });
+
+        // 검색 영역 토글 및 아이콘 변경
+        $('#searchToggleBtn').click(function () {
+            $('#searchSection').slideToggle();
+            const icon = $(this).find('.fa-chevron-down, .fa-chevron-up');
+            icon.toggleClass('fa-chevron-down fa-chevron-up');
+        });
+
+        // DataTable 초기화 및 데이터 로드
+        function initializeDataTable(data) {
+            if (dataTable) {
+                dataTable.destroy(); // 기존 테이블 제거
+            }
+
+            dataTable = $('#contentsTable').DataTable({
+                data: data,
+                columns: [
+                    { data: 'title', render: function (data, type, row) {
+                        return `<a href="#" class="content-link" data-id="${row.id}">${data || ''}</a>`;
+                    }},
+                    { data: 'gubun', defaultContent: '' },
+                    { data: 'status', defaultContent: '' },
+                    { data: 'create_user', defaultContent: '' },
+                ],
+                pageLength: 20, // 페이지당 20개 항목
+                lengthChange: false, // 항목 수 선택 비활성화
+                searching: false, // DataTables 기본 검색 비활성화 (커스텀 검색 사용)
+                ordering: true, // 정렬 활성화
+                info: true, // 정보 표시
+                paging: true, // 페이징 활성화
+                language: {
+                    paginate: {
+                        previous: '이전',
+                        next: '다음'
+                    },
+                    info: '총 _TOTAL_개 중 _START_ - _END_ 표시'
                 }
-        
-                // 데이터 로드 및 필터링
-                function loadContents() {
-                    const integratedSearch = $('#integratedSearch').val().toLowerCase();
-                    const searchStatus = $('#searchStatus').val();
-                    const searchCreateUser = $('#searchCreateUser').val().toLowerCase();
-                    const searchAssignee = $('#searchAssignee').val().toLowerCase();
-        
-                    $.get('/contents/data', function (data) {
-                        let allData = data || []; // 데이터가 null일 경우 빈 배열로 초기화
-        
-                        // 필터링
-                        let filteredData = allData.filter(content => {
-                            const matchesIntegrated = !integratedSearch || 
-                                (content.title?.toLowerCase().includes(integratedSearch) ||
-                                 content.note1?.toLowerCase().includes(integratedSearch) ||
-                                 content.note2?.toLowerCase().includes(integratedSearch) ||
-                                 content.note3?.toLowerCase().includes(integratedSearch) ||
-                                 content.memo1?.toLowerCase().includes(integratedSearch) ||
-                                 content.memo2?.toLowerCase().includes(integratedSearch));
-                            const matchesStatus = !searchStatus || content.status === searchStatus;
-                            const matchesCreateUser = !searchCreateUser || content.create_user?.toLowerCase().includes(searchCreateUser);
-                            const matchesAssignee = !searchAssignee || content.assignee?.toLowerCase().includes(searchAssignee);
-        
-                            return matchesIntegrated && matchesStatus && matchesCreateUser && matchesAssignee;
-                        });
-        
-                        // DataTable 초기화 및 데이터 적용
-                        initializeDataTable(filteredData);
-                    }).fail(function (xhr, status, error) {
-                        console.error('Error loading contents:', error);
-                        alert('데이터를 불러오는 데 실패했습니다.');
-                    });
-                }
-        
-                // 초기 로드
-                loadContents();
-        
-                // 검색 버튼 클릭
-                $('#searchBtn').click(function () {
-                    loadContents(); // 검색 시 테이블 새로고침
-                });
-        
-                // 편집 버튼 및 Title 링크 클릭 (추가 탭으로 전환)
-                $(document).on('click', '.edit-row, .content-link', function (e) {
-                    e.preventDefault(); // 링크 기본 동작 방지
-                    const id = $(this).data('id');
-                    if (!id || id === 'undefined') {
-                        console.error('Invalid content ID:', id);
-                        alert('유효하지 않은 콘텐츠 ID입니다.');
-                        return;
-                    }
-                    $.get(`/contents/data?id=${id}`, function (data) {
-                        const content = data;
-                        if (content && content.id == id) {
-                            $('#editId').val(content.id);
-                            $('#editTitle').val(content.title || '');
-                            $('#editGubun').val(content.gubun || '');
-                            $('#summernote').summernote('code', content.note1 || '');
-                            $('#editNote2').val(content.note2 || '');
-                            $('#editNote3').val(content.note3 || '');
-                            $('#editStatus').val(content.status || '');
-                            $('#editCreateUser').val(content.create_user || '');
-                            $('#editAssignee').val(content.assignee || '');
-                            $('#editStartDate').val(content.start_date || '');
-                            $('#editEndDate').val(content.end_date || '');
-                            $('#editPlanDate').val(content.plan_date || '');
-                            $('#editMemo1').val(content.memo1 || '');
-                            $('#editMemo2').val(content.memo2 || '');
-                            $('#add-tab').tab('show'); // 추가 탭으로 전환
-                        } else {
-                            console.error('Content not found for ID:', id);
-                            alert('해당 콘텐츠를 찾을 수 없습니다.');
-                        }
-                    }).fail(function (xhr, status, error) {
-                        console.error('Error fetching content data:', error);
-                        alert('콘텐츠 데이터를 가져오는 데 실패했습니다.');
-                    });
-                });
-        
-                // 신규 생성 버튼 클릭
-                $('#newContent').click(function () {
-                    const newContent = {
-                        title: $('#editTitle').val(),
-                        gubun: $('#editGubun').val(),
-                        note1: $('#summernote').summernote('code'),
-                        note2: $('#editNote2').val(),
-                        note3: $('#editNote3').val(),
-                        status: $('#editStatus').val(),
-                        create_user: $('#editCreateUser').val(),
-                        assignee: $('#editAssignee').val(),
-                        start_date: $('#editStartDate').val(),
-                        end_date: $('#editEndDate').val(),
-                        plan_date: $('#editPlanDate').val(),
-                        memo1: $('#editMemo1').val(),
-                        memo2: $('#editMemo2').val()
-                    };
-        
-                    $.ajax({
-                        url: '/contents/create',
-                        method: 'POST',
-                        data: newContent,
-                        success: function (response) {
-                            alert('신규 콘텐츠가 생성되었습니다.');
-                            $('#editId').val('');
-                            loadContents(); // 테이블 새로고침
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error creating content:', error);
-                            alert('콘텐츠 생성에 실패했습니다.');
-                        }
-                    });
-                });
-        
-                // 저장 버튼 클릭
-                $('#saveContent').click(function () {
-                    const id = $('#editId').val() || null;
-                    const content = {
-                        title: $('#editTitle').val(),
-                        gubun: $('#editGubun').val(),
-                        note1: $('#summernote').summernote('code'),
-                        note2: $('#editNote2').val(),
-                        note3: $('#editNote3').val(),
-                        status: $('#editStatus').val(),
-                        create_user: $('#editCreateUser').val(),
-                        assignee: $('#editAssignee').val(),
-                        start_date: $('#editStartDate').val(),
-                        end_date: $('#editEndDate').val(),
-                        plan_date: $('#editPlanDate').val(),
-                        memo1: $('#editMemo1').val(),
-                        memo2: $('#editMemo2').val()
-                    };
-                    const url = id ? `/contents/update/${id}` : '/contents/create';
-                    const method = id ? 'PUT' : 'POST';
-                    $.ajax({
-                        url: url,
-                        method: method,
-                        data: content,
-                        success: function () {
-                            $('#list-tab').tab('show'); // 리스트 탭으로 복귀
-                            loadContents();
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error saving content:', error);
-                        }
-                    });
-                });
-        
-                // 삭제 버튼 클릭
-                $('#deleteContent').click(function () {
-                    const id = $('#editId').val();
-                    if (id && confirm('정말 삭제하시겠습니까?')) {
-                        $.ajax({
-                            url: `/contents/delete/${id}`,
-                            method: 'DELETE',
-                            success: function () {
-                                $('#list-tab').tab('show'); // 리스트 탭으로 복귀
-                                loadContents();
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Error deleting content:', error);
-                            }
-                        });
-                    }
-                });
             });
-        </script>
+        }
+
+        // 데이터 로드 및 필터링
+        function loadContents() {
+            const integratedSearch = $('#integratedSearch').val().toLowerCase();
+            const searchGubun = $('#searchGubun').val();
+            const searchStatus = $('#searchStatus').val();
+            const searchCreateUser = $('#searchCreateUser').val().toLowerCase();
+            const searchAssignee = $('#searchAssignee').val().toLowerCase();
+
+            $.get('/contents/data', function (data) {
+                let allData = data || []; // 데이터가 null일 경우 빈 배열로 초기화
+
+                // 필터링
+                let filteredData = allData.filter(content => {
+                    const matchesIntegrated = !integratedSearch || 
+                        (content.title?.toLowerCase().includes(integratedSearch) ||
+                         content.note1?.toLowerCase().includes(integratedSearch) ||
+                         content.note2?.toLowerCase().includes(integratedSearch) ||
+                         content.note3?.toLowerCase().includes(integratedSearch) ||
+                         content.memo1?.toLowerCase().includes(integratedSearch) ||
+                         content.memo2?.toLowerCase().includes(integratedSearch));
+                    const matchesGubun = !searchGubun || content.gubun === searchGubun;
+                    const matchesStatus = !searchStatus || content.status === searchStatus;
+                    const matchesCreateUser = !searchCreateUser || content.create_user?.toLowerCase().includes(searchCreateUser);
+                    const matchesAssignee = !searchAssignee || content.assignee?.toLowerCase().includes(searchAssignee);
+
+                    return matchesIntegrated && matchesGubun && matchesStatus && matchesCreateUser && matchesAssignee;
+                });
+
+                // DataTable 초기화 및 데이터 적용
+                initializeDataTable(filteredData);
+            }).fail(function (xhr, status, error) {
+                console.error('Error loading contents:', error);
+                alert('데이터를 불러오는 데 실패했습니다.');
+            });
+        }
+
+        // 초기 로드
+        loadContents();
+
+        // 검색 버튼 클릭
+        $('#searchBtn').click(function () {
+            loadContents(); // 검색 시 테이블 새로고침
+        });
+
+        // 편집 버튼 및 Title 링크 클릭 (추가 탭으로 전환)
+        $(document).on('click', '.edit-row, .content-link', function (e) {
+            e.preventDefault(); // 링크 기본 동작 방지
+            const id = $(this).data('id');
+            if (!id || id === 'undefined') {
+                console.error('Invalid content ID:', id);
+                alert('유효하지 않은 콘텐츠 ID입니다.');
+                return;
+            }
+            $.get(`/contents/data?id=${id}`, function (data) {
+                const content = data;
+                if (content && content.id == id) {
+                    $('#editId').val(content.id);
+                    $('#editTitle').val(content.title || '');
+                    $('#editGubun').val(content.gubun || '');
+                    $('#summernote').summernote('code', content.note1 || '');
+                    $('#editNote2').val(content.note2 || '');
+                    $('#editNote3').val(content.note3 || '');
+                    $('#editStatus').val(content.status || '');
+                    $('#editCreateUser').val(content.create_user || '');
+                    $('#editAssignee').val(content.assignee || '');
+                    $('#editStartDate').val(content.start_date || '');
+                    $('#editEndDate').val(content.end_date || '');
+                    $('#editPlanDate').val(content.plan_date || '');
+                    $('#editMemo1').val(content.memo1 || '');
+                    $('#editMemo2').val(content.memo2 || '');
+                    $('#add-tab').tab('show'); // 추가 탭으로 전환
+                } else {
+                    console.error('Content not found for ID:', id);
+                    alert('해당 콘텐츠를 찾을 수 없습니다.');
+                }
+            }).fail(function (xhr, status, error) {
+                console.error('Error fetching content data:', error);
+                alert('콘텐츠 데이터를 가져오는 데 실패했습니다.');
+            });
+        });
+
+        // 신규 생성 버튼 클릭
+        $('#newContent').click(function () {
+            const newContent = {
+                title: $('#editTitle').val(),
+                gubun: $('#editGubun').val(),
+                note1: $('#summernote').summernote('code'),
+                note2: $('#editNote2').val(),
+                note3: $('#editNote3').val(),
+                status: $('#editStatus').val(),
+                create_user: $('#editCreateUser').val(),
+                assignee: $('#editAssignee').val(),
+                start_date: $('#editStartDate').val(),
+                end_date: $('#editEndDate').val(),
+                plan_date: $('#editPlanDate').val(),
+                memo1: $('#editMemo1').val(),
+                memo2: $('#editMemo2').val()
+            };
+
+            $.ajax({
+                url: '/contents/create',
+                method: 'POST',
+                data: newContent,
+                success: function (response) {
+                    alert('신규 콘텐츠가 생성되었습니다.');
+                    $('#editId').val('');
+                    loadContents(); // 테이블 새로고침
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error creating content:', error);
+                    alert('콘텐츠 생성에 실패했습니다.');
+                }
+            });
+        });
+
+        // 저장 버튼 클릭
+        $('#saveContent').click(function () {
+            const id = $('#editId').val() || null;
+            const content = {
+                title: $('#editTitle').val(),
+                gubun: $('#editGubun').val(),
+                note1: $('#summernote').summernote('code'),
+                note2: $('#editNote2').val(),
+                note3: $('#editNote3').val(),
+                status: $('#editStatus').val(),
+                create_user: $('#editCreateUser').val(),
+                assignee: $('#editAssignee').val(),
+                start_date: $('#editStartDate').val(),
+                end_date: $('#editEndDate').val(),
+                plan_date: $('#editPlanDate').val(),
+                memo1: $('#editMemo1').val(),
+                memo2: $('#editMemo2').val()
+            };
+            const url = id ? `/contents/update/${id}` : '/contents/create';
+            const method = id ? 'PUT' : 'POST';
+            $.ajax({
+                url: url,
+                method: method,
+                data: content,
+                success: function () {
+                    $('#list-tab').tab('show'); // 리스트 탭으로 복귀
+                    loadContents();
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving content:', error);
+                }
+            });
+        });
+
+        // 삭제 버튼 클릭
+        $('#deleteContent').click(function () {
+            const id = $('#editId').val();
+            if (id && confirm('정말 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: `/contents/delete/${id}`,
+                    method: 'DELETE',
+                    success: function () {
+                        $('#list-tab').tab('show'); // 리스트 탭으로 복귀
+                        loadContents();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error deleting content:', error);
+                    }
+                });
+            }
+        });
+    });
+</script>
