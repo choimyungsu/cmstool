@@ -66,7 +66,14 @@
                     </div>
                     <div class="form-row">
                       <label for="detailGubun">Gubun</label>
-                      <input type="text" class="form-control" id="detailGubun">
+                      <!-- <input type="text" class="form-control" id="detailGubun"> -->
+                      <select class="form-control" id="detailGubun">
+                        <option value="">선택</option>
+                        <% gubunCodes.forEach(gc => { %>
+                            <option value="<%= gc.code_value %>"><%= gc.code_name %></option>
+                        <% }); %>
+                    </select>
+
                     </div>
                     <div class="form-row">
                       <label for="detailNote1">Note1</label>
@@ -166,7 +173,13 @@
                     </div>
                     <div class="form-row">
                       <label for="newGubun">Gubun</label>
-                      <input type="text" class="form-control" id="newGubun">
+                      <!-- <input type="text" class="form-control" id="newGubun"> -->
+                      <select class="form-control" id="newGubun">
+                        <option value="">선택</option>
+                        <% gubunCodes.forEach(gc => { %>
+                            <option value="<%= gc.code_value %>"><%= gc.code_name %></option>
+                        <% }); %>
+                    </select>
                     </div>
                     <div class="form-row">
                       <label for="newNote1">Note1</label>

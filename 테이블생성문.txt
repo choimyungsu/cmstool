@@ -120,7 +120,11 @@ CREATE TABLE tb_treewbs (
     assignee VARCHAR(100),           -- Assignee name
     parent_id VARCHAR(100) 
 );
+ALTER TABLE tb_treewbs
+ADD COLUMN project_id INTEGER;
 
+UPDATE tb_treewbs
+SET project_id = 1;
 
 -- 모든관리
 CREATE TABLE tb_tree (
@@ -135,19 +139,19 @@ CREATE TABLE tb_tree (
 
 CREATE TABLE tb_contents (
     id SERIAL PRIMARY KEY,                -- 자동 증가하는 기본 키
-    title VARCHAR,                       -- 제목
-    gubun VARCHAR,                       -- 구분
+    title VARCHAR(255) ,                       -- 제목
+    gubun VARCHAR(255),                       -- 구분
     note1 TEXT,                          -- 대량 텍스트용
     note2 TEXT,                          -- 대량 텍스트용
     note3 TEXT,                          -- 대량 텍스트용
-    status VARCHAR,                      -- 상태
-    create_user VARCHAR,                 -- 생성자
-    assignee VARCHAR,                    -- 담당자
-    start_date VARCHAR,                  -- 시작일
-    end_date VARCHAR,                    -- 종료일
-    plan_date VARCHAR,                   -- 계획일
-    memo1 VARCHAR,                       -- 메모1
-    memo2 VARCHAR,                       -- 메모2
+    status VARCHAR(50),                      -- 상태
+    create_user VARCHAR(100),                 -- 생성자
+    assignee VARCHAR(100),                    -- 담당자
+    start_date VARCHAR(100),                  -- 시작일
+    end_date VARCHAR(100),                    -- 종료일
+    plan_date VARCHAR(100),                   -- 계획일
+    memo1 VARCHAR(100),                       -- 메모1
+    memo2 VARCHAR(100),                       -- 메모2
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 생성 시간 (자동)
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- 수정 시간 (자동)
 );

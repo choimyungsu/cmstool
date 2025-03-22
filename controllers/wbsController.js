@@ -12,7 +12,9 @@ exports.listWbs = async (req, res) => {
     res.render("index", { 
         currentPage: "pages/wbs", 
         tasks,
-        user: req.session.user  
+        user: req.session.user  ,
+        projectList: req.session.projectList || [], // 세션에서 프로젝트 리스트 가져오기
+        selectedProjectId: req.session.selectedProjectId // 선택된 프로젝트 ID 전달
     });
 };
 

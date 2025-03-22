@@ -53,7 +53,9 @@ class IssueController {
                 search_issue_status: search_issue_status || '',
                 search_issue_finish_date: search_issue_finish_date || '',
                 search_issue_contents: search_issue_contents || '',
-                user: req.session.user 
+                user: req.session.user ,
+                projectList: req.session.projectList || [], // 세션에서 프로젝트 리스트 가져오기
+                selectedProjectId: req.session.selectedProjectId // 선택된 프로젝트 ID 전달
             });
             
         } catch (error) {

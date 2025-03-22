@@ -1,13 +1,18 @@
 // controllers/treeController.js
 const treeModel = require('../models/treeModel');
+const contentsModel = require('../models/contentsModel');
 
 const treeController = {
     // tree.ejs 렌더링
     async getAllPage(req, res) {
         try {
+            const gubunCodes = await contentsModel.getGubunCodes();
             res.render('index', { 
                 currentPage: 'pages/tree' ,
                 user: req.session.user,
+                gubunCodes: gubunCodes,   // 셀렉트 박스용 Gubun 코드
+                projectList: req.session.projectList || [], // 세션에서 프로젝트 리스트 가져오기
+                selectedProjectId: req.session.selectedProjectId // 선택된 프로젝트 ID 전달
             });
         } catch (error) {
             console.error('Error rendering tree page:', error);

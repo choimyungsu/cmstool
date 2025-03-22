@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/css/custom.css">
+
 <!--begin::App Main-->
 <main class="content">
     <div class="container-fluid">
@@ -12,7 +13,7 @@
                             <p>My Project</p>
                         </div>
                         <i class="small-box-icon fa-solid fa-bars-progress"></i>
-                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover more-info" data-type="projects">
                             More info <i class="bi bi-link-45deg"></i>
                         </a>
                     </div>
@@ -26,7 +27,7 @@
                             <p>Task</p>
                         </div>
                         <i class="small-box-icon fa-solid fa-list"></i>
-                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover more-info" data-type="tasks">
                             More info <i class="bi bi-link-45deg"></i>
                         </a>
                     </div>
@@ -40,26 +41,33 @@
                             <p>Issue</p>
                         </div>
                         <i class="small-box-icon fas fa-hammer"></i>
-                        <a href="#" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
+                        <a href="#" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover more-info" data-type="issues">
                             More info <i class="bi bi-link-45deg"></i>
                         </a>
                     </div>
                 </div>
 
-                <!-- 네 번째 카드: 예시 데이터 (추가 요구사항 없으므로 고정값) -->
+                <!-- 네 번째 카드: 지연 데이터 -->
                 <div class="col-lg-3 col-6">
                     <div class="small-box text-bg-danger">
                         <div class="inner">
-                            <h3>65</h3>
-                            <p>Unique Visitors</p>
+                            <h3><%= delayCount %></h3>
+                            <p>Delay</p>
                         </div>
-                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path clip-rule="evenodd" fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z"/>
-                            <path clip-rule="evenodd" fill-rule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z"/>
-                        </svg>
-                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                        <i class="fa-solid fa-hourglass-half small-box-icon"></i>
+                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover more-info" data-type="delays">
                             More info <i class="bi bi-link-45deg"></i>
                         </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 새로운 결과 표시 영역 -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div id="dashboard-details" class="details-container">
+                        <h4 id="details-title">상세 정보</h4>
+                        <div id="details-content" class="table-responsive"></div>
                     </div>
                 </div>
             </div>
@@ -67,3 +75,177 @@
     </div>
 </main>
 <!--end::App Main-->
+
+<!-- jQuery 추가 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript 추가 -->
+<script>
+    $(document).ready(function () {
+        $('.more-info').click(function (e) {
+            e.preventDefault();
+            const type = $(this).data('type');
+            loadDetails(type);
+        });
+
+        function loadDetails(type) {
+            $.ajax({
+                url: `/dashboard/details/${type}`,
+                method: 'GET',
+                success: function (data) {
+                    displayDetails(type, data);
+                },
+                error: function (xhr, status, error) {
+                    console.error(`Error fetching ${type} details:`, error);
+                    $('#details-title').html('<i class="fas fa-exclamation-triangle me-2"></i> 오류');
+                    $('#details-content').html('<p class="text-danger">데이터를 불러오는 중 오류가 발생했습니다.</p>');
+                }
+            });
+        }
+
+        function displayDetails(type, data) {
+            let title = '';
+            let content = '';
+
+            switch (type) {
+                case 'projects':
+                    title = '<i class="fas fa-bars-progress me-2"></i> 참여 중인 프로젝트';
+                    content = createTable(data, ['pjt_name'], ['프로젝트명']);
+                    break;
+
+                case 'tasks':
+                    title = '<i class="fas fa-list me-2"></i> 미완료 태스크';
+                    content = createGroupedTable(data, 'pjt_name', ['task','progress'], ['태스크','진행률']);
+                    break;
+
+                case 'issues':
+                    title = '<i class="fas fa-hammer me-2"></i> 미완료 이슈';
+                    content = createTable(data, ['title', 'status'], ['이슈 제목', '상태']);
+                    break;
+
+                case 'delays':
+                    title = '<i class="fas fa-hourglass-half me-2"></i> 지연 데이터';
+                    content = createGroupedTable(data, 'pjt_name', ['task', 'end_date'], ['태스크', '완료예정일']);
+                    break;
+
+                default:
+                    title = '<i class="fas fa-info-circle me-2"></i> 상세 정보';
+                    content = '<p class="text-muted">데이터 없음</p>';
+            }
+
+            $('#details-title').html(title);
+            $('#details-content').html(content);
+        }
+
+        function createTable(data, columns, headers) {
+            if (!data || data.length === 0) return '<p class="text-muted">데이터 없음</p>';
+
+            let html = '<table class="table table-striped table-hover">';
+            html += '<thead><tr>';
+            headers.forEach(header => html += `<th>${header}</th>`);
+            html += '</tr></thead><tbody>';
+
+            data.forEach(item => {
+                html += '<tr>';
+                columns.forEach(col => {
+                    html += `<td>${item[col] || 'N/A'}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function createGroupedTable(data, groupKey, columns, headers) {
+            if (!data || data.length === 0) return '<p class="text-muted">데이터 없음</p>';
+
+            const grouped = {};
+            data.forEach(item => {
+                const groupName = item[groupKey] || '알 수 없는 프로젝트';
+                if (!grouped[groupName]) {
+                    grouped[groupName] = [];
+                }
+                grouped[groupName].push(item);
+            });
+
+            let html = '';
+            for (const [groupName, items] of Object.entries(grouped)) {
+                html += `<h5 class="mt-3">${groupName}</h5>`;
+                html += '<table class="table table-striped table-hover">';
+                html += '<thead><tr>';
+                headers.forEach(header => html += `<th>${header}</th>`);
+                html += '</tr></thead><tbody>';
+
+                items.forEach(item => {
+                    html += '<tr>';
+                    columns.forEach(col => {
+                        html += `<td>${item[col] || 'N/A'}</td>`;
+                    });
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table>';
+            }
+            return html;
+        }
+    });
+</script>
+
+<style>
+    .details-container {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        min-height: 200px;
+    }
+
+    .details-container h4 {
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .details-container h5 {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #007bff;
+        font-weight: 500;
+    }
+
+    .table {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table td {
+        vertical-align: middle;
+        color: #333;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #e9ecef;
+    }
+
+    .table-responsive {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>

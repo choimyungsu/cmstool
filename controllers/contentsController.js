@@ -11,7 +11,9 @@ const contentsController = {
                 currentPage: 'pages/contents',
                 user: req.session.user,
                 statusCodes: statusCodes, // 셀렉트 박스용 상태 코드
-                gubunCodes: gubunCodes   // 셀렉트 박스용 Gubun 코드
+                gubunCodes: gubunCodes,   // 셀렉트 박스용 Gubun 코드
+                projectList: req.session.projectList || [], // 세션에서 프로젝트 리스트 가져오기
+                selectedProjectId: req.session.selectedProjectId // 선택된 프로젝트 ID 전달
             });
         } catch (error) {
             console.error('Error rendering contents page:', error);

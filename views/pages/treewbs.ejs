@@ -297,8 +297,9 @@
                         $.get('/treewbs/data', function (data) {
                             const treeData = buildTree(data);
                             ganttData = flattenForGantt(data);
-                            console.log('Initial raw data from server:', data);
-                            console.log('Initial ganttData:', ganttData);
+                            // console.log('Initial raw data from server:', data);
+                            // console.log('Initial ganttData:', ganttData);
+                            console.log('Fetched data with project_id:', data);
                             callback.call(this, treeData);
                             updateTable();
                             renderGanttChart();
@@ -315,6 +316,21 @@
                     'show_only_matches_children': true // 하위 노드도 표시
                 }
             });
+
+            // 노드 추가
+        $('#addNode').click(function () {
+            let ref = $('#jstree').jstree(true);
+            let sel = ref.get_selected();
+            if (!sel.length) sel = ['#'];
+            const parentId = sel[0] === '#' ? null : sel[0];
+            $.post('/treewbs/create', { task: '새 노드', parent_id: parentId }, function (newNode) {
+                ref.create_node(sel[0], { id: newNode.id, text: newNode.task });
+                ref.open_node(sel[0]);
+                updateTable();
+            }).fail(function (xhr, status, error) {
+                console.error('Error creating node:', error);
+            });
+        });
 
             // 검색 기능 구현
         $('#treeSearch').on('keyup', function () {
@@ -645,20 +661,6 @@
             });
         }
 
-            // 노드 추가
-            $('#addNode').click(function () {
-                let ref = $('#jstree').jstree(true);
-                let sel = ref.get_selected();
-                if (!sel.length) sel = ['#'];
-                const parentId = sel[0] === '#' ? null : sel[0];
-                $.post('/treewbs/create', { task: '새 노드', parent_id: parentId }, function (newNode) {
-                    ref.create_node(sel[0], { id: newNode.id, text: newNode.task });
-                    ref.open_node(sel[0]);
-                    updateTable();
-                }).fail(function (xhr, status, error) {
-                    console.error('Error creating node:', error);
-                });
-            });
 
             // 노드 수정 (트리에서)
             $('#editNode').click(function () {

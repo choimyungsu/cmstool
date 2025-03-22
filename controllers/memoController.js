@@ -17,7 +17,9 @@ const memoController = {
         title: 'Memo List',
         currentPage: 'pages/memo',  // 동적 페이지로 pages/memo지정 ,
         Memo: memo, // 사용자 데이터 전달
-        user: req.session.user 
+        user: req.session.user ,
+        projectList: req.session.projectList || [], // 세션에서 프로젝트 리스트 가져오기
+        selectedProjectId: req.session.selectedProjectId // 선택된 프로젝트 ID 전달
       });
     } catch (error) {
       console.error(error);

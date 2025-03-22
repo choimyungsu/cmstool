@@ -181,7 +181,9 @@ const projectController = {
         search_pjt_uid: search_pjt_uid || '',
         search_pjt_name: search_pjt_name || '',
         search_pjt_open: search_pjt_open || '',
-        user: req.session.user 
+        user: req.session.user ,
+        projectList: req.session.projectList || [], // 세션에서 프로젝트 리스트 가져오기
+        selectedProjectId: req.session.selectedProjectId // 선택된 프로젝트 ID 전달
       });
     } catch (error) {
       console.error('List error:', error);
