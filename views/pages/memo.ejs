@@ -2,53 +2,21 @@
 <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
 
-<style>
-    /* DataTables 버튼 크기와 간격 조정 */
-    .dt-buttons {
-        margin-bottom: 0.5rem;
-        /* 버튼 아래 여백 */
-    }
-
-    .dt-buttons .buttons-colvis,
-    .dt-buttons .buttons-copy,
-    .dt-buttons .buttons-excel,
-    .dt-buttons .buttons-pdf,
-    .dt-buttons .buttons-print {
-        font-size: 0.7rem !important;
-        /* 버튼 텍스트 크기 축소 */
-        padding: 0.2rem 0.5rem !important;
-        /* 버튼 내부 패딩 축소 */
-        margin-right: 0.3rem !important;
-        /* 버튼 간 간격 설정 */
-        border-radius: 3px !important;
-        /* 약간 둥근 모서리 */
-    }
-
-    /* 마지막 버튼의 오른쪽 여백 제거 */
-    .dt-buttons .buttons-colvis:last-child {
-        margin-right: 0 !important;
-    }
-</style>
-<!-- views/pages/memo-create.ejs 또는 users.ejs -->
+<!-- views/pages/memo-create.ejs -->
+<!-- views/pages/memo-create.ejs -->
 <main class="content">
     <div class="container-fluid">
-
         <div class="row mb-2">
             <div class="container custom-container">
-
-                <!-- <h1 class="mb-1 custom-title"><i class="fas fa-sticky-note me-1"></i> Memo</h1> -->
                 <h1 class="mb-1 custom-title d-flex justify-content-between align-items-center" id="toggleCreate">
                     <span>
-                        <i class="fas fa-sticky-note me-1"  style="cursor: pointer;"></i> 
+                        <i class="fas fa-sticky-note me-1" style="cursor: pointer;"></i> 
                         Memo
                     </span>
-                    <i class="fas fa-caret-down"  style="cursor: pointer;"></i>
+                    <i class="fas fa-caret-down" style="cursor: pointer;"></i>
                 </h1>
 
-
-                <!-- action을 /register에서 /memo/create로 수정 -->
                 <div id="createForm" style="display: block;">
-
                     <div class="input-group custom-input-group mb-1">
                         <label class="input-group-text custom-label" for="memo_title">Title</label>
                         <input type="text" class="form-control custom-input" id="memo_title" name="memo_title" required>
@@ -65,39 +33,32 @@
                         </button>
                     </div>
                     <div class="mb-1">
-
-                        <textarea class="form-control custom-input" id="memo_contents" name="memo_contents"
-                            rows="10"></textarea>
+                        <textarea class="form-control custom-input" id="memo_contents" name="memo_contents" rows="10"></textarea>
                     </div>
                     <button type="button" class="btn btn-primary btn-sm custom-btn" id="actionButton">등록</button>
                 </div>
-
             </div>
         </div>
         <!-- 히든 필드 추가 -->
         <input type="hidden" id="memoId" name="memoId">
-
-
 
         <!-- 검색조건 -->
         <div class="row mb-2">
             <div class="container custom-container">
                 <h1 class="mb-1 custom-title d-flex justify-content-between align-items-center" id="toggleSearch">
                     <span>
-                        <i class="fas fa-search me-1"  style="cursor: pointer;"></i> 
+                        <i class="fas fa-search me-1" style="cursor: pointer;"></i> 
                         Search
                     </span>
-                    <i class="fas fa-caret-down"  style="cursor: pointer;"></i>
+                    <i class="fas fa-caret-down" style="cursor: pointer;"></i>
                 </h1>
 
                 <div id="searchForm" style="display: none;">
                     <form id="searchMemoForm">
-
                         <div class="input-group custom-input-group mb-1">
                             <label class="input-group-text custom-label" for="search_memo_title">Title</label>
                             <input type="text" class="form-control custom-input" id="search_memo_title" name="search_memo_title">
                         </div>
-
                         <div class="input-group custom-input-group mb-1">
                             <label class="input-group-text custom-label" for="search_memo_writer">Writer</label>
                             <input type="text" class="form-control custom-input" id="search_memo_writer" name="search_memo_writer">
@@ -110,14 +71,11 @@
                             <label class="input-group-text custom-label" for="search_memo_contents">Contents</label>
                             <input type="text" class="form-control custom-input" id="search_memo_contents" name="search_memo_contents">
                         </div>
-                        <button type="button" class="btn btn-sm btn-primary " id="searchButton">Search</button>
+                        <button type="button" class="btn btn-sm btn-primary" id="searchButton">Search</button>
                     </form>
                 </div>
             </div>
         </div>
-
-
-
 
         <div class="row">
             <div class="container custom-container">
@@ -133,44 +91,32 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% if (Memo && Array.isArray(Memo) && Memo.length> 0) { %>
-                                    <% Memo.forEach(memo=> { %>
+                                <% if (Memo && Array.isArray(Memo) && Memo.length > 0) { %>
+                                    <% Memo.forEach(memo => { %>
                                         <tr>
                                             <td><i class="fas fa-edit edit-icon" data-id="<%= memo.id %>"
                                                     data-memo_title="<%= memo.memo_title %>"
                                                     data-memo_writer="<%= memo.memo_writer %>"
-                                                    data-memo_dt="<%= memo.memo_dt %>"
-                                                    data-memo_contents="<%= memo.memo_contents %>"></i></td>
-                                            <td>
-                                                <%= memo.memo_title || '-' %>
-                                            </td>
-                                            <td>
-                                                <%= memo.memo_writer || '-' %>
-                                            </td>
-                                            <td>
-                                                <%= memo.memo_dt %>
-                                            </td>
+                                                    data-memo_dt="<%= memo.memo_dt %>"></i></td>
+                                            <td><%= memo.memo_title || '-' %></td>
+                                            <td><%= memo.memo_writer || '-' %></td>
+                                            <td><%= memo.memo_dt %></td>
                                         </tr>
-                                        <% }) %>
+                                    <% }) %>
                                 <% } %>
-
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-
-
     </div>
 </main>
-
 
 <!-- Summernote CSS -->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <!-- Bootstrap Datepicker CSS -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
-    rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
 <!-- DataTables CSS CDN -->
 <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 <!-- DataTables Buttons CSS CDN -->
@@ -222,7 +168,6 @@
 
     #memo_contents {
         min-height: 200px;
-        /* Summernote 에디터 최소 높이 */
     }
 
     .custom-table {
@@ -248,7 +193,6 @@
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
 <!-- DataTables JS CDN -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
@@ -268,13 +212,10 @@
 
 <script>
     $(document).ready(function () {
-        //console.log('jQuery loaded:', $); // jQuery 로드 확인
-        //console.log('Checking #memo_contents:', $('#memo_contents').length); // DOM 요소 존재 확인
-
         // Summernote 초기화
-        if ($('#memo_contents').length) { // #memo_contents가 존재하는지 확인
+        if ($('#memo_contents').length) {
             $('#memo_contents').summernote({
-                height: 200, // 에디터 높이 설정
+                height: 200,
                 toolbar: [
                     ['style', ['style']],
                     ['font', ['bold', 'underline', 'clear']],
@@ -294,37 +235,35 @@
         }
 
         // DataTables 초기화
-        table = $('#example').DataTable({
+        let table = $('#example').DataTable({
             pageLength: 10,
-            lengthMenu: [5, 10, 25, 50], // 한 페이지당 항목 수 옵션 표시
+            lengthMenu: [5, 10, 25, 50],
             dom: 'B<"row"<"col-sm-6"l><"col-sm-6"f>>rt <"row"<"col-sm-6"i><"col-sm-6"p>>',
             buttons: [
                 {
-                    extend: 'excelHtml5', //엑셀 예외처리
+                    extend: 'excelHtml5',
                     exportOptions: {
-                        columns: [1, 2, 3], // 0번 열(수정) 제외, 1(제목), 2(작성자), 3(날짜)만 내보냄
+                        columns: [1, 2, 3],
                         format: {
                             body: function (data, row, column, node) {
-                                return column === 0 ? '' : data; // 수정 열은 빈 값
+                                return column === 0 ? '' : data;
                             }
                         }
                     }
                 },
                 'copy', 'print', 'colvis'
             ],
-            searching: true, // 검색 활성화
-            ordering: true, // 정렬 활성화
-            paging: true, // 페이징 활성화
-            info: true // 정보 표시 (예: "Showing 1 to 5 of 10 entries")
-
-
+            searching: true,
+            ordering: true,
+            paging: true,
+            info: true
         });
 
         // Bootstrap Datepicker 초기화
         $('#memo_dt').datepicker({
-            format: 'yyyy-mm-dd', // 날짜 형식
-            autoclose: true, // 선택 후 자동 닫힘
-            todayHighlight: true // 오늘 날짜 강조
+            format: 'yyyy-mm-dd',
+            autoclose: true,
+            todayHighlight: true
         });
 
         // 달력 버튼 클릭 시 Datepicker 열기
@@ -337,19 +276,36 @@
         let clearBtn = null;
         let searchBtn = null;
 
-        // 수정 아이콘 클릭 시 폼 채우기
-        $(".edit-icon").on("click", function () {
+        // 수정 아이콘 클릭 이벤트 (이벤트 위임 사용)
+        $(document).on("click", ".edit-icon", function () {
             const row = $(this).closest("tr");
             const memoId = $(this).data('id');
             const title = $(this).data('memo_title') || "No Title";
             const writer = $(this).data('memo_writer') || "Anonymous";
             const memo_dt = $(this).data('memo_dt') || new Date().toISOString().split('T')[0];
-            const memo_contents = $(this).data('memo_contents') || "<p>No content</p>";
 
             $("#memo_title").val(title);
             $("#memo_writer").val(writer);
             $("#memo_dt").val(memo_dt);
-            $('#memo_contents').summernote('code', memo_contents);
+            $("#memoId").val(memoId);
+
+            // memo_contents를 별도로 AJAX로 조회
+            $.ajax({
+                url: `/memoContents/${memoId}`,
+                type: "GET",
+                success: function (response) {
+                    if (response.success) {
+                        $('#memo_contents').summernote('code', response.data || "<p>No content</p>");
+                    } else {
+                        console.error("Failed to fetch memo contents:", response.message);
+                        $('#memo_contents').summernote('code', "<p>Error loading content</p>");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching memo contents:", xhr.responseText, error);
+                    $('#memo_contents').summernote('code', "<p>Error loading content</p>");
+                }
+            });
 
             // 기존 버튼 제거
             if (updateBtn) updateBtn.remove();
@@ -404,7 +360,6 @@
                 });
             });
 
-            // 삭제 버튼 클릭 이벤트
             deleteBtn.off("click").on("click", function () {
                 if (confirm("정말로 삭제하시겠습니까?")) {
                     $.ajax({
@@ -428,14 +383,13 @@
                 }
             });
 
-            // Clear 버튼 클릭 이벤트
             clearBtn.off("click").on("click", function () {
                 $("#memo_title").val("");
                 $("#memo_writer").val("");
                 $("#memo_dt").val("");
                 $('#memo_contents').summernote('code', "");
+                $("#memoId").val("");
 
-                // 버튼 초기화
                 if (updateBtn) updateBtn.remove();
                 if (deleteBtn) deleteBtn.remove();
                 if (clearBtn) clearBtn.remove();
@@ -444,8 +398,7 @@
         });
 
         // "Create Memo" 버튼 클릭 시 신규 생성 (AJAX POST)
-        //$(".custom-btn").on("click", function () {
-        $("#actionButton").on("click", function () {    
+        $("#actionButton").on("click", function () {
             const memoData = {
                 memo_title: $("#memo_title").val().trim() || "No Title",
                 memo_writer: $("#memo_writer").val().trim() || "Anonymous",
@@ -454,7 +407,6 @@
             };
             console.log('Sending new memo data:', memoData);
 
-            // 입력값 검증
             if (!memoData.memo_title) {
                 alert("Title is required");
                 return;
@@ -469,7 +421,7 @@
                     console.log("Save response:", response);
                     if (response.success) {
                         alert(response.message || "Memo saved successfully!");
-                        location.reload(); // 페이지 새로고침
+                        location.reload();
                     } else {
                         alert("Save failed: " + response.message);
                     }
@@ -489,8 +441,8 @@
                 $('a[href="/memo"]').addClass('active');
             }
         }
-        updateActiveLink(); // 페이지 로드 시 실행
-        $(window).on('popstate', updateActiveLink); // 뒤로/앞으로 가기 시 업데이트
+        updateActiveLink();
+        $(window).on('popstate', updateActiveLink);
 
         /*토글로 창 닫고 열기*/
         document.getElementById("toggleSearch").addEventListener("click", function () {
@@ -503,70 +455,9 @@
             form2.style.display = (form2.style.display === "none" || form2.style.display === "") ? "block" : "none";
         });
 
-
-
-        $("#searchButton").on("click", function () {    
-            
-            
-
-  
-            //table.clear().draw(); // 기존 데이터 삭제
-            //table.ajax.url('/memoSearch?' + $('#searchMemoForm').serialize()).load(); // 새로운 데이터 가져오기
-
-            var query = $('#searchMemoForm').serialize();  // 검색 조건 가져오기
-            table.ajax.url('/memoSearch?' + query).load();  // URL 업데이트 후 데이터 다시 로드
-
-
-
-
-        //     const memoData = {
-        //         memo_title: $("#search_memo_title").val().trim() ,
-        //         memo_writer: $("#search_memo_writer").val().trim() ,
-        //         memo_dt: $("#search_memo_dt").val().trim() ,
-        //         memo_contents: $('#search_memo_contents').val().trim() 
-        //     };
-           
-        //     const queryString = $.param(memoData);
-           
-
-        //     $.ajax({
-        //         url: `/memoSearch?${queryString}`,
-        //         method: 'GET',
-               
-        //         success: function (response) {
-        //             console.log("Response:", response); // 디버깅용
-        //             if (response.success) {
-
-        //                 location.reload(); // 페이지 새로고침
-
-                        
-        //             } else {
-        //                 alert("Search failed: " + response.message);
-        //             }
-        //         },
-        //         error: function (xhr, status, error) {
-        //             console.error("Status:", xhr.status, "Response:", xhr.responseText, "Error:", error);
-        //             alert("Search failed. Status: " + xhr.status + ", " + xhr.responseText);
-        //         }
-        //     });
+        $("#searchButton").on("click", function () {
+            var query = $('#searchMemoForm').serialize();
+            table.ajax.url('/memoSearch?' + query).load();
         });
-
-
-
-   
-
-
-
-
     });
-
-
-
-
-
-
-
-
-
-
 </script>

@@ -5,7 +5,7 @@ class Memo {
   static async getAllMemos() {
     try {
       const result = await pool.query(`
-        SELECT id, memo_title, memo_writer, memo_dt, memo_contents, 
+        SELECT id, memo_title, memo_writer, memo_dt, 
                created_at, updated_at 
         FROM tb_memo 
         ORDER BY id
@@ -15,6 +15,7 @@ class Memo {
       throw error;
     }
   }
+
   static async createMemo(memoData) {
     try {
       const { memo_title, memo_writer, memo_dt, memo_contents } = memoData;
@@ -60,21 +61,21 @@ class Memo {
 
   static async deleteMemo(id) {
     try {
-        const result = await pool.query(
-            `DELETE FROM tb_memo WHERE id = $1 RETURNING *`,
-            [id]
-        );
-        return result;
+      const result = await pool.query(
+        `DELETE FROM tb_memo WHERE id = $1 RETURNING *`,
+        [id]
+      );
+      return result;
     } catch (error) {
-        throw error;
+      throw error;
     }
-}
+  }
 
-//검색
-static async searchMemo({ search_memo_title, search_memo_writer,search_memo_dt,search_memo_contents}) {
-  try {
-      let query = `SELECT id, memo_title, memo_writer, memo_dt, memo_contents, 
-               created_at, updated_at FROM tb_memo WHERE 1=1`;
+  // 검색 메서드에서도 memo_contents 제외
+  static async searchMemo({ search_memo_title, search_memo_writer, search_memo_dt, search_memo_contents }) {
+    try {
+      let query = `SELECT id, memo_title, memo_writer, memo_dt, 
+                   created_at, updated_at FROM tb_memo WHERE 1=1`;
       const values = [];
 
       if (search_memo_title) {
@@ -82,28 +83,41 @@ static async searchMemo({ search_memo_title, search_memo_writer,search_memo_dt,s
         values.push(`%${search_memo_title}%`);
       }
       if (search_memo_writer) {
-          query += ` AND memo_writer LIKE $${values.length + 1}`;
-          values.push(`%${search_memo_writer}%`);
+        query += ` AND memo_writer LIKE $${values.length + 1}`;
+        values.push(`%${search_memo_writer}%`);
       }
       if (search_memo_dt) {
-          query += ` AND memo_dt LIKE $${values.length + 1}`;
-          values.push(search_memo_dt);
+        query += ` AND memo_dt LIKE $${values.length + 1}`;
+        values.push(search_memo_dt);
       }
       if (search_memo_contents) {
-          query += ` AND memo_contents LIKE $${values.length + 1}`;
-          values.push(`%${search_memo_contents}%`);
+        query += ` AND memo_contents LIKE $${values.length + 1}`;
+        values.push(`%${search_memo_contents}%`);
       }
 
-      //console.log('SearchMemo SQL', query, values); // 쿼리와 값 분리 출력
       const result = await pool.query(query, values);
-      //console.log('SearchMemo SQL result',result)
       return result.rows;
-  } catch (error) {
+    } catch (error) {
       console.error(error);
       throw error;
+    }
   }
-}
 
+  // memo_contents만 조회하는 새로운 메서드 추가
+  static async getMemoContents(id) {
+    try {
+      const result = await pool.query(
+        `SELECT memo_contents FROM tb_memo WHERE id = $1`,
+        [id]
+      );
+      if (result.rowCount === 0) {
+        return null;
+      }
+      return result.rows[0].memo_contents;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 module.exports = Memo;
