@@ -21,6 +21,7 @@ const treewbsRoutes = require('./routes/treewbsRoutes');
 const contentsRoutes = require('./routes/contentsRoutes');
 const treeRoutes = require('./routes/treeRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const calendarRoutes = require('./routes/calendarRoutes');
 
 // EJS 설정
 app.set('view engine', 'ejs');
@@ -68,7 +69,7 @@ app.use('/', treewbsRoutes);
 app.use('/', contentsRoutes); // '/contents'로 시작하는 경로 처리
 app.use('/', treeRoutes); // '/tree'로 시작하는 경로 처리
 app.use('/', dashboardRoutes);
-
+app.use('/', calendarRoutes);
 // 루트 경로에서 대시보드 렌더링
 // app.get('/', (req, res) => {
 //   res.render("index", {
@@ -77,16 +78,16 @@ app.use('/', dashboardRoutes);
 //   });
 // });
 
-app.get('/calendar', async (req, res) => {
-  try {
-    res.render("index", {
-      currentPage: 'pages/calendar',
-      user: req.session.user // user 객체 전달
-    });
-  } catch (err) {
-    console.error(err);
-  }
-});
+// app.get('/calendar', async (req, res) => {
+//   try {
+//     res.render("index", {
+//       currentPage: 'pages/calendar',
+//       user: req.session.user // user 객체 전달
+//     });
+//   } catch (err) {
+//     console.error(err);
+//   }
+// });
 
 // 컬럼 비교하기
 app.get('/compare', async (req, res) => {
