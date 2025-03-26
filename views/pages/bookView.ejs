@@ -1,0 +1,365 @@
+<!-- views/pages/bookView.ejs -->
+<main class="content">
+    <div class="container-fluid">
+        <div class="book-view-container">
+            <% let currentPage = null; %>
+            <% if (pages && pages.length > 0) { %>
+                <% currentPage = pages.find(p => p.page_number === currentPageNumber) || pages[0]; %>
+            <% } %>
+
+            <div class="book-info">
+                <a href="/page/create?bookId=<%= bookId || '' %>" class="btn btn-xs btn-primary ">page 추가</a>
+                <% if (currentPage && currentPage.id) { %>
+                    <a href="/page/edit/<%= currentPage.id %>" class="btn btn-xs btn-warning ">page 수정</a>
+                <% } %>
+            </div>
+            <div class="page-viewer">
+                <% if (currentPage && currentPage.id) { %>
+                    <div class="page-item">
+                        <div class="bookmark-clip" style="display: <%= bookmark ? 'block' : 'none' %>;">
+                            <i class="fas fa-paperclip"></i>
+                        </div>
+                        <div class="page-content" id="page-content">
+                            <%- currentPage.content %>
+                        </div>
+                        <div class="watermark" style="font-size: <%= currentPage.watermark_size || 40 %>px;">
+                            <%= currentPage.watermark_text %>
+                        </div>
+                    </div>
+                    <div class="nav-icons">
+                        <% if (currentPageNumber > 1) { %>
+                            <a href="/book/<%= bookId %>/page/<%= currentPageNumber - 1 %>" class="nav-icon left">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        <% } %>
+                        <% if (currentPageNumber < pages.length) { %>
+                            <a href="/book/<%= bookId %>/page/<%= currentPageNumber + 1 %>" class="nav-icon right">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        <% } %>
+                    </div>
+                    <div class="page-number-wrapper">
+                        <span class="page-number">페이지 <%= currentPage.page_number %> / <%= pages.length %></span>
+                    </div>
+                <% } else { %>
+                    <p>페이지를 찾을 수 없습니다.</p>
+                <% } %>
+
+                <!-- 책갈피 토글 버튼 -->
+                <div class="tools-panel">
+                    <div class="tools-toggle <%= bookmark ? 'active' : '' %>">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                </div>
+
+                <!-- 책갈피 목록 -->
+                <div class="bookmark-list">
+                    <% if (bookmarks && bookmarks.length > 0) { %>
+                        <% bookmarks.forEach(bookmark => { %>
+                            <a href="/book/<%= bookId %>/page/<%= bookmark.page_number %>" class="bookmark-item">
+                                <i class="fas fa-bookmark"></i>
+                                <span class="bookmark-page-number"><%= bookmark.page_number %></span>
+                            </a>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap 모달 -->
+<div class="modal fade" id="bookmarkModal" tabindex="-1" aria-labelledby="bookmarkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <p id="bookmarkModalMessage"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Bootstrap JS (모달 동작을 위해 필요) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+    .book-view-container {
+        padding: 10px;
+        max-width: 100%;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .book-info {
+        text-align: right;
+        margin-bottom: 15px;
+    }
+
+
+
+    .page-viewer {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 150px);
+        overflow: hidden;
+    }
+
+    .page-item {
+        border: 1px solid #dee2e6;
+        padding: 10px;
+        border-radius: 5px;
+        height: 100%;
+        overflow-y: auto;
+        background: #fff;
+        position: relative;
+    }
+
+    .page-content {
+        min-height: 100%;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.2;
+        color: #000;
+        pointer-events: none;
+    }
+
+    .nav-icons {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        z-index: 10;
+    }
+
+    .page-number-wrapper {
+        position: absolute;
+        bottom: 5px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        z-index: 10;
+    }
+
+    .page-number {
+        font-size: 12px;
+        color: #666;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 2px 8px;
+        border-radius: 10px;
+        display: inline-block;
+    }
+
+    .nav-icon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 24px;
+        color: #000;
+        opacity: 0.5;
+        text-decoration: none;
+        padding: 10px;
+        transition: opacity 0.3s;
+    }
+
+    .nav-icon:hover {
+        opacity: 0.8;
+    }
+
+    .nav-icon.left {
+        left: 10px;
+    }
+
+    .nav-icon.right {
+        right: 10px;
+    }
+
+    /* 책갈피 클립 스타일 */
+    .bookmark-clip {
+        position: absolute;
+        top: 10px;
+        right: -10px;
+        font-size: 24px;
+        color: #dc3545;
+        transform: rotate(45deg);
+        z-index: 20;
+    }
+
+    /* 책갈피 토글 버튼 스타일 */
+    .tools-panel {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        z-index: 30;
+    }
+
+    .tools-toggle {
+        background-color: #007bff;
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        margin: 10px;
+        transition: background-color 0.3s;
+    }
+
+    .tools-toggle.active {
+        background-color: #dc3545; /* 책갈피가 추가된 상태에서 빨간색으로 변경 */
+    }
+
+    /* 책갈피 목록 스타일 */
+    .bookmark-list {
+        position: fixed;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        z-index: 40;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .bookmark-item {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #007bff;
+        transition: color 0.3s;
+    }
+
+    .bookmark-item:hover {
+        color: #0056b3;
+    }
+
+    .bookmark-item i {
+        font-size: 24px;
+        margin-right: 5px;
+    }
+
+    .bookmark-page-number {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .btn-xs {
+        font-size: 0.75rem; /* 12px */
+        padding: 0.125rem 0.25rem; /* 세로 2px, 가로 4px */
+        line-height: 1.5;
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+        .book-view-container {
+            padding: 5px;
+        }
+        .page-content {
+            font-size: 14px;
+        }
+        .watermark {
+            font-size: 30px;
+        }
+        .nav-icon {
+            font-size: 20px;
+        }
+        .bookmark-list {
+            right: 5px;
+        }
+        .bookmark-item i {
+            font-size: 20px;
+        }
+        .bookmark-page-number {
+            font-size: 12px;
+        }
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        const pageId = '<%= currentPage && currentPage.id ? currentPage.id : "" %>';
+        const bookId = '<%= bookId || "" %>';
+        const $bookmarkClip = $('.bookmark-clip');
+        const $toolsToggle = $('.tools-toggle');
+
+        // 책갈피 토글 기능
+        $toolsToggle.click(function () {
+            if (!pageId || !bookId) {
+                showModal('책 또는 페이지 정보를 불러올 수 없습니다. 책이 존재하지 않거나 페이지가 없습니다.');
+                //alert('책 또는 페이지 정보를 불러올 수 없습니다. 책이 존재하지 않거나 페이지가 없습니다.');
+                return;
+            }
+
+            if ($bookmarkClip.is(':visible')) {
+                // 책갈피 제거
+                $.ajax({
+                    url: '/bookmark/remove',
+                    method: 'POST',
+                    data: { pageId },
+                    success: function (response) {
+                        if (response.success) {
+                            $bookmarkClip.hide();
+                            $toolsToggle.removeClass('active');
+                            showModal('책갈피가 제거되었습니다.');
+                            // 책갈피 목록 업데이트 (페이지 새로고침으로 간단히 처리)
+                            location.reload();
+                        } else {
+                            showModal('책갈피 제거 실패: ' + response.message, true);
+                        }
+                    },
+                    error: function () {
+                        showModal('책갈피 제거 중 오류가 발생했습니다.', true);
+                    }
+                });
+            } else {
+                // 책갈피 추가
+                $.ajax({
+                    url: '/bookmark/add',
+                    method: 'POST',
+                    data: { pageId, bookId },
+                    success: function (response) {
+                        if (response.success) {
+                            $bookmarkClip.show();
+                            $toolsToggle.addClass('active');
+                            showModal('책갈피가 추가되었습니다.');
+                            // 책갈피 목록 업데이트 (페이지 새로고침으로 간단히 처리)
+                            location.reload();
+                        } else {
+                            showModal('책갈피 추가 실패: ' + response.message, true);
+                        }
+                    },
+                    error: function () {
+                        showModal('책갈피 추가 중 오류가 발생했습니다.', true);
+                    }
+                });
+            }
+        });
+
+        // 모달 표시 함수
+        function showModal(message, isError = false) {
+            const $modal = $('#bookmarkModal');
+            const $message = $('#bookmarkModalMessage');
+            $message.text(message);
+            $message.css('color', isError ? '#dc3545' : '#28a745'); // 에러 시 빨간색, 성공 시 초록색
+            $modal.modal('show');
+            setTimeout(() => {
+                $modal.modal('hide');
+            }, 2000); // 2초 후 모달 닫기
+        }
+
+        $('#page-content').on('mouseup', function (e) {
+            e.stopPropagation();
+        });
+    });
+</script>

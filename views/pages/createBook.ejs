@@ -1,0 +1,53 @@
+<!-- views/pages/createBook.ejs -->
+<div class="create-book-container">
+    <h2 class="mb-4">새로운 책 생성</h2>
+    <form id="createBookForm" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="title" class="form-label">책 제목</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="mb-3">
+            <label for="cover_image" class="form-label">표지 이미지</label>
+            <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*" required>
+        </div>
+        <button type="submit" class="btn btn-primary">책 생성</button>
+        <a href="/books" class="btn btn-secondary ms-2">취소</a>
+    </form>
+</div>
+
+<style>
+    .create-book-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#createBookForm').submit(function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            $.ajax({
+                url: '/books',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        alert('책이 성공적으로 생성되었습니다.');
+                        window.location.href = '/books';
+                    } else {
+                        alert('책 생성 실패: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('책 생성 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+</script>

@@ -45,8 +45,7 @@
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/natextract' ? 'active' : '' %>" href="/natextract">CISCO NAT정책 추출</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/oldnatextract' ? 'active' : '' %>" href="/oldnatextract">CISCO NAT정책 추출(old)</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/csvreadtable' ? 'active' : '' %>" href="/csvreadtable">CSV 파일 보기</a></li>
-            <!-- <li class="nav-item"><a class="nav-link" href="#">Submenu 3-4</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Submenu 3-5</a></li> -->
+            <!-- <li class="nav-item"><a class="nav-link" href="#">Submenu 3-5</a></li> --> 
           </ul>
         </div>
       </li>
@@ -54,13 +53,14 @@
         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu4">
           <i class="fas fa-chart-bar me-2"></i> Reports
         </a>
-        <div class="collapse" id="menu4">
+        <div class="collapse <%= ['pages/stellar','pages/books'].includes(currentPage) ? 'show' : '' %>" id="menu4">
           <ul class="nav flex-column ms-3">
-            <li class="nav-item"><a class="nav-link" href="/stellar">보안이벤트</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/stellar' ? 'active' : '' %>" href="/stellar">보안이벤트</a></li>
             <li class="nav-item"><a class="nav-link" href="#">자산관리</a></li>
             <li class="nav-item"><a class="nav-link" href="#">대시보드</a></li>
-            <!-- <li class="nav-item"><a class="nav-link" href="#">Submenu 4-4</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Submenu 4-5</a></li> -->
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/books' ? 'active' : '' %>" href="/books">Book</a></li>
+            
+            <!-- <li class="nav-item"><a class="nav-link" href="#">Submenu 4-5</a></li> -->
           </ul>
         </div>
       </li>
@@ -68,7 +68,7 @@
         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu5">
           <i class="fas fa-cog me-2"></i> 관리
         </a>
-        <div class="collapse <%= ['pages/users','pages/project','pages/codemgmt','pages/pjt_user'].includes(currentPage) ? 'show' : '' %>" id="menu5">
+        <div class="collapse <%= ['pages/users','pages/project','pages/codemgmt','pages/pjt_user','pages/createBook'].includes(currentPage) ? 'show' : '' %>" id="menu5">
           <ul class="nav flex-column ms-3">
             <li class="nav-item"><a class="nav-link <%= currentPage === 'users' ? 'active' : '' %>" href="/users">사용자</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/project' ? 'active' : '' %>" href="/project">프로젝트</a></li>
@@ -77,6 +77,7 @@
             <li class="nav-item"><a class="nav-link" href="#">프로세스관리</a></li>
             <li class="nav-item"><a class="nav-link" href="#">보고서생성</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/codemgmt' ? 'active' : '' %>" href="/codemgmt">코드관리</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/createBook' ? 'active' : '' %>" href="/books/create">책 생성</a></li>
             
           </ul>
         </div>

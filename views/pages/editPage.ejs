@@ -1,0 +1,96 @@
+<!-- views/pages/editPage.ejs -->
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="row">
+                <div class="edit-page-container">
+                    <h2 class="mb-4">페이지 수정</h2>
+
+                    <form id="editPageForm">
+                        <input type="hidden" name="pageId" value="<%= page.id %>">
+                        <input type="hidden" name="bookId" value="<%= page.book_id %>">
+                        <div class="mb-3">
+                            <label for="chapter_id" class="form-label">챕터 ID</label>
+                            <input type="number" class="form-control" id="chapter_id" name="chapter_id" value="<%= page.chapter_id %>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="page_number" class="form-label">페이지 번호</label>
+                            <input type="number" class="form-control" id="page_number" name="page_number" value="<%= page.page_number %>" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">페이지 콘텐츠</label>
+                            <textarea id="content" name="content"><%= page.content %></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="watermark_text" class="form-label">워터마크 텍스트</label>
+                            <input type="text" class="form-control" id="watermark_text" name="watermark_text" value="<%= page.watermark_text %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="watermark_size" class="form-label">워터마크 글자 크기 (px)</label>
+                            <input type="number" class="form-control" id="watermark_size" name="watermark_size" min="10" max="100" value="<%= page.watermark_size %>">
+                        </div>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                        <a href="/book/<%= page.book_id %>/page/<%= page.page_number %>" class="btn btn-secondary ms-2">취소</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<style>
+    .edit-page-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+</style>
+
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Summernote 에디터 초기화
+        $('#content').summernote({
+            height: 300,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['codeview', 'help']]
+            ]
+        });
+
+        // 폼 제출 처리
+        $('#editPageForm').submit(function (e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+
+            $.ajax({
+                url: '/page/update',
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert('페이지가 성공적으로 수정되었습니다.');
+                        window.location.href = '/book/' + $('#editPageForm [name="bookId"]').val() + '/page/' + $('#editPageForm [name="page_number"]').val();
+                    } else {
+                        alert('페이지 수정 실패: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('페이지 수정 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+</script>

@@ -9,7 +9,7 @@ exports.getDashboardData = async (req, res) => {
 
     const email = user.email;
     let selectedProjectId = req.session.selectedProjectId;
-    console.log('dashboardcontroller Project ID (before):', selectedProjectId);
+    //console.log('dashboardcontroller Project ID (before):', selectedProjectId);
 
     let projectList = req.session.projectList;
     if (!projectList) {

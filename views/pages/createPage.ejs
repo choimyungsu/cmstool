@@ -1,0 +1,142 @@
+<!-- views/pages/createPage.ejs -->
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="row">
+                <div class="create-page-container">
+                    <h2 class="mb-4">새로운 페이지 생성</h2>
+
+                    <!-- 기존 페이지 정보 표시 -->
+                    <div class="existing-pages mb-4">
+                        <h4>기존 페이지 목록</h4>
+                        <% if (pages && pages.length > 0) { %>
+                            <ul class="list-group">
+                                <% pages.forEach(page => { %>
+                                    <li class="list-group-item">
+                                        페이지 <%= page.page_number %>
+                                        <button class="btn btn-sm btn-outline-primary insert-after-btn" data-page-number="<%= page.page_number %>">
+                                            이 페이지 뒤에 삽입
+                                        </button>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        <% } else { %>
+                            <p>기존 페이지가 없습니다. 첫 페이지로 추가됩니다.</p>
+                        <% } %>
+                    </div>
+
+                    <form id="createPageForm">
+                        <input type="hidden" name="bookId" value="<%= bookId %>">
+                        <div class="mb-3">
+                            <label for="chapter_id" class="form-label">챕터 ID</label>
+                            <input type="number" class="form-control" id="chapter_id" name="chapter_id" value="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="page_number" class="form-label">페이지 번호 (자동 설정됨)</label>
+                            <input type="number" class="form-control" id="page_number" name="page_number" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="content" class="form-label">페이지 콘텐츠</label>
+                            <textarea id="content" name="content"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="watermark_text" class="form-label">워터마크 텍스트</label>
+                            <input type="text" class="form-control" id="watermark_text" name="watermark_text" value="Watermark - Book <%= bookId %>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="watermark_size" class="form-label">워터마크 글자 크기 (px)</label>
+                            <input type="number" class="form-control" id="watermark_size" name="watermark_size" min="10" max="100" value="40">
+                        </div>
+                        <button type="submit" class="btn btn-primary">페이지 생성</button>
+                        <a href="/book/<%= bookId %>" class="btn btn-secondary ms-2">취소</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<style>
+    .create-page-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .existing-pages {
+        margin-bottom: 20px;
+    }
+    .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .insert-after-btn {
+        font-size: 12px;
+    }
+</style>
+
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Summernote 에디터 초기화
+        $('#content').summernote({
+            height: 300,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video']],
+                ['view', ['codeview', 'help']]
+            ]
+        });
+
+        // 페이지 번호 기본값 설정
+        const pages = <%- JSON.stringify(pages || []) %>; // 서버에서 전달된 pages 데이터를 클라이언트로 가져옴
+        if (!pages || pages.length === 0) {
+            // 첫 페이지일 경우 page_number를 1로 설정
+            $('#page_number').val(1);
+        } else {
+            // 기존 페이지가 있을 경우 마지막 페이지 번호 + 1로 설정
+            const lastPageNumber = Math.max(...pages.map(page => page.page_number));
+            $('#page_number').val(lastPageNumber + 1);
+        }
+
+        // "이 페이지 뒤에 삽입" 버튼 클릭 시 페이지 번호 설정
+        $('.insert-after-btn').click(function () {
+            const pageNumber = parseInt($(this).data('page-number')) + 1;
+            $('#page_number').val(pageNumber);
+        });
+
+        // 폼 제출 처리
+        $('#createPageForm').submit(function (e) {
+            e.preventDefault();
+            const formData = $(this).serialize();
+
+            $.ajax({
+                url: '/page',
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert('페이지가 성공적으로 생성되었습니다.');
+                        window.location.href = '/book/' + $('#createPageForm [name="bookId"]').val() + '/page/' + response.page.page_number;
+                    } else {
+                        alert('페이지 생성 실패: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('페이지 생성 중 오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+</script>

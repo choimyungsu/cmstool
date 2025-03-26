@@ -1,0 +1,61 @@
+책 정보 저장 (제목, 표지 이미지, 작성자, 퍼블리싱 상태 등).
+
+CREATE TABLE tb_book (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    cover_image VARCHAR(255), -- 책 표지 이미지 URL
+    author_id INTEGER REFERENCES tb_user(id),
+    is_published BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+책의 챕터 정보 저장 (목차 기능 지원).
+
+CREATE TABLE tb_chapter (
+    id SERIAL PRIMARY KEY,
+    book_id INTEGER NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    chapter_order INTEGER NOT NULL, -- 챕터 순서
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+
+책의 페이지 콘텐츠 저장 (이미지/글 포함).
+CREATE TABLE tb_page (
+    id SERIAL PRIMARY KEY,
+    book_id INTEGER NOT NULL,
+    chapter_id INTEGER NOT NULL,
+    page_number INTEGER NOT NULL, -- 페이지 번호
+    content TEXT, -- Summernote로 편집된 HTML 콘텐츠
+    watermark_text VARCHAR(255), -- 워터마크 텍스트
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE tb_page ADD COLUMN watermark_size INTEGER DEFAULT 40;
+
+
+-- 책갈피 테이블
+CREATE TABLE tb_bookmarks (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL, -- 사용자 ID
+    page_id INTEGER NOT NULL, -- 페이지 ID
+    book_id INTEGER NOT NULL, -- 책 ID (추가적인 참조를 위해)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, page_id) -- 동일한 페이지에 중복 책갈피 방지
+);
+
+-- 하이라이트 테이블
+CREATE TABLE tb_highlights (
+    id SERIAL PRIMARY KEY,
+    page_id INTEGER NOT NULL, -- 페이지 ID
+    user_id INTEGER NOT NULL, -- 사용자 ID
+    content TEXT NOT NULL, -- 하이라이트된 HTML 콘텐츠
+    start_offset INTEGER NOT NULL, -- 선택 시작 위치
+    end_offset INTEGER NOT NULL, -- 선택 끝 위치
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
