@@ -20,13 +20,13 @@
       </select>
     </div>
 
-    <a href="#" class="text-dark me-3" onclick="toggleFullScreen()" title="Full Screen">
+    <a href="#" class="text-dark me-1" onclick="toggleFullScreen()" title="Full Screen">
       <i class="fas fa-expand fa-lg"></i>
     </a>    
     <!-- <i class="fas fa-user-circle fa-lg"></i> -->
-    <span style="font-size: xx-small;"><%= user ? user.user_name || user.username || 'Guest' : 'Guest' %></span>
+    
     <a class="nav-link btn btn-outline-danger btn-sm me-0" href="/logout" title="Logout" style="transition: background-color 0.3s;">
-      <i class="fas fa-sign-out-alt"></i> 
+      <i class="fas fa-sign-out-alt"></i> <span style="font-size: xx-small;"><%= user ? user.user_name || user.username || 'Guest' : 'Guest' %></span>
     </a>
   </div>
 </header>
