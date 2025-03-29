@@ -7,57 +7,45 @@
             <div class="row">
                 <!-- 첫 번째 카드: 참여 중인 프로젝트 수 -->
                 <div class="col-lg-3 col-6">
-                    <div class="small-box text-bg-primary">
+                    <div class="small-box text-bg-primary" data-type="projects">
                         <div class="inner">
                             <h3><%= projectCount %><sup class="fs-5">건</sup></h3>
                             <p>My Project</p>
                         </div>
                         <i class="small-box-icon fa-solid fa-bars-progress"></i>
-                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover more-info" data-type="projects">
-                            More info <i class="bi bi-link-45deg"></i>
-                        </a>
                     </div>
                 </div>
 
                 <!-- 두 번째 카드: 미완료 태스크 수 -->
                 <div class="col-lg-3 col-6">
-                    <div class="small-box text-bg-success">
+                    <div class="small-box text-bg-success" data-type="tasks">
                         <div class="inner">
                             <h3><%= incompleteTaskCount %><sup class="fs-5">개</sup></h3>
                             <p>Task</p>
                         </div>
                         <i class="small-box-icon fa-solid fa-list"></i>
-                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover more-info" data-type="tasks">
-                            More info <i class="bi bi-link-45deg"></i>
-                        </a>
                     </div>
                 </div>
 
                 <!-- 세 번째 카드: 미완료 이슈 수 -->
                 <div class="col-lg-3 col-6">
-                    <div class="small-box text-bg-warning">
+                    <div class="small-box text-bg-warning" data-type="issues">
                         <div class="inner">
                             <h3><%= openIssueCount %><sup class="fs-5">건</sup></h3>
                             <p>Issue</p>
                         </div>
                         <i class="small-box-icon fas fa-hammer"></i>
-                        <a href="#" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover more-info" data-type="issues">
-                            More info <i class="bi bi-link-45deg"></i>
-                        </a>
                     </div>
                 </div>
 
                 <!-- 네 번째 카드: 지연 데이터 -->
                 <div class="col-lg-3 col-6">
-                    <div class="small-box text-bg-danger">
+                    <div class="small-box text-bg-danger" data-type="delays">
                         <div class="inner">
                             <h3><%= delayCount %></h3>
                             <p>Delay</p>
                         </div>
                         <i class="fa-solid fa-hourglass-half small-box-icon"></i>
-                        <a href="#" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover more-info" data-type="delays">
-                            More info <i class="bi bi-link-45deg"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -78,14 +66,11 @@
 
 <!-- jQuery 추가 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Bootstrap JS는 index.ejs에서 로드되므로 제거 -->
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
 
 <!-- JavaScript 추가 -->
 <script>
     $(document).ready(function () {
-        $('.more-info').click(function (e) {
-            e.preventDefault();
+        $('.small-box').click(function () {
             const type = $(this).data('type');
             loadDetails(type);
         });
@@ -145,7 +130,6 @@
             let html = `<table class="table table-striped table-hover ${tableClass}">`;
             html += '<thead><tr>';
             headers.forEach((header, index) => {
-                // 열에 클래스 추가 (예: 첫 번째 열은 col-main, 두 번째 열은 col-secondary)
                 const colClass = index === 0 ? 'col-main' : 'col-secondary';
                 html += `<th class="${colClass}">${header}</th>`;
             });
@@ -210,7 +194,7 @@
         padding: 20px;
         background-color: #fff;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        min-height: 200px;
+        min-height: 300px;
     }
 
     .details-container h4 {
@@ -231,36 +215,35 @@
     .table {
         font-size: 0.9rem;
         margin-bottom: 0;
-        width: 100%; /* 테이블 너비 100%로 설정 */
-        table-layout: fixed; /* 열 너비를 고정 */
+        width: 100%;
+        table-layout: fixed;
     }
 
     .table th,
     .table td {
         vertical-align: middle;
         color: #333;
-        overflow: hidden; /* 텍스트가 넘칠 경우 숨김 */
-        text-overflow: ellipsis; /* 넘치는 텍스트를 ...으로 표시 */
-        white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
-    /* 열 너비 설정 */
     .projects-table .col-main,
     .issues-table .col-main,
     .tasks-table .col-main,
     .delays-table .col-main {
-        width: 80%; /* projects-table과 issues-table의 첫 번째 열 (프로젝트명, 이슈 제목) */
+        width: 80%;
     }
 
     .tasks-table .col-main,
     .delays-table .col-main {
-        width: 80%; /* tasks-table과 delays-table의 첫 번째 열 (태스크) */
+        width: 80%;
     }
 
     .issues-table .col-secondary,
     .tasks-table .col-secondary,
     .delays-table .col-secondary {
-        width: 20%; /* 진행률, 완료예정일, 상태 열을 20%로 설정 */
+        width: 20%;
     }
 
     .table th {
@@ -281,5 +264,16 @@
     .table-responsive {
         max-height: 400px;
         overflow-y: auto;
+    }
+
+    /* 카드 클릭 가능하도록 스타일 추가 */
+    .small-box {
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .small-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 </style>

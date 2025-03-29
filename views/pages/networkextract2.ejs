@@ -94,24 +94,24 @@
                 isNetworkSection = true;
                 networkObjects.push(line);
                 networkCount++;
+            
+            } else if (isNetworkSection && (line.trim().startsWith("!") || line.trim() === "")) {
+                isNetworkSection = false; // 섹션 끝
+            } else if (isNetworkSection) {
+                networkObjects.push(line); // 네트워크 객체의 하위 라인 추가
             }
-            // } else if (isNetworkSection && (line.trim().startsWith("!") || line.trim() === "")) {
-            //     isNetworkSection = false; // 섹션 끝
-            // } else if (isNetworkSection) {
-            //     networkObjects.push(line); // 네트워크 객체의 하위 라인 추가
-            // }
 
             // 서비스 객체 감지
             if (line.startsWith("object service") || line.startsWith("object-group service")) {
                 isServiceSection = true;
                 serviceObjects.push(line);
                 serviceCount++;
+            
+            } else if (isServiceSection && (line.trim().startsWith("!") || line.trim() === "")) {
+                isServiceSection = false; // 섹션 끝
+            } else if (isServiceSection) {
+                serviceObjects.push(line); // 서비스 객체의 하위 라인 추가
             }
-            // } else if (isServiceSection && (line.trim().startsWith("!") || line.trim() === "")) {
-            //     isServiceSection = false; // 섹션 끝
-            // } else if (isServiceSection) {
-            //     serviceObjects.push(line); // 서비스 객체의 하위 라인 추가
-            // }
         }
 
         // 결과 표시

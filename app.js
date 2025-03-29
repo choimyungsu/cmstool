@@ -121,6 +121,18 @@ app.get('/networkextract', async (req, res) => {
   }
 });
 
+// CISCO 네트워크 객체, 서비스 객체 추출 (하위객체까지)
+app.get('/networkextract2', async (req, res) => {
+  try {
+    res.render("index", {
+      currentPage: 'pages/networkextract2',
+      user: req.session.user // user 객체 전달
+    });
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // CISCO NAT 정책 추출
 app.get('/natextract', async (req, res) => {
   try {

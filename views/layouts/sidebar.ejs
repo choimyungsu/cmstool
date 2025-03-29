@@ -37,11 +37,12 @@
         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu3">
           <i class="fas fa-tools me-2"></i> Tool
         </a>
-        <div class="collapse <%= ['pages/compare','pages/networkextract','pages/natextract','pages/oldnatextract','pages/csvreadtable','pages/extract'].includes(currentPage) ? 'show' : '' %>" id="menu3">
+        <div class="collapse <%= ['pages/compare','pages/networkextract','pages/networkextract2','pages/natextract','pages/oldnatextract','pages/csvreadtable','pages/extract'].includes(currentPage) ? 'show' : '' %>" id="menu3">
           <ul class="nav flex-column ms-3">
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/compare' ? 'active' : '' %>" href="/compare">컬럼비교하기</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/extract' ? 'active' : '' %>" href="/extract">입력하여 추출</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/networkextract' ? 'active' : '' %>" href="/networkextract">CISCO 네트워크객체 추출</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/networkextract2' ? 'active' : '' %>" href="/networkextract2">CISCO 네트워크객체 추출2</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/natextract' ? 'active' : '' %>" href="/natextract">CISCO NAT정책 추출</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/oldnatextract' ? 'active' : '' %>" href="/oldnatextract">CISCO NAT정책 추출(old)</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/csvreadtable' ? 'active' : '' %>" href="/csvreadtable">CSV 파일 보기</a></li>
