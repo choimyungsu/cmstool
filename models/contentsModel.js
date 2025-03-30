@@ -20,13 +20,15 @@ const contentsModel = {
             title, gubun, note1, note2, note3, status, create_user, assignee,
             start_date, end_date, plan_date, memo1, memo2, create_user_id ,assignee_id
         } = content;
+        // assignee_id가 빈 문자열이면 null로 변환
+        const sanitizedAssigneeId = (assignee_id === "" || assignee_id === undefined) ? null : assignee_id;
         const result = await pool.query(
             `INSERT INTO tb_contents (
                 title, gubun, note1, note2, note3, status, create_user, assignee,
                 start_date, end_date, plan_date, memo1, memo2, create_user_id ,assignee_id
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,$14,$15) RETURNING *`,
             [title, gubun, note1, note2, note3, status, create_user, assignee,
-             start_date, end_date, plan_date, memo1, memo2,create_user_id,assignee_id ]
+             start_date, end_date, plan_date, memo1, memo2,create_user_id,sanitizedAssigneeId ]
         );
         return result.rows[0];
     },
@@ -37,6 +39,9 @@ const contentsModel = {
             title, gubun, note1, note2, note3, status, create_user, assignee,
             start_date, end_date, plan_date, memo1, memo2,create_user_id,assignee_id
         } = content;
+
+        // assignee_id가 빈 문자열이면 null로 변환
+        const sanitizedAssigneeId = (assignee_id === "" || assignee_id === undefined) ? null : assignee_id;
         const result = await pool.query(
             `UPDATE tb_contents SET
                 title = COALESCE($1, title),
@@ -56,7 +61,7 @@ const contentsModel = {
                 assignee_id = COALESCE($15, assignee_id)
             WHERE id = $16 RETURNING *`,
             [title, gubun, note1, note2, note3, status, create_user, assignee,
-             start_date, end_date, plan_date, memo1, memo2,create_user_id,assignee_id, id]
+             start_date, end_date, plan_date, memo1, memo2,create_user_id,sanitizedAssigneeId, id]
         );
         return result.rows[0];
     },

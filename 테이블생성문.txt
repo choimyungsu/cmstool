@@ -168,7 +168,7 @@ ADD CONSTRAINT fk_create_user FOREIGN KEY (create_user_id) REFERENCES tb_user(id
 ADD CONSTRAINT fk_assignee FOREIGN KEY (assignee_id) REFERENCES tb_user(id) ON DELETE SET NULL;
 
 
-오정훈
+
 
 
 /*###########트리거까진 생성하지 말자###############*/
@@ -322,4 +322,4 @@ WHERE r.role_name = 'GUEST';
 
 --- 슈퍼어드민 롤매핑 (사용자 아이디는 찾아서 수정)
 INSERT INTO tb_user_role (user_id, role_id)
-VALUES (4, 1);
+VALUES (2, 1);
