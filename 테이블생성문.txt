@@ -156,6 +156,21 @@ CREATE TABLE tb_contents (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- 수정 시간 (자동)
 );
 
+
+
+
+ALTER TABLE tb_contents 
+ADD COLUMN create_user_id INTEGER,
+ADD COLUMN assignee_id INTEGER;
+
+ALTER TABLE tb_contents 
+ADD CONSTRAINT fk_create_user FOREIGN KEY (create_user_id) REFERENCES tb_user(id) ON DELETE SET NULL,
+ADD CONSTRAINT fk_assignee FOREIGN KEY (assignee_id) REFERENCES tb_user(id) ON DELETE SET NULL;
+
+
+오정훈
+
+
 /*###########트리거까진 생성하지 말자###############*/
 
 -- updated_at을 자동 갱신하기 위한 트리거 함수 생성
@@ -203,6 +218,108 @@ CREATE TABLE tb_calendar (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+############ 권한설계 #####################
+tb_role (역할 테이블)
+사용자 역할을 정의합니다 (예: 슈퍼관리자, 일반 사용자 등).
+
+CREATE TABLE tb_role (
+    id SERIAL PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL UNIQUE, -- 역할 이름 (예: SUPER_ADMIN, USER, GUEST)
+    description TEXT,                      -- 역할 설명
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+tb_permission (권한 테이블)
+메뉴별 또는 리소스별 권한을 정의합니다.
+
+CREATE TABLE tb_permission (
+    id SERIAL PRIMARY KEY,
+    permission_name VARCHAR(100) NOT NULL UNIQUE, -- 권한 이름 (예: USER_MANAGE, PROJECT_VIEW)
+    description TEXT,                            -- 권한 설명
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+tb_role_permission (역할-권한 매핑 테이블)
+역할과 권한을 연결합니다.
+
+CREATE TABLE tb_role_permission (
+    id SERIAL PRIMARY KEY,
+    role_id INTEGER NOT NULL,
+    permission_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES tb_role(id) ON DELETE CASCADE,
+    FOREIGN KEY (permission_id) REFERENCES tb_permission(id) ON DELETE CASCADE,
+    CONSTRAINT unique_role_permission UNIQUE (role_id, permission_id)
+);
+
+
+tb_user_role (사용자-역할 매핑 테이블)
+사용자와 역할을 연결합니다.
+
+CREATE TABLE tb_user_role (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    role_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES tb_user(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES tb_role(id) ON DELETE CASCADE,
+    CONSTRAINT unique_user_role UNIQUE (user_id, role_id)
+);
 
 
 
+-- 역할 삽입
+INSERT INTO tb_role (role_name, description) VALUES
+('SUPER_ADMIN', '모든 기능에 대한 CRUD 권한을 가진 슈퍼관리자'),
+('USER', '자신이 생성한 객체에 대한 수정/삭제 권한을 가진 일반 사용자'),
+('GUEST', '뷰 권한만 가진 사용자');
+
+-- 권한 삽입 (메뉴별 및 리소스별)
+INSERT INTO tb_permission (permission_name, description) VALUES
+('USER_MANAGE', '사용자 관리 페이지 접근 및 CRUD'),
+('PROJECT_VIEW', '프로젝트 보기'),
+('PROJECT_MANAGE', '프로젝트 생성/수정/삭제'),
+('WBS_VIEW', 'WBS 보기'),
+('WBS_MANAGE', 'WBS 생성/수정/삭제'),
+('ISSUE_VIEW', '이슈 보기'),
+('ISSUE_MANAGE', '이슈 생성/수정/삭제'),
+('CONTENT_VIEW', '콘텐츠 보기'),
+('CONTENT_MANAGE', '콘텐츠 생성/수정/삭제'),
+('TREE_VIEW', '계층관리 보기'),
+('TREE_MANAGE', '계층관리 생성/수정/삭제'),
+('CALENDAR_VIEW', '캘린더 보기'),
+('CALENDAR_MANAGE', '캘린더 생성/수정/삭제');
+
+-- 슈퍼관리자 권한 부여 (모든 권한)
+INSERT INTO tb_role_permission (role_id, permission_id)
+SELECT r.id, p.id
+FROM tb_role r
+CROSS JOIN tb_permission p
+WHERE r.role_name = 'SUPER_ADMIN';
+
+-- 일반 사용자 권한 부여 (자신이 생성한 객체 수정/삭제 + 기본 뷰 권한)
+INSERT INTO tb_role_permission (role_id, permission_id)
+SELECT r.id, p.id
+FROM tb_role r
+JOIN tb_permission p ON p.permission_name IN (
+    'PROJECT_VIEW', 'WBS_VIEW', 'ISSUE_VIEW', 'CONTENT_VIEW', 'TREE_VIEW', 'CALENDAR_VIEW',
+    'PROJECT_MANAGE', 'WBS_MANAGE', 'ISSUE_MANAGE', 'CONTENT_MANAGE', 'TREE_MANAGE', 'CALENDAR_MANAGE'
+)
+WHERE r.role_name = 'USER';
+
+-- 게스트 권한 부여 (뷰만 가능)
+INSERT INTO tb_role_permission (role_id, permission_id)
+SELECT r.id, p.id
+FROM tb_role r
+JOIN tb_permission p ON p.permission_name IN (
+    'PROJECT_VIEW', 'WBS_VIEW', 'ISSUE_VIEW', 'CONTENT_VIEW', 'TREE_VIEW', 'CALENDAR_VIEW'
+)
+WHERE r.role_name = 'GUEST';
+
+--- 슈퍼어드민 롤매핑 (사용자 아이디는 찾아서 수정)
+INSERT INTO tb_user_role (user_id, role_id)
+VALUES (4, 1);

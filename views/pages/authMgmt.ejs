@@ -1,0 +1,488 @@
+<!-- views/pages/auth-management.ejs -->
+<link rel="stylesheet" href="/css/custom.css">
+
+<main class="content">
+  <div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">권한 관리</h1>
+
+    <!-- 역할(Role) 관리 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">역할 관리</h5>
+      </div>
+      <div class="card-body">
+        <!-- 역할 추가 -->
+        <form id="roleForm" class="mb-3">
+          <div class="row">
+            <div class="col-md-4">
+              <input type="text" name="roleName" class="form-control" placeholder="역할 이름" required>
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="description" class="form-control" placeholder="설명">
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-primary w-100">추가</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- 역할 목록 -->
+        <div class="table-responsive">
+          <table class="table table-striped table-hover" id="roleTable">
+            <thead>
+              <tr>
+                <th>역할 이름</th>
+                <th>설명</th>
+                <th>수정</th>
+                <th>삭제</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% roles.forEach(role => { %>
+                <tr>
+                  <td><%= role.role_name %></td>
+                  <td><%= role.description || 'N/A' %></td>
+                  <td>
+                    <button class="btn btn-warning btn-sm edit-role" 
+                            data-id="<%= role.id %>"
+                            data-name="<%= role.role_name %>"
+                            data-description="<%= role.description || '' %>">수정</button>
+                  </td>
+                  <td>
+                    <button class="btn btn-danger btn-sm delete-role" 
+                            data-id="<%= role.id %>">삭제</button>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 권한(Permission) 관리 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">권한 관리</h5>
+      </div>
+      <div class="card-body">
+        <!-- 권한 추가 -->
+        <form id="permissionForm" class="mb-3">
+          <div class="row">
+            <div class="col-md-4">
+              <input type="text" name="permissionName" class="form-control" placeholder="권한 이름" required>
+            </div>
+            <div class="col-md-6">
+              <input type="text" name="description" class="form-control" placeholder="설명">
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-primary w-100">추가</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- 권한 목록 -->
+        <div class="table-responsive">
+          <table class="table table-striped table-hover" id="permissionTable">
+            <thead>
+              <tr>
+                <th>권한 이름</th>
+                <th>설명</th>
+                <th>수정</th>
+                <th>삭제</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% permissions.forEach(permission => { %>
+                <tr>
+                  <td><%= permission.permission_name %></td>
+                  <td><%= permission.description || 'N/A' %></td>
+                  <td>
+                    <button class="btn btn-warning btn-sm edit-permission" 
+                            data-id="<%= permission.id %>"
+                            data-name="<%= permission.permission_name %>"
+                            data-description="<%= permission.description || '' %>">수정</button>
+                  </td>
+                  <td>
+                    <button class="btn btn-danger btn-sm delete-permission" 
+                            data-id="<%= permission.id %>">삭제</button>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 사용자-역할 매핑 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">사용자-역할 매핑</h5>
+      </div>
+      <div class="card-body">
+        <form id="userRoleForm" class="mb-3">
+          <div class="row">
+            <div class="col-md-5">
+              <select name="userId" class="form-select" required>
+                <option value="">사용자 선택</option>
+                <% users.forEach(user => { %>
+                  <option value="<%= user.id %>"><%= user.user_name %> (<%= user.email %>)</option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <select name="roleId" class="form-select" required>
+                <option value="">역할 선택</option>
+                <% roles.forEach(role => { %>
+                  <option value="<%= role.id %>"><%= role.role_name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-primary w-100">추가</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="table-responsive">
+          <table class="table table-striped table-hover" id="userRoleTable">
+            <thead>
+              <tr>
+                <th>사용자</th>
+                <th>역할</th>
+                <th>삭제</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% userRoleMappings.forEach(mapping => { %>
+                <tr>
+                  <td><%= mapping.user_name %></td>
+                  <td><%= mapping.role_name %></td>
+                  <td>
+                    <button class="btn btn-danger btn-sm delete-user-role" 
+                            data-user-id="<%= mapping.user_id %>" 
+                            data-role-id="<%= roles.find(r => r.role_name === mapping.role_name).id %>">삭제</button>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 역할-권한 매핑 -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">역할-권한 매핑</h5>
+      </div>
+      <div class="card-body">
+        <form id="rolePermissionForm" class="mb-3">
+          <div class="row">
+            <div class="col-md-5">
+              <select name="roleId" class="form-select" required>
+                <option value="">역할 선택</option>
+                <% roles.forEach(role => { %>
+                  <option value="<%= role.id %>"><%= role.role_name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <select name="permissionId" class="form-select" required>
+                <option value="">권한 선택</option>
+                <% permissions.forEach(permission => { %>
+                  <option value="<%= permission.id %>"><%= permission.permission_name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-primary w-100">추가</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="table-responsive">
+          <table class="table table-striped table-hover" id="rolePermissionTable">
+            <thead>
+              <tr>
+                <th>역할</th>
+                <th>권한</th>
+                <th>삭제</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% rolePermissionMappings.forEach(mapping => { %>
+                <tr>
+                  <td><%= mapping.role_name %></td>
+                  <td><%= mapping.permission_name %></td>
+                  <td>
+                    <button class="btn btn-danger btn-sm delete-role-permission" 
+                            data-role-id="<%= roles.find(r => r.role_name === mapping.role_name).id %>"
+                            data-permission-id="<%= permissions.find(p => p.permission_name === mapping.permission_name).id %>">삭제</button>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 수정 모달 -->
+<div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editRoleModalLabel">역할 수정</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editRoleForm">
+          <input type="hidden" name="id" id="editRoleId">
+          <div class="mb-3">
+            <label for="editRoleName" class="form-label">역할 이름</label>
+            <input type="text" class="form-control" id="editRoleName" name="roleName" required>
+          </div>
+          <div class="mb-3">
+            <label for="editRoleDescription" class="form-label">설명</label>
+            <input type="text" class="form-control" id="editRoleDescription" name="description">
+          </div>
+          <button type="submit" class="btn btn-primary">저장</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editPermissionModal" tabindex="-1" aria-labelledby="editPermissionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editPermissionModalLabel">권한 수정</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editPermissionForm">
+          <input type="hidden" name="id" id="editPermissionId">
+          <div class="mb-3">
+            <label for="editPermissionName" class="form-label">권한 이름</label>
+            <input type="text" class="form-control" id="editPermissionName" name="permissionName" required>
+          </div>
+          <div class="mb-3">
+            <label for="editPermissionDescription" class="form-label">설명</label>
+            <input type="text" class="form-control" id="editPermissionDescription" name="description">
+          </div>
+          <button type="submit" class="btn btn-primary">저장</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    // 역할 추가
+    $('#roleForm').on('submit', function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: '/auth-management/role',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('역할 추가 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 역할 수정 모달 열기
+    $('.edit-role').on('click', function () {
+      const id = $(this).data('id');
+      const name = $(this).data('name');
+      const description = $(this).data('description');
+      $('#editRoleId').val(id);
+      $('#editRoleName').val(name);
+      $('#editRoleDescription').val(description);
+      $('#editRoleModal').modal('show');
+    });
+
+    // 역할 수정
+    $('#editRoleForm').on('submit', function (e) {
+      e.preventDefault();
+      const id = $('#editRoleId').val();
+      $.ajax({
+        url: `/auth-management/role/${id}`,
+        method: 'PUT',
+        data: $(this).serialize(),
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('역할 수정 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 역할 삭제
+    $('.delete-role').on('click', function () {
+      if (!confirm('삭제하시겠습니까?')) return;
+      const id = $(this).data('id');
+      $.ajax({
+        url: `/auth-management/role/${id}`,
+        method: 'DELETE',
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('역할 삭제 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 권한 추가
+    $('#permissionForm').on('submit', function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: '/auth-management/permission',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('권한 추가 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 권한 수정 모달 열기
+    $('.edit-permission').on('click', function () {
+      const id = $(this).data('id');
+      const name = $(this).data('name');
+      const description = $(this).data('description');
+      $('#editPermissionId').val(id);
+      $('#editPermissionName').val(name);
+      $('#editPermissionDescription').val(description);
+      $('#editPermissionModal').modal('show');
+    });
+
+    // 권한 수정
+    $('#editPermissionForm').on('submit', function (e) {
+      e.preventDefault();
+      const id = $('#editPermissionId').val();
+      $.ajax({
+        url: `/auth-management/permission/${id}`,
+        method: 'PUT',
+        data: $(this).serialize(),
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('권한 수정 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 권한 삭제
+    $('.delete-permission').on('click', function () {
+      if (!confirm('삭제하시겠습니까?')) return;
+      const id = $(this).data('id');
+      $.ajax({
+        url: `/auth-management/permission/${id}`,
+        method: 'DELETE',
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('권한 삭제 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 사용자-역할 매핑 추가
+    $('#userRoleForm').on('submit', function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: '/auth-management/user-role',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('사용자-역할 매핑 추가 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 사용자-역할 매핑 삭제
+    $('.delete-user-role').on('click', function () {
+      if (!confirm('삭제하시겠습니까?')) return;
+      const userId = $(this).data('user-id');
+      const roleId = $(this).data('role-id');
+      $.ajax({
+        url: '/auth-management/user-role',
+        method: 'DELETE',
+        data: { userId, roleId },
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('사용자-역할 매핑 삭제 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 역할-권한 매핑 추가
+    $('#rolePermissionForm').on('submit', function (e) {
+      e.preventDefault();
+      $.ajax({
+        url: '/auth-management/role-permission',
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('역할-권한 매핑 추가 중 오류가 발생했습니다.');
+        }
+      });
+    });
+
+    // 역할-권한 매핑 삭제
+    $('.delete-role-permission').on('click', function () {
+      if (!confirm('삭제하시겠습니까?')) return;
+      const roleId = $(this).data('role-id');
+      const permissionId = $(this).data('permission-id');
+      $.ajax({
+        url: '/auth-management/role-permission',
+        method: 'DELETE',
+        data: { roleId, permissionId },
+        success: function () {
+          location.reload();
+        },
+        error: function (xhr) {
+          alert('역할-권한 매핑 삭제 중 오류가 발생했습니다.');
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+</style>

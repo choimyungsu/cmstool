@@ -18,15 +18,15 @@ const contentsModel = {
     async create(content) {
         const {
             title, gubun, note1, note2, note3, status, create_user, assignee,
-            start_date, end_date, plan_date, memo1, memo2
+            start_date, end_date, plan_date, memo1, memo2, create_user_id ,assignee_id
         } = content;
         const result = await pool.query(
             `INSERT INTO tb_contents (
                 title, gubun, note1, note2, note3, status, create_user, assignee,
-                start_date, end_date, plan_date, memo1, memo2
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
+                start_date, end_date, plan_date, memo1, memo2, create_user_id ,assignee_id
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,$14,$15) RETURNING *`,
             [title, gubun, note1, note2, note3, status, create_user, assignee,
-             start_date, end_date, plan_date, memo1, memo2]
+             start_date, end_date, plan_date, memo1, memo2,create_user_id,assignee_id ]
         );
         return result.rows[0];
     },
@@ -35,7 +35,7 @@ const contentsModel = {
     async update(id, content) {
         const {
             title, gubun, note1, note2, note3, status, create_user, assignee,
-            start_date, end_date, plan_date, memo1, memo2
+            start_date, end_date, plan_date, memo1, memo2,create_user_id,assignee_id
         } = content;
         const result = await pool.query(
             `UPDATE tb_contents SET
@@ -51,10 +51,12 @@ const contentsModel = {
                 end_date = COALESCE($10, end_date),
                 plan_date = COALESCE($11, plan_date),
                 memo1 = COALESCE($12, memo1),
-                memo2 = COALESCE($13, memo2)
-            WHERE id = $14 RETURNING *`,
+                memo2 = COALESCE($13, memo2),
+                create_user_id = COALESCE($14, create_user_id),
+                assignee_id = COALESCE($15, assignee_id)
+            WHERE id = $16 RETURNING *`,
             [title, gubun, note1, note2, note3, status, create_user, assignee,
-             start_date, end_date, plan_date, memo1, memo2, id]
+             start_date, end_date, plan_date, memo1, memo2,create_user_id,assignee_id, id]
         );
         return result.rows[0];
     },

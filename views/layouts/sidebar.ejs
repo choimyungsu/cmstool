@@ -69,12 +69,12 @@
         <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#menu5">
           <i class="fas fa-cog me-2"></i> 관리
         </a>
-        <div class="collapse <%= ['pages/users','pages/project','pages/codemgmt','pages/pjt_user','pages/createBook'].includes(currentPage) ? 'show' : '' %>" id="menu5">
+        <div class="collapse <%= ['pages/users','pages/project','pages/codemgmt','pages/pjt_user','pages/auth-management','pages/createBook'].includes(currentPage) ? 'show' : '' %>" id="menu5">
           <ul class="nav flex-column ms-3">
             <li class="nav-item"><a class="nav-link <%= currentPage === 'users' ? 'active' : '' %>" href="/users">사용자</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/project' ? 'active' : '' %>" href="/project">프로젝트</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/pjt_user' ? 'active' : '' %>" href="/pjt_user">프로젝트/사용자</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">권한관리</a></li>
+            <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/auth-management' ? 'active' : '' %>" href="/auth-management">권한관리</a></li>
             <li class="nav-item"><a class="nav-link" href="#">프로세스관리</a></li>
             <li class="nav-item"><a class="nav-link" href="#">보고서생성</a></li>
             <li class="nav-item"><a class="nav-link <%= currentPage === 'pages/codemgmt' ? 'active' : '' %>" href="/codemgmt">코드관리</a></li>

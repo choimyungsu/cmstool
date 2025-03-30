@@ -98,6 +98,21 @@ static async searchUsers({ search_user_id}) {
   }
 }
 
+
+static async search(user_name) {
+  console.log("🔍 Searching for user:", user_name);
+
+  const query = 'SELECT id, user_name, email FROM tb_user WHERE user_name LIKE $1';
+  const values = [`%${user_name}%`];
+
+  console.log("Executing SQL:", query, values); // SQL 로그 추가
+
+  const result = await pool.query(query, values);
+  return result.rows;
+}
+
+
+
 }
 
 module.exports = User;

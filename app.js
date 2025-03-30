@@ -24,8 +24,8 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const calendarRoutes = require('./routes/calendarRoutes');
 const bookRoutes = require('./routes/bookRoutes'); //책
 const pageRoutes = require('./routes/pageRoutes');
-
-
+const authManagementRoutes = require('./routes/authManagementRoutes'); // 추가
+const methodOverride = require('method-override');
 
 // EJS 설정
 app.set('view engine', 'ejs');
@@ -35,6 +35,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 미들웨어 설정
+app.use(methodOverride('_method'));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
@@ -76,6 +77,7 @@ app.use('/', dashboardRoutes);
 app.use('/', calendarRoutes);
 app.use('/', bookRoutes);
 app.use('/', pageRoutes);
+app.use('/', authManagementRoutes); // 추가
 
 
 // 루트 경로에서 대시보드 렌더링
