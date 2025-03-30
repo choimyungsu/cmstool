@@ -1,27 +1,29 @@
 <!-- views/pages/auth-management.ejs -->
 <link rel="stylesheet" href="/css/custom.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <main class="content">
   <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">권한 관리</h1>
+    <h1 class="h3 mb-4 text-gray-800" style="font-size: 14px;"><i class="fas fa-user-shield me-2"></i>권한 관리</h1>
 
     <!-- 역할(Role) 관리 -->
     <div class="card mb-4">
-      <div class="card-header">
-        <h5 class="mb-0">역할 관리</h5>
+      <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#roleCollapse">
+        <h5 class="mb-0" style="font-size: 12px;"><i class="fas fa-users-cog me-2"></i>역할 관리</h5>
+        <i class="fas fa-chevron-down toggle-icon"></i>
       </div>
-      <div class="card-body">
+      <div class="card-body collapse show" id="roleCollapse">
         <!-- 역할 추가 -->
         <form id="roleForm" class="mb-3">
           <div class="row">
             <div class="col-md-4">
-              <input type="text" name="roleName" class="form-control" placeholder="역할 이름" required>
+              <input type="text" name="roleName" class="form-control form-control-sm" placeholder="역할 이름" required>
             </div>
             <div class="col-md-6">
-              <input type="text" name="description" class="form-control" placeholder="설명">
+              <input type="text" name="description" class="form-control form-control-sm" placeholder="설명">
             </div>
             <div class="col-md-2">
-              <button type="submit" class="btn btn-primary w-100">추가</button>
+              <button type="submit" class="btn btn-primary btn-sm w-100">추가</button>
             </div>
           </div>
         </form>
@@ -62,21 +64,22 @@
 
     <!-- 권한(Permission) 관리 -->
     <div class="card mb-4">
-      <div class="card-header">
-        <h5 class="mb-0">권한 관리</h5>
+      <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#permissionCollapse">
+        <h5 class="mb-0" style="font-size: 12px;"><i class="fas fa-key me-2"></i>권한 관리</h5>
+        <i class="fas fa-chevron-down toggle-icon"></i>
       </div>
-      <div class="card-body">
+      <div class="card-body collapse show" id="permissionCollapse">
         <!-- 권한 추가 -->
         <form id="permissionForm" class="mb-3">
           <div class="row">
             <div class="col-md-4">
-              <input type="text" name="permissionName" class="form-control" placeholder="권한 이름" required>
+              <input type="text" name="permissionName" class="form-control form-control-sm" placeholder="권한 이름" required>
             </div>
             <div class="col-md-6">
-              <input type="text" name="description" class="form-control" placeholder="설명">
+              <input type="text" name="description" class="form-control form-control-sm" placeholder="설명">
             </div>
             <div class="col-md-2">
-              <button type="submit" class="btn btn-primary w-100">추가</button>
+              <button type="submit" class="btn btn-primary btn-sm w-100">추가</button>
             </div>
           </div>
         </form>
@@ -117,14 +120,15 @@
 
     <!-- 사용자-역할 매핑 -->
     <div class="card mb-4">
-      <div class="card-header">
-        <h5 class="mb-0">사용자-역할 매핑</h5>
+      <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#userRoleCollapse">
+        <h5 class="mb-0" style="font-size: 12px;"><i class="fas fa-user-tag me-2"></i>사용자-역할 매핑</h5>
+        <i class="fas fa-chevron-down toggle-icon"></i>
       </div>
-      <div class="card-body">
+      <div class="card-body collapse show" id="userRoleCollapse">
         <form id="userRoleForm" class="mb-3">
           <div class="row">
             <div class="col-md-5">
-              <select name="userId" class="form-select" required>
+              <select name="userId" class="form-select form-select-sm" required>
                 <option value="">사용자 선택</option>
                 <% users.forEach(user => { %>
                   <option value="<%= user.id %>"><%= user.user_name %> (<%= user.email %>)</option>
@@ -132,7 +136,7 @@
               </select>
             </div>
             <div class="col-md-5">
-              <select name="roleId" class="form-select" required>
+              <select name="roleId" class="form-select form-select-sm" required>
                 <option value="">역할 선택</option>
                 <% roles.forEach(role => { %>
                   <option value="<%= role.id %>"><%= role.role_name %></option>
@@ -140,7 +144,7 @@
               </select>
             </div>
             <div class="col-md-2">
-              <button type="submit" class="btn btn-primary w-100">추가</button>
+              <button type="submit" class="btn btn-primary btn-sm w-100">추가</button>
             </div>
           </div>
         </form>
@@ -174,14 +178,15 @@
 
     <!-- 역할-권한 매핑 -->
     <div class="card mb-4">
-      <div class="card-header">
-        <h5 class="mb-0">역할-권한 매핑</h5>
+      <div class="card-header d-flex justify-content-between align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#rolePermissionCollapse">
+        <h5 class="mb-0" style="font-size: 12px;"><i class="fas fa-lock me-2"></i>역할-권한 매핑</h5>
+        <i class="fas fa-chevron-down toggle-icon"></i>
       </div>
-      <div class="card-body">
+      <div class="card-body collapse show" id="rolePermissionCollapse">
         <form id="rolePermissionForm" class="mb-3">
           <div class="row">
             <div class="col-md-5">
-              <select name="roleId" class="form-select" required>
+              <select name="roleId" class="form-select form-select-sm" required>
                 <option value="">역할 선택</option>
                 <% roles.forEach(role => { %>
                   <option value="<%= role.id %>"><%= role.role_name %></option>
@@ -189,7 +194,7 @@
               </select>
             </div>
             <div class="col-md-5">
-              <select name="permissionId" class="form-select" required>
+              <select name="permissionId" class="form-select form-select-sm" required>
                 <option value="">권한 선택</option>
                 <% permissions.forEach(permission => { %>
                   <option value="<%= permission.id %>"><%= permission.permission_name %></option>
@@ -197,7 +202,7 @@
               </select>
             </div>
             <div class="col-md-2">
-              <button type="submit" class="btn btn-primary w-100">추가</button>
+              <button type="submit" class="btn btn-primary btn-sm w-100">추가</button>
             </div>
           </div>
         </form>
@@ -236,21 +241,21 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editRoleModalLabel">역할 수정</h5>
+        <h5 class="modal-title" id="editRoleModalLabel" style="font-size: 12px;"><i class="fas fa-edit me-2"></i>역할 수정</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="editRoleForm">
           <input type="hidden" name="id" id="editRoleId">
           <div class="mb-3">
-            <label for="editRoleName" class="form-label">역할 이름</label>
-            <input type="text" class="form-control" id="editRoleName" name="roleName" required>
+            <label for="editRoleName" class="form-label" style="font-size: 12px;">역할 이름</label>
+            <input type="text" class="form-control form-control-sm" id="editRoleName" name="roleName" required>
           </div>
           <div class="mb-3">
-            <label for="editRoleDescription" class="form-label">설명</label>
-            <input type="text" class="form-control" id="editRoleDescription" name="description">
+            <label for="editRoleDescription" class="form-label" style="font-size: 12px;">설명</label>
+            <input type="text" class="form-control form-control-sm" id="editRoleDescription" name="description">
           </div>
-          <button type="submit" class="btn btn-primary">저장</button>
+          <button type="submit" class="btn btn-primary btn-sm">저장</button>
         </form>
       </div>
     </div>
@@ -261,21 +266,21 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editPermissionModalLabel">권한 수정</h5>
+        <h5 class="modal-title" id="editPermissionModalLabel" style="font-size: 12px;"><i class="fas fa-edit me-2"></i>권한 수정</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="editPermissionForm">
           <input type="hidden" name="id" id="editPermissionId">
           <div class="mb-3">
-            <label for="editPermissionName" class="form-label">권한 이름</label>
-            <input type="text" class="form-control" id="editPermissionName" name="permissionName" required>
+            <label for="editPermissionName" class="form-label" style="font-size: 12px;">권한 이름</label>
+            <input type="text" class="form-control form-control-sm" id="editPermissionName" name="permissionName" required>
           </div>
           <div class="mb-3">
-            <label for="editPermissionDescription" class="form-label">설명</label>
-            <input type="text" class="form-control" id="editPermissionDescription" name="description">
+            <label for="editPermissionDescription" class="form-label" style="font-size: 12px;">설명</label>
+            <input type="text" class="form-control form-control-sm" id="editPermissionDescription" name="description">
           </div>
-          <button type="submit" class="btn btn-primary">저장</button>
+          <button type="submit" class="btn btn-primary btn-sm">저장</button>
         </form>
       </div>
     </div>
@@ -284,8 +289,20 @@
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
 <script>
   $(document).ready(function () {
+    // 토글 아이콘 상태 업데이트
+    $('.card-header').on('click', function () {
+      const $icon = $(this).find('.toggle-icon');
+      const $collapse = $($(this).data('bs-target'));
+      $collapse.on('shown.bs.collapse', function () {
+        $icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+      }).on('hidden.bs.collapse', function () {
+        $icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+      });
+    });
+
     // 역할 추가
     $('#roleForm').on('submit', function (e) {
       e.preventDefault();
@@ -477,12 +494,49 @@
 </script>
 
 <style>
+  body {
+    font-size: 12px;
+  }
   .card-header {
     background-color: #f8f9fa;
     border-bottom: 1px solid #dee2e6;
+    padding: 10px 15px;
+    font-weight: 500;
+  }
+  .card-header h5 {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+  .toggle-icon {
+    font-size: 12px;
+    color: #6c757d;
+    transition: transform 0.3s ease;
+  }
+  .toggle-icon:hover {
+    color: #007bff;
   }
   .table-responsive {
     max-height: 400px;
     overflow-y: auto;
+  }
+  .table th, .table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  .form-control-sm, .form-select-sm {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  .modal-title {
+    display: inline-flex;
+    align-items: center;
+  }
+  .collapse.show {
+    transition: all 0.3s ease-in-out;
   }
 </style>
