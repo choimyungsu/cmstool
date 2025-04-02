@@ -111,6 +111,19 @@ app.get('/compare', async (req, res) => {
   }
 });
 
+
+// 컬럼 비교하기 "따옴표도 없애고 비고"
+app.get('/compare2', async (req, res) => {
+  try {
+    res.render("index", {
+      currentPage: 'pages/compare2',
+      user: req.session.user // user 객체 전달
+    });
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // CISCO 네트워크 객체, 서비스 객체 추출
 app.get('/networkextract', async (req, res) => {
   try {
