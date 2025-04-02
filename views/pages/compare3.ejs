@@ -1,0 +1,129 @@
+<link rel="stylesheet" href="/css/custom.css">
+<style>
+    .textarea-container {
+        display: flex;
+        gap: 10px;
+    }
+    .output-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    pre {
+        background: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+        flex: 1;
+    }
+</style>
+<!--begin::App Main-->
+<main class="content">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="container custom-container">
+                <i class="fas fa-sticky-note me-1" style="cursor: pointer;"></i> 각각 라인을 하나의 값으로하여 비교 (앞뒤 공백 및 따옴표 제거 뒤 비교)
+                <div class="textarea-container">
+                    <textarea id="textarea1" class="form-control" rows="10" placeholder="첫 번째 텍스트"></textarea>
+                    <textarea id="textarea2" class="form-control" rows="10" placeholder="두 번째 텍스트"></textarea>
+                </div>
+                <button id="compareBtn" class="btn btn-primary mt-2">비교</button>
+                <button id="similarityBtn" class="btn btn-success mt-2 ms-2">유사정책 정리</button>
+                <br>
+                <i class="fas fa-object-ungroup me-1" style="cursor: pointer;"></i>공통된 값
+                <pre id="common" class="border p-2"></pre>
+                <i class="fas fa-lightbulb me-1" style="cursor: pointer;"></i>첫 번째 텍스트에만 있는 값과 두 번째 텍스트에만 있는 값
+                <div class="output-container">
+                    <i class="fas fa-hand-point-left me-1" style="cursor: pointer;"></i>1<pre id="onlyInText1" class="border p-2"></pre>
+                    <i class="fas fa-hand-point-right me-1" style="cursor: pointer;"></i>2<pre id="onlyInText2" class="border p-2"></pre>
+                </div>
+
+                <hr>
+                <i class="fas fa-filter me-1" style="cursor: pointer;"></i> 유사정책 정리 결과
+                <div class="textarea-container">
+                    <textarea id="filteredText1" class="form-control" rows="10" placeholder="정리된 첫 번째 텍스트"></textarea>
+                    <textarea id="filteredText2" class="form-control" rows="10" placeholder="정리된 두 번째 텍스트"></textarea>
+                </div>
+                <button id="recompareBtn" class="btn btn-primary mt-2">재비교</button>
+                <br>
+                <i class="fas fa-object-ungroup me-1" style="cursor: pointer;"></i>공통된 값
+                <pre id="filteredCommon" class="border p-2"></pre>
+                <i class="fas fa-lightbulb me-1" style="cursor: pointer;"></i>정리된 첫 번째 텍스트에만 있는 값과 두 번째 텍스트에만 있는 값
+                <div class="output-container">
+                    <i class="fas fa-hand-point-left me-1" style="cursor: pointer;"></i>1<pre id="filteredOnlyInText1" class="border p-2"></pre>
+                    <i class="fas fa-hand-point-right me-1" style="cursor: pointer;"></i>2<pre id="filteredOnlyInText2" class="border p-2"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!--end::App Main-->
+
+<script>
+    // 공통 텍스트 정리 함수
+    const cleanText = (text) => text.replace(/^['"\s]+|['"\s]+$/g, '');
+
+    // 초기 비교
+    document.getElementById("compareBtn").addEventListener("click", function () {
+        const text1 = document.getElementById("textarea1").value;
+        const text2 = document.getElementById("textarea2").value;
+
+        const set1 = new Set(text1.split("\n").map(line => cleanText(line)).filter(line => line !== ""));
+        const set2 = new Set(text2.split("\n").map(line => cleanText(line)).filter(line => line !== ""));
+
+        const common = [...set1].filter(item => set2.has(item));
+        const onlyInText1 = [...set1].filter(item => !set2.has(item));
+        const onlyInText2 = [...set2].filter(item => !set1.has(item));
+
+        document.getElementById("common").textContent = common.join("\n");
+        document.getElementById("onlyInText1").textContent = onlyInText1.join("\n");
+        document.getElementById("onlyInText2").textContent = onlyInText2.join("\n");
+    });
+
+    // 유사정책 정리
+    document.getElementById("similarityBtn").addEventListener("click", function () {
+        const text1 = document.getElementById("textarea1").value;
+        const text2 = document.getElementById("textarea2").value;
+
+        const lines1 = text1.split("\n").map(line => cleanText(line)).filter(line => line !== "");
+        const lines2 = text2.split("\n").map(line => cleanText(line)).filter(line => line !== "");
+
+        // 두 번째 텍스트를 기준으로 첫 번째 텍스트에서 유사한 값 필터링
+        const filteredLines1 = [];
+        const usedMatches = new Set();
+
+        for (const line1 of lines1) {
+            let isMatched = false;
+            for (const line2 of lines2) {
+                if (line1.includes(line2) && !usedMatches.has(line2)) {
+                    filteredLines1.push(line1);
+                    usedMatches.add(line2);
+                    isMatched = true;
+                    break;
+                }
+            }
+            if (!isMatched) {
+                filteredLines1.push(line1);
+            }
+        }
+
+        document.getElementById("filteredText1").value = filteredLines1.join("\n");
+        document.getElementById("filteredText2").value = lines2.join("\n");
+    });
+
+    // 재비교
+    document.getElementById("recompareBtn").addEventListener("click", function () {
+        const text1 = document.getElementById("filteredText1").value;
+        const text2 = document.getElementById("filteredText2").value;
+
+        const set1 = new Set(text1.split("\n").map(line => cleanText(line)).filter(line => line !== ""));
+        const set2 = new Set(text2.split("\n").map(line => cleanText(line)).filter(line => line !== ""));
+
+        const common = [...set1].filter(item => set2.has(item));
+        const onlyInText1 = [...set1].filter(item => !set2.has(item));
+        const onlyInText2 = [...set2].filter(item => !set1.has(item));
+
+        document.getElementById("filteredCommon").textContent = common.join("\n");
+        document.getElementById("filteredOnlyInText1").textContent = onlyInText1.join("\n");
+        document.getElementById("filteredOnlyInText2").textContent = onlyInText2.join("\n");
+    });
+</script>
