@@ -27,7 +27,6 @@
                     <textarea id="textarea2" class="form-control" rows="10" placeholder="두 번째 텍스트"></textarea>
                 </div>
                 <button id="compareBtn" class="btn btn-primary mt-2">비교</button>
-                <button id="similarityBtn" class="btn btn-success mt-2 ms-2">유사정책 정리</button>
                 <br>
                 <i class="fas fa-object-ungroup me-1" style="cursor: pointer;"></i>공통된 값
                 <pre id="common" class="border p-2"></pre>
@@ -36,6 +35,7 @@
                     <i class="fas fa-hand-point-left me-1" style="cursor: pointer;"></i>1<pre id="onlyInText1" class="border p-2"></pre>
                     <i class="fas fa-hand-point-right me-1" style="cursor: pointer;"></i>2<pre id="onlyInText2" class="border p-2"></pre>
                 </div>
+                <button id="similarityBtn" class="btn btn-success mt-2">유사정책 정리</button>
 
                 <hr>
                 <i class="fas fa-filter me-1" style="cursor: pointer;"></i> 유사정책 정리 결과
@@ -81,33 +81,34 @@
 
     // 유사정책 정리
     document.getElementById("similarityBtn").addEventListener("click", function () {
-        const text1 = document.getElementById("textarea1").value;
-        const text2 = document.getElementById("textarea2").value;
+        const onlyInText1 = document.getElementById("onlyInText1").textContent.split("\n").filter(line => line !== "");
+        const onlyInText2 = document.getElementById("onlyInText2").textContent.split("\n").filter(line => line !== "");
 
-        const lines1 = text1.split("\n").map(line => cleanText(line)).filter(line => line !== "");
-        const lines2 = text2.split("\n").map(line => cleanText(line)).filter(line => line !== "");
-
-        // 두 번째 텍스트를 기준으로 첫 번째 텍스트에서 유사한 값 필터링
+        // 중복 제거를 위한 Set
         const filteredLines1 = [];
-        const usedMatches = new Set();
+        const seenPatterns = new Set(); // [[ aaaa ]] 패턴 추적
 
-        for (const line1 of lines1) {
-            let isMatched = false;
-            for (const line2 of lines2) {
-                if (line1.includes(line2) && !usedMatches.has(line2)) {
+        // [[ aaaa ]] 패턴을 추출하기 위한 정규표현식
+        const patternRegex = /\[\[\s*([^\]]*)\s*\]\]/;
+
+        // 첫 번째 텍스트(onlyInText1)에서 중복 패턴 제거
+        for (const line1 of onlyInText1) {
+            const match = line1.match(patternRegex);
+            if (match) {
+                const pattern = match[0]; // [[ aaaa ]] 전체 패턴
+                if (!seenPatterns.has(pattern)) {
                     filteredLines1.push(line1);
-                    usedMatches.add(line2);
-                    isMatched = true;
-                    break;
+                    seenPatterns.add(pattern);
                 }
-            }
-            if (!isMatched) {
+            } else {
+                // 패턴이 없는 줄은 그대로 추가
                 filteredLines1.push(line1);
             }
         }
 
+        // 두 번째 텍스트는 그대로 유지
         document.getElementById("filteredText1").value = filteredLines1.join("\n");
-        document.getElementById("filteredText2").value = lines2.join("\n");
+        document.getElementById("filteredText2").value = onlyInText2.join("\n");
     });
 
     // 재비교
