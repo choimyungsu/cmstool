@@ -202,7 +202,8 @@
                       </div>
                       <div>
                         <label for="newCreateUser">Create User</label>
-                        <input type="text" class="form-control" id="newCreateUser">
+                        <input type="text" class="form-control" id="newCreateUser" readonly>
+                        <input type="hidden" id="newCreateUserId" name="newCreateUserId">
                       </div>
                       <div>
                         <label for="newAssignee">Assignee</label>
@@ -595,6 +596,11 @@
 <!-- views/tree.ejs (HTML 및 CSS는 동일, <script> 부분만 수정) -->
   <script>
     $(document).ready(function () {
+      // 세션에서 현재 사용자 정보 가져오기
+      const currentUser = {
+        id: '<%- user.id %>',
+        user_name: '<%- user.user_name %>'
+      };
       let currentTreeId = null;
       let currentContentId = null;
       let lastAjax = null; // 이전 요청을 추적하기 위한 변수
@@ -1113,6 +1119,17 @@
           });
         });
       });
+
+
+// newCreateUser 필드에 세션 정보 설정
+$('#newCreateUser').val(currentUser.user_name).prop('readonly', true);
+    const $newCreateUserId = $('<input>').attr({
+      type: 'hidden',
+      id: 'newCreateUserId',
+      name: 'newCreateUserId'
+    }).val(currentUser.id);
+    $('#newCreateUser').after($newCreateUserId);
+
   
       // 새 컨텐츠 생성 및 링크
       $('#saveNewContent').click(function () {
@@ -1128,7 +1145,8 @@
           note2: $('#newNote2').val(),
           note3: $('#newNote3').val(),
           status: $('#newStatus').val(),
-          create_user: $('#newCreateUser').val(),
+          create_user: currentUser.user_name, // 세션에서 가져온 사용자 이름
+          create_user_id: currentUser.id, // 세션에서 가져온 사용자 ID
           assignee: $('#newAssignee').val(),
           start_date: $('#newStartDate').val(),
           end_date: $('#newEndDate').val(),
@@ -1153,6 +1171,8 @@
               $('#create-link-tab').tab('show');
               $('#createContentForm')[0].reset(); // 폼 초기화
               $('#newSummernote').summernote('reset'); // Summernote 초기화
+              $('#newCreateUser').val(currentUser.user_name); // 폼 초기화 후 다시 세션 정보 설정
+              $('#newCreateUserId').val(currentUser.id);
               updateContentsList();
             }).fail(function (xhr, status, error) {
               console.error('Error linking content:', error);
